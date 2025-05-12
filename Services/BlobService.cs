@@ -14,14 +14,18 @@ namespace QuanLyCotWeb.Services
 
         public BlobService(IConfiguration configuration)
         {
-            _connectionString = configuration["AzureBlobStorage:ConnectionString"];
-            _containerName = configuration["AzureBlobStorage:ContainerName"];
+            // Khớp với biến môi trường đã khai báo trên Render
+            _connectionString = configuration["AzureBlob:ConnectionString"];
+            _containerName = configuration["AzureBlob:ContainerName"];
         }
 
         public async Task<string> UploadAsync(Stream fileStream, string fileName)
         {
             var blobClient = new BlobContainerClient(_connectionString, _containerName);
             await blobClient.CreateIfNotExistsAsync();
+
+            // Đặt quyền công khai để ảnh có thể truy cập từ link
+            await blobClient.SetAccessPolicyAsync(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
 
             var blob = blobClient.GetBlobClient(fileName);
             await blob.UploadAsync(fileStream, overwrite: true);
