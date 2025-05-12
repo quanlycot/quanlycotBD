@@ -1,0 +1,158 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Mvc.Core.Common
+@model X.PagedList.IPagedList<QuanLyCotWeb.Models.Cot>
+
+@{
+    int highlightId = 0;
+    if (Context.Request.Query["highlight"].Count > 0)
+    {
+        int.TryParse(Context.Request.Query["highlight"], out highlightId);
+    }
+}
+
+
+@{
+    ViewData["Title"] = "Danh sách Cốt";
+}
+
+
+<h2 class="text-center mb-4">Danh sách Cốt</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success text-center">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <form asp-action="Index" method="get" class="d-flex flex-grow-1 me-3">
+        <input type="text" name="searchString"
+               value="@Context.Request.Query["searchString"]"
+               class="form-control me-2"
+               placeholder="Nhập ID hoặc tên hoặc họ tên cần tìm"
+               style="flex: 1;" />
+        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+    </form>
+</div>
+
+<!-- Nhóm nút xuất dữ liệu -->
+<div class="mb-4">
+    <form asp-action="XuatCot" method="get" class="d-inline">
+        <button type="submit" class="btn btn-success me-2">Xuất Cốt</button>
+    </form>
+    <form asp-action="XuatNguoiThan" method="get" class="d-inline">
+        <button type="submit" class="btn btn-primary me-2">Xuất Người Thân</button>
+    </form>
+    <form asp-action="XuatViTri" method="get" class="d-inline">
+        <button type="submit" class="btn btn-warning">Xuất Vị Trí</button>
+    </form>
+</div>
+
+
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover">
+        <thead class="table-dark text-center">
+            <tr>
+                <th>STT</th>
+                <th>Họ</th>
+                <th>Tên</th>
+                <th>Pháp danh</th>
+                <th>Năm sinh</th>
+                <th>Ngày mất (AL)</th>
+                <th>Ngày mất (DL)</th>
+                <th>Tuổi</th>
+                <th>Ảnh Người Mất</th>
+                <th>Vị trí (Lầu - Lô)</th>
+                <th>ID Người Thân</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count > 0)
+            {
+                int stt = (Model.PageNumber - 1) * Model.PageSize;
+                foreach (var item in Model)
+                {
+                    stt++;
+                    <tr class="text-center align-middle @(item.Idcot == highlightId ? "table-warning" : "")" id="cot-@item.Idcot">
+                        <td>@stt</td>
+                        <td>@item.Ho</td>
+                        <td>@item.Ten</td>
+                        <td>@item.PhapDanh</td>
+                        <td>@item.NamSinh</td>
+                        <td>@item.MatAl</td>
+                        <td>@item.MatDl</td>
+                        <td>@item.Tuoi</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.HinhNguoiMat))
+                            {
+                                <img src="@item.HinhNguoiMat"
+                                     alt="Ảnh người mất"
+                                     style="width:80px; height:100px; object-fit:cover;" />
+                            }
+
+                        </td>
+                        <td>
+                            @(item.IdViTriNavigation?.Lau ?? "") - @(item.IdViTriNavigation?.LoSo ?? "")
+                        </td>
+                        <td>@item.IdnguoiThan</td>
+                        <td>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.Idcot" class="btn btn-sm btn-warning">Sửa</a>
+                                <a asp-action="Delete" asp-route-id="@item.Idcot" class="btn btn-sm btn-danger">Xóa</a>
+                            }
+                            <a asp-action="Details" asp-route-id="@item.Idcot" class="btn btn-sm btn-info">Chi tiết</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="12" class="text-center">Không có dữ liệu.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="text-end me-3 mb-2 text-muted">
+    Tổng cộng: @Model.TotalItemCount cốt
+</div>
+
+<div class="d-flex justify-content-center">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, highlight = highlightId }), new PagedListRenderOptions
+{
+    MaximumPageNumbersToDisplay = 5,
+    LiElementClasses = new[] { "page-item" },
+    PageClasses = new[] { "page-link" },
+    UlElementClasses = new[] { "pagination justify-content-center" }
+})
+</div>
+<script>
+    const highlight = '@highlightId';
+    if (highlight) {
+        const row = document.getElementById("cot-" + highlight);
+        if (row) {
+            row.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+    }
+</script>
+@section Scripts {
+    <script>
+        window.onload = function () {
+            const url = new URL(window.location.href);
+            const highlight = url.searchParams.get("highlight");
+            if (highlight) {
+                const row = document.getElementById("cot-" + highlight);
+                if (row) row.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        };
+    </script>
+}
+
+

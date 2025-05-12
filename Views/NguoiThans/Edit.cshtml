@@ -1,0 +1,97 @@
+﻿@model QuanLyCotWeb.Models.NguoiThan
+
+@{
+    ViewData["Title"] = "Sửa Người Thân";
+}
+
+<h2 class="text-center mb-4">Sửa Thông Tin Người Thân</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <form asp-action="Edit" class="needs-validation" novalidate id="formSuaNguoiThan">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <input type="hidden" asp-for="IdnguoiThan" />
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label asp-for="Ho" class="form-label">Họ</label>
+                    <input asp-for="Ho" class="form-control" />
+                </div>
+                <div class="col">
+                    <label asp-for="Ten" class="form-label">Tên</label>
+                    <input asp-for="Ten" class="form-control" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PhapDanh" class="form-label">Pháp danh</label>
+                <input asp-for="PhapDanh" class="form-control" />
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label asp-for="NgaySinh" class="form-label">Ngày sinh</label>
+                    <input asp-for="NgaySinh" class="form-control" placeholder="dd/MM/yyyy" />
+                </div>
+                <div class="col">
+                    <label asp-for="Cccd" class="form-label">CCCD</label>
+                    <input asp-for="Cccd" class="form-control" />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label asp-for="NgayCap" class="form-label">Ngày cấp</label>
+                    <input asp-for="NgayCap" class="form-control" placeholder="dd/MM/yyyy" />
+                </div>
+                <div class="col">
+                    <label asp-for="NoiCap" class="form-label">Nơi cấp</label>
+                    <input asp-for="NoiCap" class="form-control" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="DiaChi" class="form-label">Địa chỉ</label>
+                <input asp-for="DiaChi" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SoDienThoai" class="form-label">Số điện thoại</label>
+                <input asp-for="SoDienThoai" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="NgayDangKy" class="form-label">Ngày đăng ký</label>
+                <input asp-for="NgayDangKy" class="form-control" placeholder="dd/MM/yyyy" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="GhiChu" class="form-label">Ghi chú</label>
+                <textarea asp-for="GhiChu" class="form-control" rows="2"></textarea>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Lưu</button>
+                <a asp-action="Index" class="btn btn-secondary ms-2">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll("#formSuaNguoiThan input, #formSuaNguoiThan textarea").forEach(function (el, index, array) {
+            el.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    const next = array[index + 1];
+                    if (next) next.focus();
+                }
+            });
+        });
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

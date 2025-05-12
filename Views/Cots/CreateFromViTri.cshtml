@@ -1,0 +1,151 @@
+﻿@{
+    int idTinhTrang = ViewBag.IdTinhTrang ?? 0;
+}
+@model QuanLyCotWeb.Models.Cot
+
+
+@{
+    ViewData["Title"] = "Thêm Cốt từ Vị Trí";
+}
+
+<h2 class="text-center mb-4">Thêm Cốt Từ Vị Trí</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <form asp-action="CreateFromViTri" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label asp-for="Idcot" class="form-label">ID Cốt</label>
+                    <input asp-for="Idcot" class="form-control" readonly />
+                </div>
+                <div class="col">
+                    <label asp-for="IdnguoiThan" class="form-label">ID Người Thân</label>
+                    <input asp-for="IdnguoiThan" class="form-control" tabindex="1" />
+                </div>
+                <div class="col">
+                    <label asp-for="IdviTri" class="form-label">ID Vị Trí</label>
+                    <input asp-for="IdviTri" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="IdTinhTrang" class="form-label">Tình trạng</label>
+                <select name="IdTinhTrang" class="form-select" asp-items="ViewBag.TinhTrangList">
+                    <option value="">-- Chọn --</option>
+                </select>
+                <span asp-validation-for="IdTinhTrang" class="text-danger"></span>
+            </div>
+
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label asp-for="Ho" class="form-label">Họ</label>
+                    <input asp-for="Ho" class="form-control" tabindex="3" />
+                    <span asp-validation-for="Ho" class="text-danger"></span>
+                </div>
+                <div class="col">
+                    <label asp-for="Ten" class="form-label">Tên</label>
+                    <input asp-for="Ten" class="form-control" tabindex="4" />
+                    <span asp-validation-for="Ten" class="text-danger"></span>
+                </div>
+                <div class="col">
+                    <label asp-for="PhapDanh" class="form-label">Pháp danh</label>
+                    <input asp-for="PhapDanh" class="form-control" tabindex="5" />
+                    <span asp-validation-for="PhapDanh" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label asp-for="NamSinh" class="form-label">Năm sinh</label>
+                    <input asp-for="NamSinh" class="form-control" tabindex="6" />
+                </div>
+                <div class="col">
+                    <label asp-for="Tuoi" class="form-label">Tuổi</label>
+                    <input asp-for="Tuoi" class="form-control" tabindex="7" />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label asp-for="MatAl" class="form-label">Ngày mất (AL)</label>
+                    <input asp-for="MatAl" class="form-control" tabindex="8" />
+                </div>
+                <div class="col">
+                    <label asp-for="MatDl" class="form-label">Ngày mất (DL)</label>
+                    <input asp-for="MatDl" class="form-control" tabindex="9" />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label asp-for="NgayBatDau" class="form-label"></label>
+                    <input asp-for="NgayBatDau" type="date" class="form-control" id="NgayBatDau" tabindex="10" />
+                    <span asp-validation-for="NgayBatDau" class="text-danger"></span>
+                </div>
+                <div class="col">
+                    <label asp-for="NgayKetThuc" class="form-label"></label>
+                    <input asp-for="NgayKetThuc" type="date" class="form-control" id="NgayKetThuc" />
+                    <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Tải ảnh người mất (nếu có)</label>
+                <input type="file" name="HinhAnhUpload" class="form-control" accept="image/*" tabindex="11" />
+                @if (!string.IsNullOrEmpty(Model.HinhNguoiMat))
+                {
+                    <div class="mb-3">
+                        <label class="form-label">Ảnh hiện tại:</label><br />
+                        <img src="@Model.HinhNguoiMat" alt="Ảnh người mất" width="120" height="150" style="object-fit: cover;" class="border rounded" />
+                    </div>
+                }
+
+
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Lưu</button>
+                <a asp-action="Index" asp-controller="Cots" class="btn btn-secondary ms-2">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Tự động tính ngày kết thúc
+        document.getElementById("NgayBatDau").addEventListener("change", function () {
+            const start = new Date(this.value);
+            if (!isNaN(start)) {
+                start.setFullYear(start.getFullYear() + 10);
+                const yyyy = start.getFullYear();
+                const mm = ('0' + (start.getMonth() + 1)).slice(-2);
+                const dd = ('0' + start.getDate()).slice(-2);
+                document.getElementById("NgayKetThuc").value = `${yyyy}-${mm}-${dd}`;
+            }
+        });
+
+        // Nhấn Enter chuyển ô tiếp theo
+         document.querySelectorAll('input, select').forEach((el, i, arr) => {
+            el.addEventListener("keypress", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    const tabindex = parseInt(this.getAttribute("tabindex"));
+                    const next = document.querySelector('[tabindex="' + (tabindex + 1) + '"]');
+                    if (next) {
+                        next.focus();
+                    }
+                }
+            });
+        });
+        document.querySelector('select[name="IdTinhTrang"]').value = '@idTinhTrang';
+    </script>
+}
+
+

@@ -1,0 +1,66 @@
+﻿@model QuanLyCotWeb.Models.ViTri
+
+@{
+    ViewData["Title"] = "Thêm vị trí mới";
+}
+
+<h2 class="text-center mb-4">Thêm Vị Trí Mới</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Lau" class="form-label">Lầu</label>
+                <input asp-for="Lau" class="form-control" tabindex="1" />
+                <span asp-validation-for="Lau" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="LoSo" class="form-label">Lô số</label>
+                <input asp-for="LoSo" class="form-control" tabindex="2" />
+                <span asp-validation-for="LoSo" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-4">
+                <label asp-for="IdTinhTrang" class="form-label">Tình trạng</label>
+                <select asp-for="IdTinhTrang" class="form-select" asp-items="ViewBag.IdTinhTrang" tabindex="3">
+                    <option value="">-- Chọn tình trạng --</option>
+                </select>
+                <span asp-validation-for="IdTinhTrang" class="text-danger"></span>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary" tabindex="4">Lưu</button>
+                <a asp-action="Index" class="btn btn-secondary ms-2">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const inputs = document.querySelectorAll("input[tabindex], select[tabindex]");
+
+            inputs.forEach((input, index) => {
+                input.addEventListener("keydown", function (e) {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        const next = inputs[index + 1];
+                        if (next) next.focus();
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+
+
+

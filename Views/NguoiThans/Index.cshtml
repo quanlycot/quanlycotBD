@@ -1,0 +1,128 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Mvc.Core.Common
+@model X.PagedList.IPagedList<QuanLyCotWeb.Models.NguoiThan>
+
+@{
+    int highlightId = -1;
+    if (Context.Request.Query["highlight"].Count > 0)
+    {
+        int.TryParse(Context.Request.Query["highlight"], out highlightId);
+    }
+}
+
+@{
+    ViewData["Title"] = "Danh sách Người Thân";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success text-center">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger text-center">@TempData["ErrorMessage"]</div>
+}
+
+<h2 class="text-center mb-4">QUẢN LÝ NGƯỜI THÂN</h2>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <form asp-action="Index" method="get" class="d-flex flex-grow-1 me-3">
+        <input type="text" name="searchString"
+               value="@Context.Request.Query["searchString"]"
+               class="form-control me-2"
+               placeholder="Nhập ID hoặc tên hoặc họ tên cần tìm"
+               style="flex: 1;" />
+        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+    </form>
+
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-success ms-3">+ Thêm mới</a>
+    }
+</div>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover text-center align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th style="width: 50px;">ID</th>
+                <th style="width: 150px;">Họ và Tên</th>
+                <th style="width: 120px;">Pháp danh</th>
+                <th style="width: 100px;">Ngày sinh</th>
+                <th style="width: 110px;">CCCD</th>
+                <th style="width: 100px;">Ngày cấp</th>
+                <th style="width: 100px;">Nơi cấp</th>
+                <th style="width: 200px;">Địa chỉ</th>
+                <th style="width: 140px;">SĐT</th>
+                <th style="width: 180px;">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count > 0)
+            {
+                foreach (var item in Model)
+                {
+                    <tr class="@(item.IdnguoiThan == highlightId ? "table-warning" : "")" id="nt-@item.IdnguoiThan">
+                        <td>@item.IdnguoiThan</td>
+                        <td>@item.Ho @item.Ten</td>
+                        <td>@item.PhapDanh</td>
+                        <td class="text-nowrap">@item.NgaySinh</td>
+                        <td class="text-nowrap">@item.Cccd</td>
+                        <td class="text-nowrap">@item.NgayCap</td>
+                        <td>@item.NoiCap</td>
+                        <td>@item.DiaChi</td>
+                        <td class="text-nowrap">@item.SoDienThoai</td>
+                        
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center mb-1">
+                                <a asp-action="Edit" asp-route-id="@item.IdnguoiThan" class="btn btn-sm btn-warning me-1">Sửa</a>
+                                <form asp-action="Delete" asp-route-id="@item.IdnguoiThan" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa người thân này không?')">
+                                    <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                                </form>
+                            </div>
+                            <div class="text-center">
+                                <a asp-action="ThongKe" asp-route-id="@item.IdnguoiThan" class="btn btn-sm btn-info">Thống Kê</a>
+                            </div>
+                        </td>
+
+                        
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="10" class="text-center text-danger">Không có dữ liệu.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="text-end me-3 mb-2 text-muted">
+    Tổng cộng: @Model.TotalItemCount người thân
+</div>
+
+<div class="d-flex justify-content-center">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }),
+            new PagedListRenderOptions
+    {
+        UlElementClasses = new[] { "pagination" },
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" }
+    })
+</div>
+@section Scripts {
+    <script>
+        window.onload = function () {
+            const url = new URL(window.location.href);
+            const highlight = url.searchParams.get("highlight");
+            if (highlight) {
+                const row = document.getElementById("nt-" + highlight);
+                if (row) row.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        };
+    </script>
+}
+

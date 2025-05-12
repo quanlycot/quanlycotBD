@@ -1,0 +1,54 @@
+﻿@model List<QuanLyCotWeb.Models.Cot>
+@{
+    ViewData["Title"] = "Thống kê Cốt theo Người Thân";
+}
+
+<h2 class="text-center">Các Cốt do người thân: @ViewBag.HoTen (ID: @ViewBag.IdNguoiThan) quản lý</h2>
+
+@if (Model.Count == 0)
+{
+    <p class="text-center text-muted">Người thân này chưa quản lý cốt nào.</p>
+}
+else
+{
+    <form asp-action="XoaNhieuCot" method="post">
+        <input type="hidden" name="idNguoiThan" value="@ViewBag.IdNguoiThan" />
+        <table class="table table-bordered text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Chọn</th>
+                    <th>ID Cốt</th>
+                    <th>Họ</th>
+                    <th>Tên</th>
+                    <th>Pháp danh</th>
+                    <th>Năm sinh</th>
+                    <th>Ngày mất (AL)</th>
+                    <th>Ngày mất (DL)</th>
+                    <th>Tuổi</th>
+                    <th>Lầu</th>
+                    <th>Lô số</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cot in Model)
+                {
+                    <tr>
+                        <td><input type="checkbox" name="selectedIds" value="@cot.Idcot" /></td>
+                        <td>@cot.Idcot</td>
+                        <td>@cot.Ho</td>
+                        <td>@cot.Ten</td>
+                        <td>@cot.PhapDanh</td>
+                        <td>@cot.NamSinh</td>
+                        <td>@cot.MatAl</td>
+                        <td>@cot.MatDl</td>
+                        <td>@cot.Tuoi</td>
+                        <td>@(cot.IdViTriNavigation?.Lau ?? "")</td>
+                        <td>@(cot.IdViTriNavigation?.LoSo ?? "")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc muốn xóa các cốt đã chọn không?')">Xóa các cốt đã chọn</button>
+    </form>
+}
+<a asp-action="Index" class="btn btn-secondary mt-2">Quay lại danh sách</a>

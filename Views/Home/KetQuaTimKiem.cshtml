@@ -1,0 +1,63 @@
+﻿@model IEnumerable<QuanLyCotWeb.Models.Cot>
+
+@{
+    ViewData["Title"] = "Kết quả tìm kiếm";
+    Layout = "_Layout";
+}
+
+<div class="container py-5">
+    <a href="@Url.Action("TrangTimKiem", "Home")" class="btn btn-secondary mb-4">← Quay lại tìm kiếm</a>
+    <h2 class="mb-4 text-center">Kết quả tìm kiếm</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning text-center">Không tìm thấy kết quả phù hợp.</div>
+    }
+    else
+    {
+        <table class="table table-bordered table-hover bg-white">
+            <thead class="table-dark text-center align-middle">
+                <tr>
+                    <th>Họ tên</th>
+                    <th>Pháp danh</th>
+                    <th>Năm sinh</th>
+                    <th>Ngày mất</th>
+                    <th>Tuổi</th>
+                    <th>Vị trí</th>
+                    <th>Người thân</th>
+                    <th>Ảnh</th>
+                    <th>Chi tiết</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="text-center align-middle">
+                        <td>@item.Ho @item.Ten</td>
+                        <td>@item.PhapDanh</td>
+                        <td>@item.NamSinh</td>
+                        <td>@item.MatDl</td>
+                        <td>@item.Tuoi</td>
+                        <td>@(item.IdViTriNavigation?.Lau ?? "") - @(item.IdViTriNavigation?.LoSo ?? "")</td>
+                        <td>@(item.IdnguoiThanNavigation?.Ho) @(item.IdnguoiThanNavigation?.Ten)</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.HinhNguoiMat))
+                            {
+                                <div style="font-size:10px">@item.HinhNguoiMat</div> <!-- thêm tạm -->
+                                <img src="@item.HinhNguoiMat" alt="Ảnh"
+                                     width="70" height="90"
+                                     style="object-fit: cover; border-radius: 5px;" />
+                            }
+                        </td>
+
+                        <td>
+                            <a href="@Url.Action("Details", "Cots", new { id = item.Idcot })" class="btn btn-sm btn-info text-white">
+                                Chi tiết
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

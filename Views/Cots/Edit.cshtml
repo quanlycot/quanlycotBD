@@ -1,0 +1,150 @@
+﻿@model QuanLyCotWeb.Models.Cot
+@{
+    ViewData["Title"] = "Sửa Cốt";
+}
+
+<h2 class="text-center mb-4">Sửa Cốt</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data" id="formEdit">
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <input type="hidden" asp-for="Idcot" />
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label>ID Cốt</label>
+                    <input type="text" class="form-control" value="@Model.Idcot" disabled readonly />
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="IdviTri"></label>
+                    <input asp-for="IdviTri" class="form-control" />
+                    <span asp-validation-for="IdviTri" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="IdnguoiThan"></label>
+                    <input asp-for="IdnguoiThan" class="form-control" />
+                    <span asp-validation-for="IdnguoiThan" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Ho"></label>
+                    <input asp-for="Ho" class="form-control" />
+                    <span asp-validation-for="Ho" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Ten"></label>
+                    <input asp-for="Ten" class="form-control" />
+                    <span asp-validation-for="Ten" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PhapDanh"></label>
+                <input asp-for="PhapDanh" class="form-control" />
+                <span asp-validation-for="PhapDanh" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="NamSinh"></label>
+                    <input asp-for="NamSinh" class="form-control" />
+                    <span asp-validation-for="NamSinh" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Tuoi"></label>
+                    <input asp-for="Tuoi" class="form-control" />
+                    <span asp-validation-for="Tuoi" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="MatAl"></label>
+                    <input asp-for="MatAl" class="form-control" />
+                    <span asp-validation-for="MatAl" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="MatDl"></label>
+                    <input asp-for="MatDl" class="form-control" />
+                    <span asp-validation-for="MatDl" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="NgayBatDau"></label>
+                    <input asp-for="NgayBatDau" type="date" class="form-control" />
+                    <span asp-validation-for="NgayBatDau" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="NgayKetThuc"></label>
+                    <input asp-for="NgayKetThuc" type="date" class="form-control" />
+                    <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.HinhNguoiMat))
+            {
+                <div class="mb-3">
+                    <label>Ảnh người mất hiện tại:</label><br />
+                    <img src="@Model.HinhNguoiMat"
+                         alt="Ảnh người mất"
+                         style="width: 120px; height: 150px; object-fit: cover;" class="border rounded" />
+                </div>
+            }
+
+            <div class="mb-4">
+                <label class="form-label">Tải ảnh mới (nếu muốn thay)</label>
+                <input type="file" name="HinhAnhUpload" class="form-control" accept="image/*" />
+                <!-- KHÔNG thêm asp-for ở đây nếu bạn không bắt buộc ảnh -->
+
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                <a asp-action="Index" class="btn btn-secondary ms-3">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const ngayBatDau = document.getElementById("NgayBatDau");
+            const ngayKetThuc = document.getElementById("NgayKetThuc");
+
+            if (ngayBatDau && ngayKetThuc) {
+                ngayBatDau.addEventListener("change", function () {
+                    const startDate = new Date(ngayBatDau.value);
+                    if (!isNaN(startDate)) {
+                        const endDate = new Date(startDate);
+                        endDate.setFullYear(startDate.getFullYear() + 10);
+                        ngayKetThuc.value = endDate.toISOString().split('T')[0];
+                    }
+                });
+            }
+        });
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.getElementById("formEdit").addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                const inputs = Array.from(this.querySelectorAll("input, select, textarea"))
+                    .filter(i => !i.disabled && i.type !== "hidden" && i.type !== "file");
+                const index = inputs.indexOf(document.activeElement);
+                if (index > -1 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            }
+        });
+    </script>
+}
