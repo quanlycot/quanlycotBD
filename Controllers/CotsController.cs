@@ -142,19 +142,15 @@ namespace QuanLyCotWeb.Controllers
                 else
                 {
                     // Nếu thêm mới cốt
-                    _context.Cots.Add(cot);
-                    await _context.SaveChangesAsync(); // để có Idcot
-
                     if (HinhAnhUpload != null && HinhAnhUpload.Length > 0)
                     {
                         var fileName = $"{cot.Idcot}.jpg";
-
                         var blobUrl = await _blobService.UploadAsync(HinhAnhUpload.OpenReadStream(), fileName);
                         cot.HinhNguoiMat = blobUrl;
-
-                        _context.Update(cot); // cập nhật ảnh
-                        await _context.SaveChangesAsync();
                     }
+
+                    _context.Cots.Add(cot);
+                    await _context.SaveChangesAsync(); // tất cả được lưu 1 lần duy nhất
                 }
 
                 TempData["SuccessMessage"] = "Lưu thông tin cốt thành công!";

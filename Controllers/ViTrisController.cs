@@ -35,10 +35,11 @@ namespace QuanLyCotWeb.Controllers
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(lau))
-                danhSach = danhSach.Where(v => v.Lau.Contains(lau));
+                danhSach = danhSach.Where(v => v.Lau.ToLower() == lau.ToLower());
 
             if (!string.IsNullOrEmpty(loSo))
-                danhSach = danhSach.Where(v => v.LoSo.Contains(loSo));
+                danhSach = danhSach.Where(v => v.LoSo.ToLower() == loSo.ToLower());
+
 
             int pageSize = 20;
             int pageNumber = page ?? 1;
