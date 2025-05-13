@@ -83,16 +83,17 @@
                 <div class="col">
                     <label asp-for="NgayBatDau" class="form-label"></label>
                     <input asp-for="NgayBatDau" type="date" class="form-control" id="NgayBatDau" tabindex="10"
-                           value="@(Model.NgayBatDau != null ? Convert.ToDateTime(Model.NgayBatDau).ToString("yyyy-MM-dd") : "")" />
+                           value="@(Model.NgayBatDau != DateTime.MinValue ? Convert.ToDateTime(Model.NgayBatDau).ToString("yyyy-MM-dd") : "")" />
                     <span asp-validation-for="NgayBatDau" class="text-danger"></span>
                 </div>
                 <div class="col">
                     <label asp-for="NgayKetThuc" class="form-label"></label>
                     <input asp-for="NgayKetThuc" type="date" class="form-control" id="NgayKetThuc"
-                           value="@(Model.NgayKetThuc != null ? Convert.ToDateTime(Model.NgayKetThuc).ToString("yyyy-MM-dd") : "")" />
+                           value="@(Model.NgayKetThuc != DateTime.MinValue ? Convert.ToDateTime(Model.NgayKetThuc).ToString("yyyy-MM-dd") : "")" />
                     <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
                 </div>
             </div>
+
 
 
             <div class="mb-3">
@@ -123,15 +124,30 @@
     }
     <script>
         // Tự động tính ngày kết thúc
-        document.getElementById("NgayBatDau").addEventListener("change", function () {
-            const start = new Date(this.value);
-            if (!isNaN(start)) {
-                start.setFullYear(start.getFullYear() + 10);
-                const yyyy = start.getFullYear();
-                const mm = ('0' + (start.getMonth() + 1)).slice(-2);
-                const dd = ('0' + start.getDate()).slice(-2);
-                document.getElementById("NgayKetThuc").value = `${yyyy}-${mm}-${dd}`;
+             window.addEventListener("DOMContentLoaded", function () {
+            var batDau = document.getElementById("NgayBatDau");
+            var ketThuc = document.getElementById("NgayKetThuc");
+
+            if (batDau && ketThuc && (!ketThuc.value || ketThuc.value === "0001-01-01")) {
+                var start = new Date(batDau.value);
+                if (!isNaN(start)) {
+                    var end = new Date(start);
+                    end.setFullYear(start.getFullYear() + 10);
+                    ketThuc.value = end.toISOString().split("T")[0];
+                }
             }
+
+            batDau.addEventListener("change", function () {
+                var start = new Date(batDau.value);
+                if (!isNaN(start)) {
+                    var end = new Date(start);
+                    end.setFullYear(start.getFullYear() + 10);
+                    ketThuc.value = end.toISOString().split("T")[0];
+                }
+            });
+        });
+    </script>
+
       
 
         // Nhấn Enter chuyển ô tiếp theo

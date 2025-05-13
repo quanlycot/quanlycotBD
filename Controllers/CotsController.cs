@@ -93,7 +93,12 @@ namespace QuanLyCotWeb.Controllers
             ViewBag.IdTinhTrang = viTri.IdTinhTrang;
 
             // Gửi danh sách tình trạng để hiển thị dropdown chỉnh sửa tình trạng
-            ViewBag.TinhTrangList = new SelectList(_context.TinhTrangs.ToList(), "IdTinhTrang", "TenTinhTrang");
+            ViewBag.TinhTrangList = new SelectList(
+             _context.TinhTrangs.ToList(),
+              "IdTinhTrang",
+             "TenTinhTrang",
+              viTri.IdTinhTrang // đây là selectedValue
+             );
 
             return View("CreateFromViTri", cot);
         }
