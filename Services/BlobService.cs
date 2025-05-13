@@ -30,8 +30,10 @@ namespace QuanLyCotWeb.Services
             var blob = blobClient.GetBlobClient(fileName);
             await blob.UploadAsync(fileStream, overwrite: true);
 
-            return GenerateSasUrl(blob);
+            // Trả về đường dẫn vĩnh viễn (không dùng SAS)
+            return blob.Uri.ToString();
         }
+
 
         public async Task DeleteAsync(string fileName)
         {
