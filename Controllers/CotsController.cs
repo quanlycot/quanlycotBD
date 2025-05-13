@@ -82,19 +82,24 @@ namespace QuanLyCotWeb.Controllers
                 cot = new Cot
                 {
                     Idcot = LayIDCotTiepTheo(), // Hàm tự viết để lấy ID kế tiếp
-                    IdviTri = idViTri
+                    IdviTri = idViTri,
+                    NgayBatDau = DateTime.Today,
+                    NgayKetThuc = DateTime.Today.AddYears(10)
+                    // KHÔNG có TinhTrang ở đây vì bảng Cot không có cột đó
                 };
             }
 
-            // Gán ID tình trạng hiện tại của vị trí cho ViewBag
+            // Gán tình trạng hiện tại của vị trí cho ViewBag (để hiển thị trên giao diện nếu cần)
             ViewBag.IdTinhTrang = viTri.IdTinhTrang;
 
-            // Gửi danh sách tình trạng
+            // Gửi danh sách tình trạng để hiển thị dropdown chỉnh sửa tình trạng
             ViewBag.TinhTrangList = new SelectList(_context.TinhTrangs.ToList(), "IdTinhTrang", "TenTinhTrang");
+
             return View("CreateFromViTri", cot);
         }
 
 
+        // POST: Cots/CreateFromViTri
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateFromViTri(Cot cot, int IdTinhTrang, IFormFile? HinhAnhUpload)
@@ -142,20 +147,24 @@ namespace QuanLyCotWeb.Controllers
                 else
                 {
                     // Nếu thêm mới cốt
+                    _context.Cots.Add(cot);
+                    await _context.SaveChangesAsync(); // để có Idcot
+
                     if (HinhAnhUpload != null && HinhAnhUpload.Length > 0)
                     {
                         var fileName = $"{cot.Idcot}.jpg";
+
                         var blobUrl = await _blobService.UploadAsync(HinhAnhUpload.OpenReadStream(), fileName);
                         cot.HinhNguoiMat = blobUrl;
-                    }
 
-                    _context.Cots.Add(cot);
-                    await _context.SaveChangesAsync(); // tất cả được lưu 1 lần duy nhất
+                        _context.Update(cot); // cập nhật ảnh
+                        await _context.SaveChangesAsync();
+                    }
                 }
 
                 TempData["SuccessMessage"] = "Lưu thông tin cốt thành công!";
 
-                // Trở về đúng trang và highlight
+                // Tính vị trí dòng để quay lại đúng trang
                 int index = await _context.ViTris
                     .Where(v => v.IdviTri < cot.IdviTri)
                     .CountAsync();
@@ -166,9 +175,11 @@ namespace QuanLyCotWeb.Controllers
                 return RedirectToAction("Index", "ViTris", new { page = page, highlight = cot.IdviTri });
             }
 
+            // Nếu có lỗi nhập liệu
             ViewBag.TinhTrangList = new SelectList(_context.TinhTrangs.ToList(), "IdTinhTrang", "TenTinhTrang");
-            return View(cot);
+            return View("CreateFromViTri", cot);
         }
+
         // GET: Cots/XUẤT ECXEL
         [Authorize]
         // 1. Xuất Excel Cốt

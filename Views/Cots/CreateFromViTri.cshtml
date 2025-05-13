@@ -82,15 +82,18 @@
             <div class="row mb-3">
                 <div class="col">
                     <label asp-for="NgayBatDau" class="form-label"></label>
-                    <input asp-for="NgayBatDau" type="date" class="form-control" id="NgayBatDau" tabindex="10" />
+                    <input asp-for="NgayBatDau" type="date" class="form-control" id="NgayBatDau" tabindex="10"
+                           value="@(Model.NgayBatDau != null ? Convert.ToDateTime(Model.NgayBatDau).ToString("yyyy-MM-dd") : "")" />
                     <span asp-validation-for="NgayBatDau" class="text-danger"></span>
                 </div>
                 <div class="col">
                     <label asp-for="NgayKetThuc" class="form-label"></label>
-                    <input asp-for="NgayKetThuc" type="date" class="form-control" id="NgayKetThuc" />
+                    <input asp-for="NgayKetThuc" type="date" class="form-control" id="NgayKetThuc"
+                           value="@(Model.NgayKetThuc != null ? Convert.ToDateTime(Model.NgayKetThuc).ToString("yyyy-MM-dd") : "")" />
                     <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
                 </div>
             </div>
+
 
             <div class="mb-3">
                 <label class="form-label">Tải ảnh người mất (nếu có)</label>

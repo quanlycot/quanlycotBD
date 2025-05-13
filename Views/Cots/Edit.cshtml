@@ -77,15 +77,18 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label asp-for="NgayBatDau"></label>
-                    <input asp-for="NgayBatDau" type="date" class="form-control" />
+                    <input asp-for="NgayBatDau" type="date" class="form-control"
+                           value="@(Model.NgayBatDau != null ? Convert.ToDateTime(Model.NgayBatDau).ToString("yyyy-MM-dd") : "")" />
                     <span asp-validation-for="NgayBatDau" class="text-danger"></span>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label asp-for="NgayKetThuc"></label>
-                    <input asp-for="NgayKetThuc" type="date" class="form-control" />
+                    <input asp-for="NgayKetThuc" type="date" class="form-control"
+                           value="@(Model.NgayKetThuc != null ? Convert.ToDateTime(Model.NgayKetThuc).ToString("yyyy-MM-dd") : "")" />
                     <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
                 </div>
             </div>
+
 
             @if (!string.IsNullOrEmpty(Model.HinhNguoiMat))
             {
