@@ -89,7 +89,7 @@
                         <td>
                             @if (!string.IsNullOrEmpty(item.HinhNguoiMat))
                             {
-                                <img src="@item.HinhNguoiMat"
+                                <img src="@($"{item.HinhNguoiMat}?ver={Guid.NewGuid()}")"
                                      alt="Ảnh người mất"
                                      style="width:80px; height:100px; object-fit:cover;" />
                             }

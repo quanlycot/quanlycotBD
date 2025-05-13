@@ -91,7 +91,7 @@
             {
                 <div class="mb-3">
                     <label>Ảnh người mất hiện tại:</label><br />
-                    <img src="@Model.HinhNguoiMat"
+                    <img src="@($"{Model.HinhNguoiMat}?ver={Guid.NewGuid()}")"
                          alt="Ảnh người mất"
                          style="width: 120px; height: 150px; object-fit: cover;" class="border rounded" />
                 </div>

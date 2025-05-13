@@ -43,8 +43,8 @@
                         <td>
                             @if (!string.IsNullOrEmpty(item.HinhNguoiMat))
                             {
-                                
-                                <img src="@item.HinhNguoiMat" alt="Ảnh"
+
+                                <img src="@($"{item.HinhNguoiMat}?ver={Guid.NewGuid()}")"
                                      width="70" height="90"
                                      style="object-fit: cover; border-radius: 5px;" />
                             }

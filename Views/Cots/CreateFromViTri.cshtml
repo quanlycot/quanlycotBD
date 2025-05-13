@@ -99,7 +99,7 @@
                 {
                     <div class="mb-3">
                         <label class="form-label">Ảnh hiện tại:</label><br />
-                        <img src="@Model.HinhNguoiMat" alt="Ảnh người mất" width="120" height="150" style="object-fit: cover;" class="border rounded" />
+                        <img src="@($"{Model.HinhNguoiMat}?ver={Guid.NewGuid()}")" alt="Ảnh người mất" width="120" height="150" style="object-fit: cover;" class="border rounded" />
                     </div>
                 }
 

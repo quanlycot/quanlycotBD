@@ -17,7 +17,7 @@
                 <!-- Ảnh người mất từ Azure -->
                 @if (!string.IsNullOrEmpty(Model.HinhNguoiMat))
                 {
-                    <img src="@Model.HinhNguoiMat"
+                    <img src="@($"{Model.HinhNguoiMat}?ver={Guid.NewGuid()}")"
                          alt="Ảnh người mất"
                          class="position-absolute top-50 start-50 translate-middle"
                          style="width: 120px; height: 150px; object-fit: cover; border-radius: 6px; box-shadow: 0 0 10px rgba(0,0,0,0.3);" />
@@ -58,6 +58,15 @@
                         <th scope="row">Tuổi:</th>
                         <td>@Model.Tuoi</td>
                     </tr>
+                    <tr>
+                        <th scope="row">Ngày bắt đầu:</th>
+                        <td>@Model.NgayBatDau?.ToString("dd/MM/yyyy")</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Ngày kết thúc:</th>
+                        <td>@Model.NgayKetThuc?.ToString("dd/MM/yyyy")</td>
+                    </tr>
+
                     <tr>
                         <th scope="row">Lầu - Lô Số:</th>
                         <td>@Model.IdViTriNavigation?.Lau - @Model.IdViTriNavigation?.LoSo</td>
