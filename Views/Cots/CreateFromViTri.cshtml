@@ -79,22 +79,20 @@
                 </div>
             </div>
 
-            <div class="row mb-3">
-                <div class="col">
-                    <label asp-for="NgayBatDau" class="form-label"></label>
-                    <input asp-for="NgayBatDau" type="date" class="form-control" id="NgayBatDau" tabindex="10"
-                           value="@(Model.NgayBatDau != DateTime.MinValue ? Convert.ToDateTime(Model.NgayBatDau).ToString("yyyy-MM-dd") : "")" />
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="NgayBatDau"></label>
+                    <input asp-for="NgayBatDau" type="date" class="form-control"
+                           value="@(Model.NgayBatDau != null ? Convert.ToDateTime(Model.NgayBatDau).ToString("yyyy-MM-dd") : "")" />
                     <span asp-validation-for="NgayBatDau" class="text-danger"></span>
                 </div>
-                <div class="col">
-                    <label asp-for="NgayKetThuc" class="form-label"></label>
-                    <input asp-for="NgayKetThuc" type="date" class="form-control" id="NgayKetThuc"
-                           value="@(Model.NgayKetThuc != DateTime.MinValue ? Convert.ToDateTime(Model.NgayKetThuc).ToString("yyyy-MM-dd") : "")" />
+                <div class="col-md-6 mb-3">
+                    <label asp-for="NgayKetThuc"></label>
+                    <input asp-for="NgayKetThuc" type="date" class="form-control"
+                           value="@(Model.NgayKetThuc != null ? Convert.ToDateTime(Model.NgayKetThuc).ToString("yyyy-MM-dd") : "")" />
                     <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
                 </div>
             </div>
-
-
 
             <div class="mb-3">
                 <label class="form-label">Tải ảnh người mất (nếu có)</label>
@@ -119,37 +117,29 @@
 </div>
 
 @section Scripts {
+    
+    <script>
+        // Tự động tính ngày kết thúc
+          document.addEventListener("DOMContentLoaded", function () {
+            const ngayBatDau = document.getElementById("NgayBatDau");
+            const ngayKetThuc = document.getElementById("NgayKetThuc");
+
+            if (ngayBatDau && ngayKetThuc) {
+                ngayBatDau.addEventListener("change", function () {
+                    const startDate = new Date(ngayBatDau.value);
+                    if (!isNaN(startDate)) {
+                        const endDate = new Date(startDate);
+                        endDate.setFullYear(startDate.getFullYear() + 10);
+                        ngayKetThuc.value = endDate.toISOString().split('T')[0];
+                    }
+                });
+            }
+        });
+    </script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        // Tự động tính ngày kết thúc
-             window.addEventListener("DOMContentLoaded", function () {
-            var batDau = document.getElementById("NgayBatDau");
-            var ketThuc = document.getElementById("NgayKetThuc");
-
-            if (batDau && ketThuc && (!ketThuc.value || ketThuc.value === "0001-01-01")) {
-                var start = new Date(batDau.value);
-                if (!isNaN(start)) {
-                    var end = new Date(start);
-                    end.setFullYear(start.getFullYear() + 10);
-                    ketThuc.value = end.toISOString().split("T")[0];
-                }
-            }
-
-            batDau.addEventListener("change", function () {
-                var start = new Date(batDau.value);
-                if (!isNaN(start)) {
-                    var end = new Date(start);
-                    end.setFullYear(start.getFullYear() + 10);
-                    ketThuc.value = end.toISOString().split("T")[0];
-                }
-            });
-        });
-    </script>
-
-      
-
         // Nhấn Enter chuyển ô tiếp theo
          document.querySelectorAll('input, select').forEach((el, i, arr) => {
             el.addEventListener("keypress", function (e) {

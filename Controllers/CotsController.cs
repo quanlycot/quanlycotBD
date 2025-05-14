@@ -22,7 +22,7 @@ namespace QuanLyCotWeb.Controllers
     {
         private readonly QuanLyCotContext _context;
 
-       
+
         // GET: Cots
         public async Task<IActionResult> Index(string searchString, int? page)
         {
@@ -37,11 +37,26 @@ namespace QuanLyCotWeb.Controllers
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                danhSach = danhSach.Where(c => (c.Ho + " " + c.Ten).Contains(searchString) || c.Ho.Contains(searchString) || c.Ten.Contains(searchString));
+                if (int.TryParse(searchString, out int id))
+                {
+                    // Nếu nhập là số → tìm đúng IDcot
+                    danhSach = danhSach.Where(c => c.Idcot == id);
+                }
+                else
+                {
+                    // Nếu không phải số → tìm họ tên, pháp danh
+                    danhSach = danhSach.Where(c =>
+                        (c.Ho + " " + c.Ten).Contains(searchString) ||
+                        c.Ho.Contains(searchString) ||
+                        c.Ten.Contains(searchString) ||
+                        c.PhapDanh.Contains(searchString));
+                }
             }
+
 
             return View(await danhSach.ToPagedListAsync(pageNumber, pageSize));
         }
+
         private readonly IWebHostEnvironment _hostEnvironment;
         private readonly BlobService _blobService;
 
@@ -51,21 +66,7 @@ namespace QuanLyCotWeb.Controllers
             _hostEnvironment = hostEnvironment;
             _blobService = blobService;
         }
-        private int LayIDCotTiepTheo()
-        {
-            var connectionString = _context.Database.GetDbConnection().ConnectionString;
-
-            using (var conn = new SqlConnection(connectionString))
-            {
-                conn.Open();
-                var sql = "SELECT ISNULL(IDENT_CURRENT('Cot'), 0) + IDENT_INCR('Cot')";
-                using (var cmd = new SqlCommand(sql, conn))
-                {
-                    var result = cmd.ExecuteScalar();
-                    return result != null && result != DBNull.Value ? Convert.ToInt32(result) : 1;
-                }
-            }
-        }
+        
         // GET: Cots/CreateFromViTri
         [Authorize]
         public async Task<IActionResult> CreateFromViTri(int idViTri)
@@ -81,28 +82,23 @@ namespace QuanLyCotWeb.Controllers
                 // Nếu chưa có thì tạo cốt mới
                 cot = new Cot
                 {
-                    Idcot = LayIDCotTiepTheo(), // Hàm tự viết để lấy ID kế tiếp
-                    IdviTri = idViTri,
-                    NgayBatDau = DateTime.Today,
-                    NgayKetThuc = DateTime.Today.AddYears(10)
-                    // KHÔNG có TinhTrang ở đây vì bảng Cot không có cột đó
+                  IdviTri = idViTri,  
                 };
             }
 
-            // Gán tình trạng hiện tại của vị trí cho ViewBag (để hiển thị trên giao diện nếu cần)
+            // Gán tình trạng hiện tại của vị trí cho ViewBag
             ViewBag.IdTinhTrang = viTri.IdTinhTrang;
 
-            // Gửi danh sách tình trạng để hiển thị dropdown chỉnh sửa tình trạng
+            // Gửi danh sách tình trạng (dropdown) và chọn sẵn đúng giá trị hiện tại
             ViewBag.TinhTrangList = new SelectList(
-             _context.TinhTrangs.ToList(),
-              "IdTinhTrang",
-             "TenTinhTrang",
-              viTri.IdTinhTrang // đây là selectedValue
-             );
+                _context.TinhTrangs.ToList(),
+                "IdTinhTrang",
+                "TenTinhTrang",
+                viTri.IdTinhTrang
+            );
 
             return View("CreateFromViTri", cot);
         }
-
 
         // POST: Cots/CreateFromViTri
         [HttpPost]
@@ -151,10 +147,11 @@ namespace QuanLyCotWeb.Controllers
                 }
                 else
                 {
-                    // Nếu thêm mới cốt
+                    // Thêm mới cốt
                     _context.Cots.Add(cot);
-                    await _context.SaveChangesAsync(); // để có Idcot
+                    await _context.SaveChangesAsync(); // Lúc này IDcot đã tự sinh
 
+                    // Nếu có ảnh mới thì upload ảnh theo ID vừa sinh
                     if (HinhAnhUpload != null && HinhAnhUpload.Length > 0)
                     {
                         var fileName = $"{cot.Idcot}.jpg";
@@ -162,14 +159,14 @@ namespace QuanLyCotWeb.Controllers
                         var blobUrl = await _blobService.UploadAsync(HinhAnhUpload.OpenReadStream(), fileName);
                         cot.HinhNguoiMat = blobUrl;
 
-                        _context.Update(cot); // cập nhật ảnh
+                        _context.Update(cot);
                         await _context.SaveChangesAsync();
                     }
                 }
 
                 TempData["SuccessMessage"] = "Lưu thông tin cốt thành công!";
 
-                // Tính vị trí dòng để quay lại đúng trang
+                // Tính trang để quay lại vị trí vừa thao tác
                 int index = await _context.ViTris
                     .Where(v => v.IdviTri < cot.IdviTri)
                     .CountAsync();
@@ -180,10 +177,11 @@ namespace QuanLyCotWeb.Controllers
                 return RedirectToAction("Index", "ViTris", new { page = page, highlight = cot.IdviTri });
             }
 
-            // Nếu có lỗi nhập liệu
+            // Trường hợp có lỗi nhập liệu, load lại dropdown
             ViewBag.TinhTrangList = new SelectList(_context.TinhTrangs.ToList(), "IdTinhTrang", "TenTinhTrang");
             return View("CreateFromViTri", cot);
         }
+
 
         // GET: Cots/XUẤT ECXEL
         [Authorize]
@@ -408,8 +406,8 @@ namespace QuanLyCotWeb.Controllers
                 // Tìm vị trí chứa cốt
                 var viTri = await _context.ViTris.FirstOrDefaultAsync(v => v.IdviTri == cot.IdviTri);
 
-                // Nếu vị trí có tình trạng là "Đã Có Cốt" thì cập nhật lại "Trống"
-                if (viTri != null && viTri.IdTinhTrang == 1)
+                // Nếu vị trí có tình trạng là "Đã Có Cốt" (1) hoặc "Đặc Chỗ" (2) thì cập nhật lại thành "Trống" (3)
+                if (viTri != null && (viTri.IdTinhTrang == 1 || viTri.IdTinhTrang == 2))
                 {
                     viTri.IdTinhTrang = 3;
                     _context.ViTris.Update(viTri);

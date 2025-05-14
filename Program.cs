@@ -51,7 +51,7 @@ using (var scope = app.Services.CreateScope())
         }
     }
     // 2. Tạo tài khoản admin nếu chưa có
-    string adminEmail = "admin@gmail.com";
+    string adminEmail = "buudapagoda@gmail.com";
     string adminPass = "Admin@123";
 
     var adminUser = await userManager.FindByEmailAsync(adminEmail);

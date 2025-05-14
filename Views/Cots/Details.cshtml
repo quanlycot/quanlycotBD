@@ -81,7 +81,14 @@
     </div>
 
     <div class="text-center mt-4">
-        <a asp-controller="Home" asp-action="TrangTimKiem" class="btn btn-secondary">Quay lại</a>
-
+        @if (User.Identity.IsAuthenticated)
+        {
+            <a asp-controller="Cots" asp-action="Index" class="btn btn-primary">Quay lại quản lý cốt</a>
+        }
+        else
+        {
+            <a asp-controller="Home" asp-action="TrangTimKiem" class="btn btn-secondary">Quay lại</a>
+        }
     </div>
+
 </div>
