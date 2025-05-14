@@ -26,36 +26,43 @@
     </div>
 }
 
-<form asp-action="Index" method="get" class="row row-cols-lg-auto g-2 align-items-center mb-3">
-    <div class="col">
-        <input type="text" name="lau"
-               value="@Context.Request.Query["lau"]"
-               class="form-control"
-               placeholder="Lầu" />
+
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+
+        <form asp-action="Index" method="get" class="d-flex flex-wrap gap-2">
+            <div class="col">
+                <input type="text" name="lau"
+                       value="@Context.Request.Query["lau"]"
+                       class="form-control"
+                       placeholder="Lầu" />
+            </div>
+
+            <div class="col">
+                <input type="text" name="loSo"
+                       value="@Context.Request.Query["loSo"]"
+                       class="form-control"
+                       placeholder="Lô số" />
+            </div>
+
+            <div class="col">
+                <select name="tinhTrang" class="form-select">
+                    <option value="">-- Tình trạng --</option>
+                    <option value="1" selected="@((string)Context.Request.Query["tinhTrang"] == "1")">Đã Có Cốt</option>
+                    <option value="2" selected="@((string)Context.Request.Query["tinhTrang"] == "2")">Đặc Chỗ</option>
+                    <option value="3" selected="@((string)Context.Request.Query["tinhTrang"] == "3")">Trống</option>
+                </select>
+            </div>
+
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+            </div>
+        </form>
+
+        <div>
+            <a asp-action="Create" class="btn btn-success">+ Thêm Vị Trí</a>
+        </div>
+
     </div>
-
-    <div class="col">
-        <input type="text" name="loSo"
-               value="@Context.Request.Query["loSo"]"
-               class="form-control"
-               placeholder="Lô số" />
-    </div>
-
-    <div class="col">
-        <select name="tinhTrang" class="form-select">
-            <option value="">-- Tình trạng --</option>
-            <option value="1" selected="@((string)Context.Request.Query["tinhTrang"] == "1")">Đã Có Cốt</option>
-            <option value="2" selected="@((string)Context.Request.Query["tinhTrang"] == "2")">Đặc Chỗ</option>
-            <option value="3" selected="@((string)Context.Request.Query["tinhTrang"] == "3")">Trống</option>
-        </select>
-    </div>
-
-    <div class="col">
-        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-    </div>
-</form>
-
-
 
 <div class="table-responsive">
     <table class="table table-striped table-bordered table-hover">
