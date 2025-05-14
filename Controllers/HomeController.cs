@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuanLyCotWeb.Models;
+using QuanLyCotWeb.Helpers;
+
 
 namespace QuanLyCotWeb.Controllers
 {
@@ -43,15 +45,23 @@ namespace QuanLyCotWeb.Controllers
             if (string.IsNullOrWhiteSpace(ten))
                 return RedirectToAction("TrangTimKiem");
 
+            // Chuẩn hóa từ khóa tìm kiếm
+            string keyword = StringHelper.NormalizeString(ten);
+
+            // Lấy danh sách cốt kèm thông tin vị trí và người thân
             var ketQua = await _context.Cots
                 .Include(c => c.IdViTriNavigation)
                 .Include(c => c.IdnguoiThanNavigation)
-                .Where(c =>
-                    c.Idcot.ToString() == ten ||                         // Tìm đúng ID
-                    (c.Ho + " " + c.Ten).Contains(ten) ||               // Họ tên đầy đủ
-                    c.Ho.Contains(ten) || c.Ten.Contains(ten) ||        // Họ hoặc Tên riêng
-                    c.PhapDanh.Contains(ten))                           // Pháp danh
                 .ToListAsync();
+
+            // Lọc kết quả sau khi chuẩn hóa
+            ketQua = ketQua.Where(c =>
+                c.Idcot.ToString() == ten ||
+                StringHelper.NormalizeString(c.Ho + " " + c.Ten).Contains(keyword) ||
+                StringHelper.NormalizeString(c.Ho).Contains(keyword) ||
+                StringHelper.NormalizeString(c.Ten).Contains(keyword) ||
+                StringHelper.NormalizeString(c.PhapDanh).Contains(keyword)
+            ).ToList();
 
             return View(ketQua);
         }

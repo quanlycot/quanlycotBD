@@ -73,8 +73,19 @@
                     </tr>
                     <tr>
                         <th scope="row">Người thân:</th>
-                        <td>@Model.IdnguoiThanNavigation?.Ho @Model.IdnguoiThanNavigation?.Ten</td>
+                        <td>
+                            @if (Model.IdnguoiThanNavigation?.Ho == "trong" || Model.IdnguoiThanNavigation?.Ten == "trong")
+                            {
+                                <span class="text-danger">Gia đình vui lòng liên hệ Chùa đăng ký lại thông tin cốt</span>
+                            }
+                            else
+                            {
+                                @($"{Model.IdnguoiThanNavigation.Ho} {Model.IdnguoiThanNavigation.Ten}")
+                            }
+                        </td>
                     </tr>
+
+
                 </tbody>
             </table>
         </div>
@@ -87,7 +98,11 @@
         }
         else
         {
-            <a asp-controller="Home" asp-action="TrangTimKiem" class="btn btn-secondary">Quay lại</a>
+            <div class="d-flex justify-content-center gap-3 my-4">
+                <a href="https://chuabuuda.org/vn/trang-chu.html" class="btn btn-secondary">Quay lại</a>
+                <a href="http://chuabuuda.org/vn/dat-mam-cung.html" class="btn btn-warning">Đặt Mâm Cúng</a>
+                <a href="https://chuabuuda.org/vn/dat-hoa.html" class="btn btn-success">Đặt Hoa - Gửi Hoa</a>
+            </div>
         }
     </div>
 
