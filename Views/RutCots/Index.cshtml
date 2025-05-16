@@ -1,0 +1,80 @@
+﻿@model X.PagedList.IPagedList<RutCot>
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+
+@{
+    ViewData["Title"] = "Danh sách rút cốt";
+    string keyword = Context.Request.Query["search"];
+}
+
+<h2 class="text-center mb-4">Danh sách rút cốt</h2>
+<div class="mb-3 text-end">
+    <a asp-action="ExportExcel" asp-route-search="@Context.Request.Query["search"]" class="btn btn-success">
+        Xuất Excel
+    </a>
+</div>
+<div class="row mb-3">
+    <div class="col-md-4">
+        <form asp-action="Index" method="get" class="d-flex">
+            <input type="text" name="search" value="@keyword" class="form-control me-2" placeholder="Tìm theo ID hoặc người rút..." />
+            <button type="submit" class="btn btn-primary">Tìm</button>
+        </form>
+    </div>
+    <div class="col-md-8 text-end">
+        <a asp-action="Create" class="btn btn-success">+ Thêm mới</a>
+    </div>
+</div>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Người Rút</th>
+            <th>Họ Tên Cốt</th>
+            <th>Lô</th>
+            <th>Lầu</th>
+            <th>Ngày Rút</th>
+            <th style="width:180px;">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.IDRut</td>
+                <td>@($"{item.HoNguoiRut} {item.TenNguoiRut}")</td>
+                <td>@Html.Raw(item.HoTenCot?.Replace("\n", "<br>"))</td>
+                <td>@Html.Raw(item.Lo?.Replace("\n", "<br>"))</td>
+                <td>@Html.Raw(item.Lau?.Replace("\n", "<br>"))</td>
+                <td>@item.NgayRut</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.IDRut" class="btn btn-sm btn-info me-1">Chi tiết</a>
+                    <a asp-action="Edit" asp-route-id="@item.IDRut" class="btn btn-sm btn-warning">Cập nhật</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="d-flex justify-content-center mt-4">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, search = keyword }),
+            new X.PagedList.Mvc.Core.Common.PagedListRenderOptions
+    {
+        UlElementClasses = new[] { "pagination" },
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" }
+    })
+
+</div>
+
+<style>
+    td {
+        vertical-align: top;
+        word-break: break-word;
+        white-space: pre-wrap;
+    }
+
+    .pagination {
+        justify-content: center;
+    }
+</style>

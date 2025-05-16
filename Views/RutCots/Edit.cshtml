@@ -1,0 +1,107 @@
+﻿@model RutCot
+@{
+    ViewData["Title"] = "Cập nhật thông tin rút cốt";
+}
+
+<h2 class="text-center mb-4">Cập nhật thông tin rút cốt</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IDRut" />
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="HoNguoiRut" class="form-label">Họ người rút</label>
+                    <input asp-for="HoNguoiRut" class="form-control" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="TenNguoiRut" class="form-label">Tên người rút</label>
+                    <input asp-for="TenNguoiRut" class="form-control" />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="NamSinhNguoiRut" class="form-label">Năm sinh</label>
+                    <input asp-for="NamSinhNguoiRut" class="form-control" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="CMND" class="form-label">CMND/CCCD</label>
+                    <input asp-for="CMND" class="form-control" />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="NgayCap" class="form-label">Ngày cấp</label>
+                    <input asp-for="NgayCap" class="form-control" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="NoiCap" class="form-label">Nơi cấp</label>
+                    <input asp-for="NoiCap" class="form-control" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="DiaChi" class="form-label">Địa chỉ thường trú</label>
+                <input asp-for="DiaChi" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SDT" class="form-label">Số điện thoại</label>
+                <input asp-for="SDT" class="form-control" />
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="HoTenCot" class="form-label">Họ tên người mất</label>
+                    <textarea asp-for="HoTenCot" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="Lo" class="form-label">Lô</label>
+                    <textarea asp-for="Lo" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="Lau" class="form-label">Lầu</label>
+                    <textarea asp-for="Lau" class="form-control" rows="3"></textarea>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="NgayRut" class="form-label">Ngày rút</label>
+                <input asp-for="NgayRut" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="LyDo" class="form-label">Lý do rút</label>
+                < input asp-for="LyDo" class="form-control" />
+            </div>
+
+            <div class="text-end">
+                <a asp-action="Index" class="btn btn-secondary">Hủy bỏ</a>
+                <input type="submit" value="Lưu lại" class="btn btn-primary ms-2" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        const skipFields = ['HoTenCot', 'Lo', 'Lau', 'LyDo'];
+        document.querySelectorAll('input, textarea').forEach((el, index, all) => {
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !skipFields.includes(el.name)) {
+                    e.preventDefault();
+                    const next = all[index + 1];
+                    if (next) next.focus();
+                }
+            });
+        });
+    </script>
+}

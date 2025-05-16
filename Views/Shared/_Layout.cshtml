@@ -27,15 +27,18 @@
                         @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Cots" asp-action="Index">Quản lý Cốt</a>
+                                <a class="nav-link text-light" asp-controller="Cots" asp-action="Index">Quản lý Cốt</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="ViTris" asp-action="Index">Quản lý Vị trí</a>
+                                <a class="nav-link text-light" asp-controller="ViTris" asp-action="Index">Quản lý Vị trí</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="NguoiThans" asp-action="Index">Người thân</a>
+                                <a class="nav-link text-light" asp-controller="NguoiThans" asp-action="Index">Người thân</a>
                             </li>
-                           
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-controller="RutCots" asp-action="Index">Rút Cốt</a>
+                            </li>
+
                         }
                     </ul>
                     <ul class="navbar-nav">
@@ -52,6 +55,7 @@
                         }
                         else
                         {
+                            
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Login">Đăng nhập</a>
                             </li>

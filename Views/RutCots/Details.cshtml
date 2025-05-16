@@ -1,0 +1,71 @@
+﻿@model RutCot
+@{
+    ViewData["Title"] = "Chi tiết thông tin rút cốt";
+}
+
+<h2 class="text-center mb-4">Chi tiết thông tin rút cốt</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th>Người rút: Họ:</th>
+                    <td>@Model.HoNguoiRut</td>
+                    <th>Tên: </th>
+                    <td>@Model.TenNguoiRut</td>
+                </tr>
+                <tr>
+                    <th>Năm sinh</th>
+                    <td>@Model.NamSinhNguoiRut</td>
+                    <th>CMND/CCCD</th>
+                    <td>@Model.CMND</td>
+                </tr>
+                <tr>
+                    <th>Ngày cấp</th>
+                    <td>@Model.NgayCap</td>
+                    <th>Nơi cấp</th>
+                    <td>@Model.NoiCap</td>
+                </tr>
+                <tr>
+                    <th>Địa chỉ thường trú</th>
+                    <td colspan="3">@Model.DiaChi</td>
+                </tr>
+                <tr>
+                    <th>Số điện thoại</th>
+                    <td colspan="3">@Model.SDT</td>
+                </tr>
+                <tr>
+                    <th>Cốt Rút Tên: </th>
+                    <td colspan="3" style="white-space: pre-wrap">@Model.HoTenCot</td>
+                    <th>Lô</th>
+                    <td>@Html.Raw(Model.Lo?.Replace("\n", "<br>"))</td>
+                    <th>Lầu</th>
+                    <td>@Html.Raw(Model.Lau?.Replace("\n", "<br>"))</td>
+                </tr>
+                <tr>
+                    <th>Ngày rút</th>
+                    <td>@Model.NgayRut</td>
+                    <th>Lý do rút</th>
+                    <td>@Model.LyDo</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="text-end mt-3">
+            <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    table th {
+        background-color: #f2f2f2;
+        width: 20%;
+    }
+
+    table td {
+        vertical-align: top;
+        white-space: pre-wrap;
+    }
+</style>

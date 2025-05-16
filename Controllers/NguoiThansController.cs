@@ -90,7 +90,7 @@ namespace QuanLyCotWeb.Controllers
                         var viTri = await _context.ViTris.FirstOrDefaultAsync(v => v.IdviTri == cot.IdviTri);
 
                         // Nếu vị trí có tình trạng là "Đã Có Cốt" thì cập nhật thành "Trống"
-                        if (viTri != null && viTri.IdTinhTrang == 1) // 1 = Đã có cốt, 3 = Trống
+                        if (viTri != null && (viTri.IdTinhTrang == 1 || viTri.IdTinhTrang == 2))
                         {
                             viTri.IdTinhTrang = 3;
                             _context.ViTris.Update(viTri);

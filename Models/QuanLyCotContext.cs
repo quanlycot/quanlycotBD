@@ -15,6 +15,8 @@ namespace QuanLyCotWeb.Models
         public virtual DbSet<NguoiThan> NguoiThans { get; set; }
         public virtual DbSet<ViTri> ViTris { get; set; }
         public virtual DbSet<TinhTrang> TinhTrangs { get; set; }
+        public DbSet<RutCot> RutCot { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
