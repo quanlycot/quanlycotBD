@@ -184,19 +184,29 @@ namespace QuanLyCotWeb.Controllers
             }
             return View(nguoiThan);
         }
+        // GET: NguoiThans/Edit/1
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+                return NotFound();
 
-         
+            var nguoiThan = await _context.NguoiThans.FindAsync(id);
+            if (nguoiThan == null)
+                return NotFound();
+
+            return View(nguoiThan);
+        }
+
+
         // POST: NguoiThans/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdnguoiThan,Ho,Ten,PhapDanh,NgaySinh,Cccd,NgayCap,NoiCap,DiaChi,SoDienThoai,NgayDangKy,GhiChu")] NguoiThan nguoiThan)
+        public async Task<IActionResult> Edit(int id, NguoiThan nguoiThan)
         {
             if (id != nguoiThan.IdnguoiThan)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
@@ -207,21 +217,27 @@ namespace QuanLyCotWeb.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!NguoiThanExists(nguoiThan.IdnguoiThan))
-                    {
+                    if (!_context.NguoiThans.Any(e => e.IdnguoiThan == nguoiThan.IdnguoiThan))
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
-                return RedirectToAction(nameof(Index));
+
+                // Tính lại số trang để quay về đúng dòng vừa sửa
+                int index = await _context.NguoiThans
+                    .Where(n => n.IdnguoiThan < nguoiThan.IdnguoiThan)
+                    .CountAsync();
+
+                int pageSize = 20;
+                int page = (index / pageSize) + 1;
+
+                return RedirectToAction("Index", new { page = page, highlight = nguoiThan.IdnguoiThan });
             }
+
             return View(nguoiThan);
         }
 
-        
+
         // POST: NguoiThans/Delete/5
         // POST: NguoiThans/Delete/5
         [HttpPost]
