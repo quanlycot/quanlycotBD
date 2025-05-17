@@ -27,7 +27,7 @@ namespace QuanLyCotWeb.Controllers
         }
 
         // GET: ViTris
-        public async Task<IActionResult> Index(string lau, string loSo, int? tinhTrang, int? page)
+        public async Task<IActionResult> Index(string lau, string loSo, int? tinhTrang, bool loSoStartsWith, int? page)
         {
             var danhSach = _context.ViTris
                 .Include(v => v.TinhTrangNavigation)
@@ -38,7 +38,12 @@ namespace QuanLyCotWeb.Controllers
                 danhSach = danhSach.Where(v => v.Lau.ToLower() == lau.ToLower());
 
             if (!string.IsNullOrEmpty(loSo))
-                danhSach = danhSach.Where(v => v.LoSo.ToLower().StartsWith(loSo.ToLower()));
+            {
+                if (loSoStartsWith)
+                    danhSach = danhSach.Where(v => v.LoSo.ToLower().StartsWith(loSo.ToLower()));
+                else
+                    danhSach = danhSach.Where(v => v.LoSo.ToLower() == loSo.ToLower());
+            }
 
             if (tinhTrang.HasValue)
                 danhSach = danhSach.Where(v => v.IdTinhTrang == tinhTrang.Value);
@@ -48,6 +53,7 @@ namespace QuanLyCotWeb.Controllers
 
             return View(await danhSach.ToPagedListAsync(pageNumber, pageSize));
         }
+
 
 
 

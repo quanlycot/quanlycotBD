@@ -342,6 +342,20 @@ namespace QuanLyCotWeb.Controllers
                         if (existing != null)
                             cot.HinhNguoiMat = existing.HinhNguoiMat;
                     }
+                    // Lấy vị trí cũ của cốt (trước khi chuyển)
+                    var cotCu = await _context.Cots.AsNoTracking().FirstOrDefaultAsync(c => c.Idcot == id);
+                    if (cotCu != null && cotCu.IdviTri != cot.IdviTri)
+                    {
+                        // Cập nhật vị trí cũ thành Trống (3)
+                        var viTriCu = await _context.ViTris.FindAsync(cotCu.IdviTri);
+                        if (viTriCu != null)
+                            viTriCu.IdTinhTrang = 3;
+
+                        // Cập nhật vị trí mới thành Đã Có Cốt (1)
+                        var viTriMoi = await _context.ViTris.FindAsync(cot.IdviTri);
+                        if (viTriMoi != null)
+                            viTriMoi.IdTinhTrang = 1;
+                    }
 
                     _context.Update(cot);
                     await _context.SaveChangesAsync();
