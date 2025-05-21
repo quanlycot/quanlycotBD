@@ -27,6 +27,7 @@ else
                     <th>Tuổi</th>
                     <th>Lầu</th>
                     <th>Lô số</th>
+                    <th>Thao tác</th> @* ✅ Thêm cột thao tác *@
                 </tr>
             </thead>
             <tbody>
@@ -44,6 +45,11 @@ else
                         <td>@cot.Tuoi</td>
                         <td>@(cot.IdViTriNavigation?.Lau ?? "")</td>
                         <td>@(cot.IdViTriNavigation?.LoSo ?? "")</td>
+                        <td>
+                            <a asp-controller="Cots" asp-action="Edit" asp-route-id="@cot.Idcot" asp-route-idNguoiThan="@ViewBag.IdNguoiThan"
+                               class="btn btn-sm btn-warning">Sửa</a>
+                        </td>
+
                     </tr>
                 }
             </tbody>

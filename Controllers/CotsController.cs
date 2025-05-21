@@ -304,7 +304,7 @@ namespace QuanLyCotWeb.Controllers
 
         // GET: Cots/Edit/5
         [Authorize]
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, int? idNguoiThan)
         {
             if (id == null)
                 return NotFound();
@@ -313,12 +313,13 @@ namespace QuanLyCotWeb.Controllers
             if (cot == null)
                 return NotFound();
 
+            ViewBag.IdNguoiThan = idNguoiThan; // giữ lại để redirect sau
             return View(cot);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Idcot,Ho,Ten,PhapDanh,NamSinh,MatAl,MatDl,Tuoi,NgayBatDau,NgayKetThuc,HinhNguoiMat,IdviTri,IdnguoiThan")] Cot cot, IFormFile? HinhAnhUpload)
+        public async Task<IActionResult> Edit(int id, [Bind("Idcot,Ho,Ten,PhapDanh,NamSinh,MatAl,MatDl,Tuoi,NgayBatDau,NgayKetThuc,HinhNguoiMat,IdviTri,IdnguoiThan")] Cot cot, IFormFile? HinhAnhUpload, int? idNguoiThan)
         {
             if (id != cot.Idcot)
                 return NotFound();
@@ -367,10 +368,18 @@ namespace QuanLyCotWeb.Controllers
                     throw;
                 }
 
-                var danhSach = _context.Cots.OrderBy(c => c.Idcot).AsEnumerable().ToList();
-                int index = danhSach.FindIndex(c => c.Idcot == cot.Idcot);
-                int page = index / 20 + 1;
-                return RedirectToAction("Index", new { page, highlight = cot.Idcot });
+                if (idNguoiThan.HasValue)
+                {
+                    return RedirectToAction("ThongKe", "NguoiThans", new { id = idNguoiThan.Value });
+                }
+                else
+                {
+                    var danhSach = _context.Cots.OrderBy(c => c.Idcot).AsEnumerable().ToList();
+                    int index = danhSach.FindIndex(c => c.Idcot == cot.Idcot);
+                    int page = index / 20 + 1;
+                    return RedirectToAction("Index", new { page, highlight = cot.Idcot });
+                }
+
             }
 
             return View(cot);
