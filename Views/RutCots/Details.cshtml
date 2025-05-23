@@ -1,71 +1,107 @@
 ﻿@model RutCot
+
 @{
-    ViewData["Title"] = "Chi tiết thông tin rút cốt";
+    ViewData["Title"] = "Cập nhật thông tin rút cốt";
 }
 
-<h2 class="text-center mb-4">Chi tiết thông tin rút cốt</h2>
+<h2 class="text-center mb-4">Cập nhật thông tin rút cốt</h2>
 
 <div class="row justify-content-center">
-    <div class="col-md-10">
-        <table class="table table-bordered">
-            <tbody>
-                <tr>
-                    <th>Người rút: Họ:</th>
-                    <td>@Model.HoNguoiRut</td>
-                    <th>Tên: </th>
-                    <td>@Model.TenNguoiRut</td>
-                </tr>
-                <tr>
-                    <th>Năm sinh</th>
-                    <td>@Model.NamSinhNguoiRut</td>
-                    <th>CMND/CCCD</th>
-                    <td>@Model.CMND</td>
-                </tr>
-                <tr>
-                    <th>Ngày cấp</th>
-                    <td>@Model.NgayCap</td>
-                    <th>Nơi cấp</th>
-                    <td>@Model.NoiCap</td>
-                </tr>
-                <tr>
-                    <th>Địa chỉ thường trú</th>
-                    <td colspan="3">@Model.DiaChi</td>
-                </tr>
-                <tr>
-                    <th>Số điện thoại</th>
-                    <td colspan="3">@Model.SDT</td>
-                </tr>
-                <tr>
-                    <th>Cốt Rút Tên: </th>
-                    <td colspan="3" style="white-space: pre-wrap">@Model.HoTenCot</td>
-                    <th>Lô</th>
-                    <td>@Html.Raw(Model.Lo?.Replace("\n", "<br>"))</td>
-                    <th>Lầu</th>
-                    <td>@Html.Raw(Model.Lau?.Replace("\n", "<br>"))</td>
-                </tr>
-                <tr>
-                    <th>Ngày rút</th>
-                    <td>@Model.NgayRut</td>
-                    <th>Lý do rút</th>
-                    <td>@Model.LyDo</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="col-md-8">
+        <form asp-action="Edit">
+            <input type="hidden" asp-for="IDRut" />
 
-        <div class="text-end mt-3">
-            <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
-        </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="HoNguoiRut" class="form-label"></label>
+                    <input asp-for="HoNguoiRut" class="form-control" />
+                    <span asp-validation-for="HoNguoiRut" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="TenNguoiRut" class="form-label"></label>
+                    <input asp-for="TenNguoiRut" class="form-control" />
+                    <span asp-validation-for="TenNguoiRut" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="NamSinhNguoiRut" class="form-label"></label>
+                    <input asp-for="NamSinhNguoiRut" class="form-control" />
+                    <span asp-validation-for="NamSinhNguoiRut" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="CMND" class="form-label"></label>
+                    <input asp-for="CMND" class="form-control" />
+                    <span asp-validation-for="CMND" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="NgayCap" class="form-label"></label>
+                    <input asp-for="NgayCap" class="form-control" />
+                    <span asp-validation-for="NgayCap" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="NoiCap" class="form-label"></label>
+                    <input asp-for="NoiCap" class="form-control" />
+                    <span asp-validation-for="NoiCap" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="DiaChi" class="form-label"></label>
+                <input asp-for="DiaChi" class="form-control" />
+                <span asp-validation-for="DiaChi" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SDT" class="form-label"></label>
+                <input asp-for="SDT" class="form-control" />
+                <span asp-validation-for="SDT" class="text-danger"></span>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label asp-for="HoTenCot" class="form-label"></label>
+                    <textarea asp-for="HoTenCot" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="HoTenCot" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Lo" class="form-label"></label>
+                    <textarea asp-for="Lo" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="Lo" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Lau" class="form-label"></label>
+                    <textarea asp-for="Lau" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="Lau" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="NgayRut" class="form-label"></label>
+                <input asp-for="NgayRut" class="form-control" />
+                <span asp-validation-for="NgayRut" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="LyDo" class="form-label"></label>
+                <input asp-for="LyDo" class="form-control" />
+                <span asp-validation-for="LyDo" class="text-danger"></span>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">Cập nhật</button>
+                <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+            </div>
+        </form>
     </div>
 </div>
 
-<style>
-    table th {
-        background-color: #f2f2f2;
-        width: 20%;
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
-    table td {
-        vertical-align: top;
-        white-space: pre-wrap;
-    }
-</style>
+}

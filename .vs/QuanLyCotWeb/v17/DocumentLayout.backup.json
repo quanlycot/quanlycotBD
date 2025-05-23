@@ -3,24 +3,40 @@
   "WorkspaceRootPath": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|c:\\users\\dong thinh\\source\\repos\\quanlycotweb\\views\\rutcots\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:views\\rutcots\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|c:\\users\\dong thinh\\source\\repos\\quanlycotweb\\views\\rutcots\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:views\\rutcots\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|c:\\users\\dong thinh\\source\\repos\\quanlycotweb\\views\\rutcots\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:views\\rutcots\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|c:\\users\\dong thinh\\source\\repos\\quanlycotweb\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|c:\\users\\dong thinh\\source\\repos\\quanlycotweb\\controllers\\cotscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:controllers\\cotscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|c:\\users\\dong thinh\\source\\repos\\quanlycotweb\\controllers\\rutcotscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:controllers\\rutcotscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|c:\\users\\dong thinh\\source\\repos\\quanlycotweb\\views\\cots\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:views\\cots\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|c:\\users\\dong thinh\\source\\repos\\quanlycotweb\\views\\nguoithans\\thongke.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:views\\nguoithans\\thongke.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|c:\\users\\dong thinh\\source\\repos\\quanlycotweb\\controllers\\nguoithanscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:controllers\\nguoithanscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|c:\\users\\dong thinh\\source\\repos\\quanlycotweb\\controllers\\cotscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:controllers\\cotscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|c:\\users\\dong thinh\\source\\repos\\quanlycotweb\\views\\nguoithans\\thongke.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:views\\nguoithans\\thongke.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|c:\\users\\dong thinh\\source\\repos\\quanlycotweb\\controllers\\vitriscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -46,24 +62,76 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 8,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Details.cshtml",
+              "DocumentMoniker": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Views\\RutCots\\Details.cshtml",
+              "RelativeDocumentMoniker": "Views\\RutCots\\Details.cshtml",
+              "ToolTip": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Views\\RutCots\\Details.cshtml*",
+              "RelativeToolTip": "Views\\RutCots\\Details.cshtml*",
+              "ViewState": "AgIAAEwAAAAAAAAAAAAQwGsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-23T01:19:00.774Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Views\\RutCots\\Edit.cshtml",
+              "RelativeDocumentMoniker": "Views\\RutCots\\Edit.cshtml",
+              "ToolTip": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Views\\RutCots\\Edit.cshtml",
+              "RelativeToolTip": "Views\\RutCots\\Edit.cshtml",
+              "ViewState": "AgIAAEEAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-23T01:06:53.453Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Views\\RutCots\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\RutCots\\Index.cshtml",
+              "ToolTip": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Views\\RutCots\\Index.cshtml",
+              "RelativeToolTip": "Views\\RutCots\\Index.cshtml",
+              "ViewState": "AgIAABsAAAAAAAAAAAAQwDgAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-05-23T01:06:35.429Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "RutCotsController.cs",
+              "DocumentMoniker": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Controllers\\RutCotsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\RutCotsController.cs",
+              "ToolTip": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Controllers\\RutCotsController.cs",
+              "RelativeToolTip": "Controllers\\RutCotsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-23T01:06:13.035Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Views\\Cots\\Edit.cshtml",
               "RelativeDocumentMoniker": "Views\\Cots\\Edit.cshtml",
               "ToolTip": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Views\\Cots\\Edit.cshtml",
               "RelativeToolTip": "Views\\Cots\\Edit.cshtml",
-              "ViewState": "AgIAAHsAAAAAAAAAAAAswJoAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAGUAAAAAAAAAAAAAAGUAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-05-21T08:59:48.852Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 8,
               "Title": "ThongKe.cshtml",
               "DocumentMoniker": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Views\\NguoiThans\\ThongKe.cshtml",
               "RelativeDocumentMoniker": "Views\\NguoiThans\\ThongKe.cshtml",
@@ -71,25 +139,24 @@
               "RelativeToolTip": "Views\\NguoiThans\\ThongKe.cshtml",
               "ViewState": "AgIAABsAAAAAAAAAAAAowDMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-05-21T08:40:23.802Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-21T08:40:23.802Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 6,
               "Title": "NguoiThansController.cs",
               "DocumentMoniker": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Controllers\\NguoiThansController.cs",
               "RelativeDocumentMoniker": "Controllers\\NguoiThansController.cs",
               "ToolTip": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Controllers\\NguoiThansController.cs",
               "RelativeToolTip": "Controllers\\NguoiThansController.cs",
-              "ViewState": "AgIAAHQAAAAAAAAAAAAkwIYAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAEwAAAAAAAAAAAAAwGgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-21T08:39:46.315Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 10,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Views\\ViTris\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\ViTris\\Index.cshtml",
@@ -101,7 +168,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 9,
               "Title": "ViTrisController.cs",
               "DocumentMoniker": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Controllers\\ViTrisController.cs",
               "RelativeDocumentMoniker": "Controllers\\ViTrisController.cs",
@@ -109,12 +176,11 @@
               "RelativeToolTip": "Controllers\\ViTrisController.cs",
               "ViewState": "AgIAABsAAAAAAAAAAAAUwDcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-17T09:37:45.017Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-17T09:37:45.017Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 7,
               "Title": "CotsController.cs",
               "DocumentMoniker": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Controllers\\CotsController.cs",
               "RelativeDocumentMoniker": "Controllers\\CotsController.cs",
@@ -122,12 +188,11 @@
               "RelativeToolTip": "Controllers\\CotsController.cs",
               "ViewState": "AgIAADABAAAAAAAAAAAAADABAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-17T09:19:09.977Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-17T09:19:09.977Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 11,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Views\\NguoiThans\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\NguoiThans\\Index.cshtml",
@@ -139,7 +204,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 12,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Views\\NguoiThans\\Edit.cshtml",
               "RelativeDocumentMoniker": "Views\\NguoiThans\\Edit.cshtml",
@@ -151,7 +216,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Dong Thinh\\source\\repos\\QuanLyCotWeb\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
