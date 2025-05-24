@@ -367,10 +367,9 @@ namespace QuanLyCotWeb.Controllers
                     if (!CotExists(cot.Idcot)) return NotFound();
                     throw;
                 }
-
-                if (idNguoiThan.HasValue)
+                if (cot.IdnguoiThan.HasValue)
                 {
-                    return RedirectToAction("ThongKe", "NguoiThans", new { id = idNguoiThan.Value });
+                    return RedirectToAction("ThongKe", "NguoiThans", new { id = cot.IdnguoiThan.Value });
                 }
                 else
                 {

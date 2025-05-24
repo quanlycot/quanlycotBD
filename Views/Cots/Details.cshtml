@@ -74,7 +74,11 @@
                     <tr>
                         <th scope="row">Người thân:</th>
                         <td>
-                            @if (Model.IdnguoiThanNavigation?.Ho == "trong" || Model.IdnguoiThanNavigation?.Ten == "trong")
+                            @if (Model.IdnguoiThanNavigation == null)
+                            {
+                                <span class="text-danger">Chưa đăng ký người thân</span>
+                            }
+                            else if (Model.IdnguoiThanNavigation.Ho == "trong" || Model.IdnguoiThanNavigation.Ten == "trong")
                             {
                                 <span class="text-danger">Gia đình vui lòng liên hệ Chùa đăng ký lại thông tin cốt</span>
                             }
