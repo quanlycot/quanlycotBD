@@ -66,6 +66,7 @@
                 <th>Tuổi</th>
                 <th>Ảnh Người Mất</th>
                 <th>Vị trí (Lầu - Lô)</th>
+                <th>Ngày KT</th>
                 <th>ID Người Thân</th>
                 <th>Thao tác</th>
             </tr>
@@ -98,6 +99,7 @@
                         <td>
                             @(item.IdViTriNavigation?.Lau ?? "") - @(item.IdViTriNavigation?.LoSo ?? "")
                         </td>
+                        <td>@item.NgayKetThuc</td>
                         <td>@item.IdnguoiThan</td>
                         <td>
                             @if (User.IsInRole("Admin"))

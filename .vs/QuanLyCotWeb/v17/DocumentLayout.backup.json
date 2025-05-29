@@ -3,6 +3,14 @@
   "WorkspaceRootPath": "D:\\QuanLyCot_New\\WEB\\QuanLyCotWeb\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|d:\\quanlycot_new\\web\\quanlycotweb\\views\\cots\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:views\\cots\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|d:\\quanlycot_new\\web\\quanlycotweb\\views\\nguoithans\\thongke.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:views\\nguoithans\\thongke.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|d:\\quanlycot_new\\web\\quanlycotweb\\views\\cots\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:views\\cots\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
@@ -13,10 +21,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|d:\\quanlycot_new\\web\\quanlycotweb\\views\\cots\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:views\\cots\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|d:\\quanlycot_new\\web\\quanlycotweb\\views\\cots\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:views\\cots\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|d:\\quanlycot_new\\web\\quanlycotweb\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
@@ -50,10 +54,6 @@
       "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:controllers\\nguoithanscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|d:\\quanlycot_new\\web\\quanlycotweb\\views\\nguoithans\\thongke.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:views\\nguoithans\\thongke.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|d:\\quanlycot_new\\web\\quanlycotweb\\controllers\\vitriscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{59EB39BA-1699-87CC-D72D-1613CFDBC656}|QuanLyCotWeb.csproj|solutionrelative:controllers\\vitriscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -77,11 +77,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "Details.cshtml",
               "DocumentMoniker": "D:\\QuanLyCot_New\\WEB\\QuanLyCotWeb\\Views\\Cots\\Details.cshtml",
               "RelativeDocumentMoniker": "Views\\Cots\\Details.cshtml",
@@ -94,20 +94,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\QuanLyCot_New\\WEB\\QuanLyCotWeb\\Views\\Cots\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\Cots\\Index.cshtml",
               "ToolTip": "D:\\QuanLyCot_New\\WEB\\QuanLyCotWeb\\Views\\Cots\\Index.cshtml",
               "RelativeToolTip": "Views\\Cots\\Index.cshtml",
-              "ViewState": "AgIAAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAFoAAAAAAAAAAAAAAG4AAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-05-24T13:15:08.49Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\QuanLyCot_New\\WEB\\QuanLyCotWeb\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -115,23 +115,21 @@
               "RelativeToolTip": "appsettings.json",
               "ViewState": "AgIAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-05-24T13:13:45.836Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-24T13:13:45.836Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "Microsoft.PackageDependencyResolution.targets",
               "DocumentMoniker": "C:\\Program Files\\dotnet\\sdk\\9.0.202\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.PackageDependencyResolution.targets",
               "ToolTip": "C:\\Program Files\\dotnet\\sdk\\9.0.202\\Sdks\\Microsoft.NET.Sdk\\targets\\Microsoft.PackageDependencyResolution.targets",
               "ViewState": "AgIAAPkAAAAAAAAAAAAuwAkBAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
-              "WhenOpened": "2025-05-24T13:13:36.598Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-24T13:13:36.598Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "Details.cshtml",
               "DocumentMoniker": "D:\\QuanLyCot_New\\WEB\\QuanLyCotWeb\\Views\\RutCots\\Details.cshtml",
               "RelativeDocumentMoniker": "Views\\RutCots\\Details.cshtml",
@@ -139,12 +137,11 @@
               "RelativeToolTip": "Views\\RutCots\\Details.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-05-23T01:19:00.774Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-23T01:19:00.774Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "D:\\QuanLyCot_New\\WEB\\QuanLyCotWeb\\Views\\RutCots\\Edit.cshtml",
               "RelativeDocumentMoniker": "Views\\RutCots\\Edit.cshtml",
@@ -156,7 +153,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\QuanLyCot_New\\WEB\\QuanLyCotWeb\\Views\\RutCots\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\RutCots\\Index.cshtml",
@@ -168,7 +165,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "RutCotsController.cs",
               "DocumentMoniker": "D:\\QuanLyCot_New\\WEB\\QuanLyCotWeb\\Controllers\\RutCotsController.cs",
               "RelativeDocumentMoniker": "Controllers\\RutCotsController.cs",
@@ -180,7 +177,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "D:\\QuanLyCot_New\\WEB\\QuanLyCotWeb\\Views\\Cots\\Edit.cshtml",
               "RelativeDocumentMoniker": "Views\\Cots\\Edit.cshtml",
@@ -188,24 +185,24 @@
               "RelativeToolTip": "Views\\Cots\\Edit.cshtml",
               "ViewState": "AgIAAAYAAAAAAAAAAAAAAA0AAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-05-21T08:59:48.852Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-21T08:59:48.852Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 1,
               "Title": "ThongKe.cshtml",
               "DocumentMoniker": "D:\\QuanLyCot_New\\WEB\\QuanLyCotWeb\\Views\\NguoiThans\\ThongKe.cshtml",
               "RelativeDocumentMoniker": "Views\\NguoiThans\\ThongKe.cshtml",
               "ToolTip": "D:\\QuanLyCot_New\\WEB\\QuanLyCotWeb\\Views\\NguoiThans\\ThongKe.cshtml",
               "RelativeToolTip": "Views\\NguoiThans\\ThongKe.cshtml",
-              "ViewState": "AgIAABsAAAAAAAAAAAAowDMAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABsAAAAAAAAAAAAowB4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-05-21T08:40:23.802Z"
+              "WhenOpened": "2025-05-21T08:40:23.802Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "NguoiThansController.cs",
               "DocumentMoniker": "D:\\QuanLyCot_New\\WEB\\QuanLyCotWeb\\Controllers\\NguoiThansController.cs",
               "RelativeDocumentMoniker": "Controllers\\NguoiThansController.cs",
@@ -241,7 +238,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "CotsController.cs",
               "DocumentMoniker": "D:\\QuanLyCot_New\\WEB\\QuanLyCotWeb\\Controllers\\CotsController.cs",
               "RelativeDocumentMoniker": "Controllers\\CotsController.cs",
@@ -249,8 +246,7 @@
               "RelativeToolTip": "Controllers\\CotsController.cs",
               "ViewState": "AgIAAGIBAAAAAAAAAAAIwHoBAAA1AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-17T09:19:09.977Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-17T09:19:09.977Z"
             },
             {
               "$type": "Document",
@@ -278,7 +274,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\QuanLyCot_New\\WEB\\QuanLyCotWeb\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
