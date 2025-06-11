@@ -70,7 +70,7 @@ namespace QuanLyCotWeb.Controllers
 
             ViewBag.HoTen = nguoiThan.Ho + " " + nguoiThan.Ten;
             ViewBag.IdNguoiThan = id;
-            ViewBag.SoLuongCot - danhSachCot.Count;
+            ViewBag.SoLuongCot = danhSachCot.Count;
 
             return View(danhSachCot);
         }
