@@ -127,7 +127,7 @@
 </div>
 
 <div class="d-flex justify-content-center">
-    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, highlight = highlightId }), new PagedListRenderOptions
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, highlight = highlightId, searchString=Context.Request.Query["searchString"] }), new PagedListRenderOptions
 {
     MaximumPageNumbersToDisplay = 5,
     LiElementClasses = new[] { "page-item" },
