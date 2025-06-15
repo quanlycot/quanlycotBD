@@ -30,13 +30,6 @@
     <Folder Include="Migrations\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
-	<ItemGroup>
-		<Content Include="wwwroot\MauDKCOt\GIAY_DK_COT.docx">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Content Include="wwwroot\MauDKCOt\GIAY_DK_COT_Full.docx">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
+	
 
 </Project>

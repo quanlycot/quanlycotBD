@@ -73,7 +73,7 @@ public IActionResult InGiayDangKyTheoCot(int idCot)
             var nguoiThan = cot.IdnguoiThanNavigation;
 
             // Đường dẫn tới file mẫu
-            string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "MauDKCot", "GIAY_DK_COT.docx");
+            string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "MAUDKCOT", "GIAY_DK_COT.docx");
 
             // Tạo file tạm trong thư mục hệ thống
             string tempFile = Path.GetTempFileName();
@@ -138,7 +138,7 @@ public IActionResult InGiayDangKyTheoCot(int idCot)
             var nguoiThan = danhSachCot.First().IdnguoiThanNavigation;
             if (nguoiThan == null) return NotFound("Không tìm thấy người thân.");
 
-            string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "MauDKCot", "GIAY_DK_COT_Full.docx");
+            string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "MAUDKCOT", "GIAY_DK_COT_Full.docx");
             using var templateStream = System.IO.File.OpenRead(templatePath);
             using var memStream = new MemoryStream();
             templateStream.CopyTo(memStream);
