@@ -97,6 +97,14 @@
                         <td>
                             <a asp-controller="Cots" asp-action="CreateFromViTri" asp-route-idViTri="@item.IdviTri" class="btn btn-sm btn-warning">Cập Nhật</a>
                             <a asp-action="Delete" asp-route-id="@item.IdviTri" class="btn btn-sm btn-danger mb-1">Xóa</a>
+                            <a asp-action="InGiayDangKyTheoCot"
+                               asp-route-idCot="@item.Cot?.Idcot"
+                               class="btn btn-sm btn-outline-success ms-1" target="_blank">
+                                <i class="bi bi-printer"></i> In giấy
+                            </a>
+
+
+
                         </td>
                     </tr>
                 }

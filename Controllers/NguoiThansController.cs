@@ -11,6 +11,11 @@ using QuanLyCotWeb.Models;
 using QuanLyCotWeb.Services;
 using X.PagedList;
 using X.PagedList.Mvc.Core;
+using TemplateEngine.Docx;
+using System.IO;
+using System.Collections.Generic;
+using QuanLyCotWeb.Models;
+using TemplateEngine.Docx;
 
 
 namespace QuanLyCotWeb.Controllers
@@ -52,6 +57,125 @@ namespace QuanLyCotWeb.Controllers
         }
 
 
+    
+
+public IActionResult InGiayDangKyTheoCot(int idCot)
+    {
+        var cot = _context.Cots
+            .Include(c => c.IdnguoiThanNavigation)
+            .Include(c => c.IdViTriNavigation)
+                .ThenInclude(v => v.TinhTrangNavigation)
+            .FirstOrDefault(c => c.Idcot == idCot);
+
+        if (cot == null || cot.IdnguoiThanNavigation == null)
+            return NotFound("Không tìm thấy cốt hoặc người thân tương ứng.");
+
+            var nguoiThan = cot.IdnguoiThanNavigation;
+
+            // Đường dẫn tới file mẫu
+            string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "MauDKCot", "GIAY_DK_COT.docx");
+
+            // Tạo file tạm trong thư mục hệ thống
+            string tempFile = Path.GetTempFileName();
+            System.IO.File.Copy(templatePath, tempFile, true);
+
+            // Gán nội dung vào template
+            using (var outputDoc = new TemplateEngine.Docx.TemplateProcessor(tempFile).SetRemoveContentControls(true))
+            {
+                var valuesToFill = new Content(
+         new FieldContent("MaSoHoSo", nguoiThan.IdnguoiThan.ToString()),
+         new FieldContent("HoTenNT", $"{nguoiThan.Ho} {nguoiThan.Ten}"),
+         new FieldContent("PhapDanhNT", nguoiThan.PhapDanh ?? ""),
+         new FieldContent("NgaySinhNT", nguoiThan.NgaySinh ?? ""),
+         new FieldContent("CCCD", nguoiThan.Cccd ?? ""),
+         new FieldContent("NgayCap", nguoiThan.NgayCap ?? ""),
+         new FieldContent("NoiCap", nguoiThan.NoiCap ?? ""),
+         new FieldContent("DiaChi", nguoiThan.DiaChi ?? ""),
+         new FieldContent("SDT", nguoiThan.SoDienThoai ?? ""),
+
+         new FieldContent("HoTenNM", $"{cot.Ho} {cot.Ten}"),
+         new FieldContent("PhapDanhNM", cot.PhapDanh ?? ""),
+         new FieldContent("NamSinh", cot.NamSinh ?? ""),
+         new FieldContent("NgayMatAL", cot.MatAl ?? ""),
+            new FieldContent("NgayMatDL", cot.MatDl ?? ""),
+         new FieldContent("TuoiAL", cot.Tuoi?.ToString() ?? ""),
+         new FieldContent("Lau", cot.IdViTriNavigation?.Lau ?? ""),
+         new FieldContent("Day", cot.IdViTriNavigation?.LoSo ?? ""),
+         new FieldContent("TinhTrang", cot.IdViTriNavigation?.TinhTrangNavigation?.TenTinhTrang ?? ""),
+         new FieldContent("SoNamDK", "10"),
+         new FieldContent("NgayBatDau", cot.NgayBatDau?.ToString("dd/MM/yyyy") ?? ""),
+         new FieldContent("NgayKetThuc", cot.NgayKetThuc?.ToString("dd/MM/yyyy") ?? "")
+     );
+
+
+                outputDoc.FillContent(valuesToFill);
+            outputDoc.SaveChanges();
+        }
+
+            // Đọc từ file tạm rồi xóa
+            byte[] bytes = System.IO.File.ReadAllBytes(tempFile);
+            System.IO.File.Delete(tempFile);
+
+            return File(bytes,
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                $"DonDangKy_{cot.Idcot}.docx");
+        }
+
+        [HttpPost]
+        public IActionResult InGiayDangKyNhieuCot(List<int> selectedCotIds)
+        {
+            if (selectedCotIds == null || selectedCotIds.Count == 0)
+                return BadRequest("Không có cốt nào được chọn.");
+
+            var danhSachCot = _context.Cots
+                .Where(c => selectedCotIds.Contains(c.Idcot))
+                .Include(c => c.IdnguoiThanNavigation)
+                .Include(c => c.IdViTriNavigation)
+                    .ThenInclude(v => v.TinhTrangNavigation)
+                .OrderBy(c => c.Idcot)
+                .ToList();
+
+            var nguoiThan = danhSachCot.First().IdnguoiThanNavigation;
+            if (nguoiThan == null) return NotFound("Không tìm thấy người thân.");
+
+            string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "MauDKCot", "GIAY_DK_COT_Full.docx");
+            using var templateStream = System.IO.File.OpenRead(templatePath);
+            using var memStream = new MemoryStream();
+            templateStream.CopyTo(memStream);
+            memStream.Position = 0;
+
+            using (var outputDoc = new TemplateProcessor(memStream).SetRemoveContentControls(true))
+            {
+                var valuesToFill = new Content(
+                    new FieldContent("MaSoHoSo", nguoiThan.IdnguoiThan.ToString()),
+                    new FieldContent("HoTenNT", $"{nguoiThan.Ho} {nguoiThan.Ten}"),
+                    new FieldContent("PhapDanhNT", nguoiThan.PhapDanh ?? ""),
+                    new FieldContent("NgaySinhNT", nguoiThan.NgaySinh ?? ""),
+                    new FieldContent("CCCD", nguoiThan.Cccd ?? ""),
+                    new FieldContent("NgayCap", nguoiThan.NgayCap ?? ""),
+                    new FieldContent("NoiCap", nguoiThan.NoiCap ?? ""),
+                    new FieldContent("DiaChi", nguoiThan.DiaChi ?? ""),
+                    new FieldContent("SDT", nguoiThan.SoDienThoai ?? ""),
+                    new FieldContent("SoLuong", danhSachCot.Count.ToString())
+                );
+
+                var tableRows = danhSachCot.Select((cot, index) => new TableRowContent(
+                    new FieldContent("STT", (index + 1).ToString()),
+                    new FieldContent("HoTenCot", $"{cot.Ho} {cot.Ten}"),
+                    new FieldContent("ViTri", $"{cot.IdViTriNavigation?.Lau}:{cot.IdViTriNavigation?.LoSo}"),
+                    new FieldContent("TinhTrang", cot.IdViTriNavigation?.TinhTrangNavigation?.TenTinhTrang ?? ""),
+                    new FieldContent("ThoiHan", $"{cot.NgayBatDau?.ToString("dd/MM/yyyy")} => {cot.NgayKetThuc?.ToString("dd/MM/yyyy")}")
+                )).ToList();
+
+                valuesToFill.Tables.Add(new TableContent("DanhSachCot", tableRows));
+                outputDoc.FillContent(valuesToFill);
+                outputDoc.SaveChanges();
+            }
+
+            return File(memStream.ToArray(),
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                $"DonDangKyNhieuCot_{nguoiThan.IdnguoiThan}.docx");
+        }
 
 
         // GET: NguoiThans/ThongKe/5
