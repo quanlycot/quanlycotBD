@@ -42,7 +42,7 @@ namespace QuanLyCotWeb.Controllers
             var nguoiThan = cot.IdnguoiThanNavigation;
 
             // Đường dẫn tới file mẫu
-            string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "MAUDKCOT", "GIAY_DK_COT.docx");
+            string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "MauDKCOt", "GIAY_DK_COT.docx");
 
             // Tạo file tạm trong thư mục hệ thống
             string tempFile = Path.GetTempFileName();
