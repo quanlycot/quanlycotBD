@@ -16,6 +16,7 @@ using System.IO;
 using System.Collections.Generic;
 using QuanLyCotWeb.Models;
 using TemplateEngine.Docx;
+using X.PagedList.Extensions;
 
 
 namespace QuanLyCotWeb.Controllers
@@ -52,14 +53,15 @@ namespace QuanLyCotWeb.Controllers
             }
 
 
-            var pagedList = await danhSach.OrderBy(nt => nt.IdnguoiThan).ToPagedListAsync(pageNumber, pageSize);
+            var pagedList = danhSach .OrderBy(nt => nt.IdnguoiThan) .ToPagedList(pageNumber, pageSize);
             return View(pagedList);
+
         }
 
 
-    
 
-public IActionResult InGiayDangKyTheoCot(int idCot)
+
+        public IActionResult InGiayDangKyTheoCot(int idCot)
     {
         var cot = _context.Cots
             .Include(c => c.IdnguoiThanNavigation)

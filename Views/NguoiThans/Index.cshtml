@@ -1,6 +1,5 @@
 ﻿@using X.PagedList
 @using X.PagedList.Mvc.Core
-@using X.PagedList.Mvc.Core.Common
 @model X.PagedList.IPagedList<QuanLyCotWeb.Models.NguoiThan>
 
 @{
@@ -105,14 +104,20 @@
 </div>
 
 <div class="d-flex justify-content-center">
-    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }),
+    @Html.PagedListPager(Model, page => Url.Action("Index", new
+        {
+            page,
+            searchString = Context.Request.Query["searchString"]
+        }),
             new PagedListRenderOptions
     {
-        UlElementClasses = new[] { "pagination" },
+        MaximumPageNumbersToDisplay = 5,
         LiElementClasses = new[] { "page-item" },
-        PageClasses = new[] { "page-link" }
+        PageClasses = new[] { "page-link" },
+        UlElementClasses = new[] { "pagination justify-content-center" }
     })
 </div>
+
 @section Scripts {
     <script>
         window.onload = function () {

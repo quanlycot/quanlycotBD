@@ -1,6 +1,7 @@
-﻿@model X.PagedList.IPagedList<RutCot>
+﻿@using X.PagedList
 @using X.PagedList.Mvc.Core
-@using X.PagedList.Web.Common
+@model IPagedList<RutCot>
+
 
 @{
     ViewData["Title"] = "Danh sách rút cốt";
@@ -58,13 +59,12 @@
 
 <div class="d-flex justify-content-center mt-4">
     @Html.PagedListPager(Model, page => Url.Action("Index", new { page, search = keyword }),
-            new X.PagedList.Mvc.Core.Common.PagedListRenderOptions
+            new PagedListRenderOptions
     {
         UlElementClasses = new[] { "pagination" },
         LiElementClasses = new[] { "page-item" },
         PageClasses = new[] { "page-link" }
     })
-
 </div>
 
 <style>

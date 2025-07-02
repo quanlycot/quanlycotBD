@@ -13,6 +13,7 @@ using QuanLyCotWeb.Services;
 using TemplateEngine.Docx;
 using System.IO;
 using System.Collections.Generic;
+using X.PagedList.Extensions;
 
 
 namespace QuanLyCotWeb.Controllers
@@ -114,7 +115,8 @@ namespace QuanLyCotWeb.Controllers
             int pageSize = 20;
             int pageNumber = page ?? 1;
 
-            return View(await danhSach.ToPagedListAsync(pageNumber, pageSize));
+            return View(danhSach.ToPagedList(pageNumber, pageSize));
+
         }
 
 

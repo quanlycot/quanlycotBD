@@ -1,6 +1,5 @@
 ﻿@using X.PagedList
 @using X.PagedList.Mvc.Core
-@using X.PagedList.Mvc.Core.Common
 @model X.PagedList.IPagedList<QuanLyCotWeb.Models.Cot>
 
 @{
@@ -27,14 +26,22 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <form asp-action="Index" method="get" class="d-flex flex-grow-1 me-3">
+    <form asp-action="Index" method="get" class="d-flex mb-3">
         <input type="text" name="searchString"
                value="@Context.Request.Query["searchString"]"
                class="form-control me-2"
-               placeholder="Nhập ID hoặc tên hoặc họ tên cần tìm"
-               style="flex: 1;" />
+               placeholder="Nhập ID, họ tên, pháp danh"
+               style="flex: 1; min-width: 300px;" />
+
+        <input type="number" name="namKetThuc"
+               value="@Context.Request.Query["namKetThuc"]"
+               class="form-control me-2"
+               placeholder="Năm kết thúc" />
+
         <button type="submit" class="btn btn-primary">Tìm kiếm</button>
     </form>
+   
+
 </div>
 
 <!-- Nhóm nút xuất dữ liệu -->
@@ -48,6 +55,15 @@
     <form asp-action="XuatViTri" method="get" class="d-inline">
         <button type="submit" class="btn btn-warning">Xuất Vị Trí</button>
     </form>
+    @if (Model != null && Model.Any())
+    {
+        <a class="btn btn-success ms-2"
+           asp-action="XuatKetQua"
+           asp-route-searchString="@Context.Request.Query["searchString"]"
+           asp-route-namKetThuc="@Context.Request.Query["namKetThuc"]">
+            Xuất Thông Báo
+        </a>
+    }
 </div>
 
 
@@ -127,7 +143,13 @@
 </div>
 
 <div class="d-flex justify-content-center">
-    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, highlight = highlightId, searchString=Context.Request.Query["searchString"] }), new PagedListRenderOptions
+    @Html.PagedListPager(Model, page => Url.Action("Index", new
+        {
+            page,
+            highlight = highlightId,
+            searchString = Context.Request.Query["searchString"],
+            namKetThuc = Context.Request.Query["namKetThuc"]
+        }), new PagedListRenderOptions
 {
     MaximumPageNumbersToDisplay = 5,
     LiElementClasses = new[] { "page-item" },
@@ -135,6 +157,7 @@
     UlElementClasses = new[] { "pagination justify-content-center" }
 })
 </div>
+
 <script>
     const highlight = '@highlightId';
     if (highlight) {

@@ -10,6 +10,7 @@ using QuanLyCotWeb.Models;
 using X.PagedList;
 using ClosedXML.Excel;
 using System.IO;
+using X.PagedList.Extensions;
 
 namespace QuanLyCotWeb.Controllers
 {
@@ -56,10 +57,12 @@ namespace QuanLyCotWeb.Controllers
                     x.HoTenCotKhongDau.Contains(keyword));
             }
 
-            var ds = await query
-                .OrderBy(x => x.IDRut)
-    .            ToPagedListAsync(pageNumber, pageSize);
+            var ds = query
+                 .OrderBy(x => x.IDRut)
+    .             ToPagedList(pageNumber, pageSize);
+
             return View(ds);
+
         }
 
         public IActionResult ExportExcel(string search)

@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using ClosedXML.Excel;
 using QuanLyCotWeb.Services;
+using X.PagedList.Extensions;
 
 
 namespace QuanLyCotWeb.Controllers
@@ -24,7 +25,7 @@ namespace QuanLyCotWeb.Controllers
 
 
         // GET: Cots
-        public async Task<IActionResult> Index(string searchString, int? page)
+        public IActionResult Index(string searchString, int? namKetThuc, int? page)
         {
             int pageSize = 20;
             int pageNumber = page ?? 1;
@@ -53,9 +54,14 @@ namespace QuanLyCotWeb.Controllers
                 }
             }
 
+            if (namKetThuc.HasValue)
+            {
+                danhSach = danhSach.Where(c => c.NgayKetThuc != null && c.NgayKetThuc.Value.Year <= namKetThuc.Value);
+            }
 
-            return View(await danhSach.ToPagedListAsync(pageNumber, pageSize));
+            return View(danhSach.ToPagedList(pageNumber, pageSize));
         }
+
 
         private readonly IWebHostEnvironment _hostEnvironment;
         private readonly BlobService _blobService;
@@ -300,6 +306,79 @@ namespace QuanLyCotWeb.Controllers
             string fileName = $"ViTri_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
             return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
+        // xuat file cot ket thuc
+        public IActionResult XuatKetQua(string searchString, int? namKetThuc)
+        {
+            var danhSach = _context.Cots
+                .Include(c => c.IdViTriNavigation)
+                .Include(c => c.IdnguoiThanNavigation)  // Đảm bảo lấy thông tin người thân
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                if (int.TryParse(searchString, out int id))
+                {
+                    danhSach = danhSach.Where(c => c.Idcot == id);
+                }
+                else
+                {
+                    danhSach = danhSach.Where(c =>
+                        (c.Ho + " " + c.Ten).Contains(searchString) ||
+                        c.Ho.Contains(searchString) ||
+                        c.Ten.Contains(searchString) ||
+                        c.PhapDanh.Contains(searchString));
+                }
+            }
+
+            if (namKetThuc.HasValue)
+            {
+                danhSach = danhSach.Where(c => c.NgayKetThuc != null && c.NgayKetThuc.Value.Year <= namKetThuc.Value);
+            }
+
+            var ds = danhSach
+                .OrderBy(c => c.NgayKetThuc)
+                .AsNoTracking()
+                .Select(c => new
+                {
+                    IDNguoiThan = c.IdnguoiThan ?? 0,
+                    TenNguoiThan = (c.IdnguoiThanNavigation != null)
+                        ? (c.IdnguoiThanNavigation.Ho ?? "") + " " + (c.IdnguoiThanNavigation.Ten ?? "")
+                        : "",
+                    SDT = c.IdnguoiThanNavigation != null ? c.IdnguoiThanNavigation.SoDienThoai : "",
+                    DiaChi = c.IdnguoiThanNavigation != null ? c.IdnguoiThanNavigation.DiaChi : "",
+                    HoTenCot = (c.Ho ?? "") + " " + (c.Ten ?? ""),
+                    ViTri = (c.IdViTriNavigation.Lau ?? "") + " - " + (c.IdViTriNavigation.LoSo ?? ""),
+                    NgayKT = c.NgayKetThuc
+                })
+                .ToList();
+
+            using var workbook = new XLWorkbook();
+            var ws = workbook.Worksheets.Add("ThongBaoNguoiThan");
+            var header = new[] { "ID Người Thân", "Tên Người Thân", "SĐT", "Địa chỉ", "Họ tên cốt", "Vị trí", "Ngày kết thúc" };
+            for (int i = 0; i < header.Length; i++)
+            {
+                ws.Cell(1, i + 1).Value = header[i];
+            }
+
+            int row = 2;
+            foreach (var item in ds)
+            {
+                ws.Cell(row, 1).Value = item.IDNguoiThan;
+                ws.Cell(row, 2).Value = item.TenNguoiThan;
+                ws.Cell(row, 3).Value = item.SDT;
+                ws.Cell(row, 4).Value = item.DiaChi;
+                ws.Cell(row, 5).Value = item.HoTenCot;
+                ws.Cell(row, 6).Value = item.ViTri;
+                ws.Cell(row, 7).Value = item.NgayKT?.ToString("dd/MM/yyyy");
+                row++;
+            }
+
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            stream.Position = 0;
+            string fileName = $"ThongBaoNguoiThan_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+            return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
 
 
         // GET: Cots/Edit/5
@@ -450,6 +529,92 @@ namespace QuanLyCotWeb.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        public IActionResult LocTheoNamKetThuc(int? nam, int? page)
+        {
+            if (nam == null)
+            {
+                ViewBag.ThongBao = "Vui lòng nhập năm cần lọc.";
+                return View(new List<CotViewModel>().ToPagedList(1, 20));
+            }
+
+            var ds = _context.Cots
+                .Include(c => c.IdnguoiThanNavigation)
+                .Include(c => c.IdViTriNavigation)
+                .Where(c => c.NgayKetThuc != null && c.NgayKetThuc.Value.Year <= nam)
+                .Select(c => new CotViewModel
+                {
+                    IDNguoiThan = c.IdnguoiThan ?? 0,
+                    TenNguoiThan = (c.IdnguoiThanNavigation.Ho ?? "") + " " + (c.IdnguoiThanNavigation.Ten ?? ""),
+                    SDTNguoiThan = c.IdnguoiThanNavigation.SoDienThoai,
+                    DiaChiNguoiThan = c.IdnguoiThanNavigation.DiaChi,
+                    HoTenCot = (c.Ho ?? "") + " " + (c.Ten ?? ""),
+                    ViTri = (c.IdViTriNavigation.Lau ?? "") + " - " + (c.IdViTriNavigation.LoSo ?? ""),
+                    NgayKetThuc = c.NgayKetThuc
+                })
+                .OrderBy(c => c.NgayKetThuc)
+                .ToList();
+
+            int pageSize = 20;
+            int pageNumber = page ?? 1;
+
+            ViewBag.NamLoc = nam;
+
+            return View(ds.ToPagedList(pageNumber, pageSize));
+        }
+
+
+
+        public IActionResult XuatExcelLoc(int nam)
+        {
+            var ds = _context.Cots
+                .Include(c => c.IdnguoiThanNavigation)
+                .Include(c => c.IdViTriNavigation)
+                .Where(c => c.NgayKetThuc != null && c.NgayKetThuc.Value.Year <= nam)
+                .Select(c => new CotViewModel
+                {
+                    IDNguoiThan = c.IdnguoiThan ?? 0,
+                    TenNguoiThan = (c.IdnguoiThanNavigation.Ho ?? "") + " " + (c.IdnguoiThanNavigation.Ten ?? ""),
+                    SDTNguoiThan = c.IdnguoiThanNavigation.SoDienThoai,
+                    DiaChiNguoiThan = c.IdnguoiThanNavigation.DiaChi,
+                    HoTenCot = (c.Ho ?? "") + " " + (c.Ten ?? ""),
+                    ViTri = (c.IdViTriNavigation.Lau ?? "") + " - " + (c.IdViTriNavigation.LoSo ?? ""),
+                    NgayKetThuc = c.NgayKetThuc
+                })
+                .ToList();
+
+            using var workbook = new XLWorkbook();
+            var ws = workbook.Worksheets.Add("DanhSachCot");
+
+            // Tiêu đề
+            ws.Cell(1, 1).Value = "ID Người Thân";
+            ws.Cell(1, 2).Value = "Tên Người Thân";
+            ws.Cell(1, 3).Value = "SĐT";
+            ws.Cell(1, 4).Value = "Địa chỉ";
+            ws.Cell(1, 5).Value = "Họ tên cốt";
+            ws.Cell(1, 6).Value = "Vị trí";
+            ws.Cell(1, 7).Value = "Ngày kết thúc";
+
+            int row = 2;
+            foreach (var item in ds)
+            {
+                ws.Cell(row, 1).Value = item.IDNguoiThan;
+                ws.Cell(row, 2).Value = item.TenNguoiThan;
+                ws.Cell(row, 3).Value = item.SDTNguoiThan;
+                ws.Cell(row, 4).Value = item.DiaChiNguoiThan;
+                ws.Cell(row, 5).Value = item.HoTenCot;
+                ws.Cell(row, 6).Value = item.ViTri;
+                ws.Cell(row, 7).Value = item.NgayKetThuc?.ToString("dd/MM/yyyy");
+                row++;
+            }
+
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            stream.Position = 0;
+
+            string fileName = $"DanhSachCot_NamKetThuc_{nam}.xlsx";
+            return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
+
 
 
 

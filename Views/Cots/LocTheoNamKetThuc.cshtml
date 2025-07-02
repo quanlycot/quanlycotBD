@@ -1,0 +1,51 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<CotViewModel>
+
+<h2 class="text-center">Danh sách cốt có ngày kết thúc đến năm @ViewBag.NamLoc</h2>
+
+<form asp-action="LocTheoNamKetThuc" method="get" class="form-inline mb-3">
+    <input type="number" name="nam" value="@ViewBag.NamLoc" class="form-control mr-2" placeholder="Nhập năm" />
+    <button type="submit" class="btn btn-primary">Lọc</button>
+    @if (ViewBag.NamLoc != null)
+    {
+        <a class="btn btn-success ml-2" asp-action="XuatExcelLoc" asp-route-nam="@ViewBag.NamLoc">Xuất Excel</a>
+    }
+</form>
+
+@if (!string.IsNullOrEmpty(ViewBag.ThongBao))
+{
+    <div class="alert alert-warning">@ViewBag.ThongBao</div>
+}
+
+<table class="table table-bordered table-sm">
+    <thead>
+        <tr>
+            <th>ID Người Thân</th>
+            <th>Tên Người Thân</th>
+            <th>SĐT</th>
+            <th>Địa chỉ</th>
+            <th>Họ tên cốt</th>
+            <th>Vị trí</th>
+            <th>Ngày kết thúc</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.IDNguoiThan</td>
+                <td>@item.TenNguoiThan</td>
+                <td>@item.SDTNguoiThan</td>
+                <td>@item.DiaChiNguoiThan</td>
+                <td>@item.HoTenCot</td>
+                <td>@item.ViTri</td>
+                <td>@(item.NgayKetThuc?.ToString("dd/MM/yyyy"))</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="text-center">
+    @Html.PagedListPager(Model, page => Url.Action("LocTheoNamKetThuc", new { nam = ViewBag.NamLoc, page = page }))
+</div>
