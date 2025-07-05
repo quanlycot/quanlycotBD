@@ -124,13 +124,13 @@ namespace QuanLyCotWeb.Controllers
         }
 
         [HttpPost]
-        public IActionResult InGiayDangKyNhieuCot(List<int> selectedCotIds)
+        public IActionResult InGiayDangKyNhieuCot(List<int> selectedIds)
         {
-            if (selectedCotIds == null || selectedCotIds.Count == 0)
+            if (selectedIds == null || selectedIds.Count == 0)
                 return BadRequest("Không có cốt nào được chọn.");
 
             var danhSachCot = _context.Cots
-                .Where(c => selectedCotIds.Contains(c.Idcot))
+                .Where(c => selectedIds.Contains(c.Idcot))
                 .Include(c => c.IdnguoiThanNavigation)
                 .Include(c => c.IdViTriNavigation)
                     .ThenInclude(v => v.TinhTrangNavigation)

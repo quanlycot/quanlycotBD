@@ -10,14 +10,15 @@
 
 	<ItemGroup>
 		<PackageReference Include="Azure.Storage.Blobs" Version="12.24.0" />
-		<PackageReference Include="ClosedXML" Version="0.104.2" />
+		<PackageReference Include="ClosedXML" Version="0.95.4" />
+		<PackageReference Include="DocumentFormat.OpenXml" Version="2.19.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.11" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.11" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.11" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.4" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.4">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		<PrivateAssets>all</PrivateAssets>
+		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
 		<PackageReference Include="TemplateEngine.Docx" Version="1.1.5" />
@@ -25,7 +26,6 @@
 		<PackageReference Include="X.PagedList" Version="10.5.7" />
 		<PackageReference Include="X.PagedList.Mvc.Core" Version="10.5.7" />
 	</ItemGroup>
-
 	<ItemGroup>
     <Folder Include="Migrations\" />
     <Folder Include="wwwroot\images\" />

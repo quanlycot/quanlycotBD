@@ -10,8 +10,10 @@
 }
 else
 {
-    <form method="post" asp-action="XoaNhieuCot">
+    <form method="post" asp-action="XoaNhieuCot" asp-controller="NguoiThans">
+        @Html.AntiForgeryToken()
         <input type="hidden" name="idNguoiThan" value="@ViewBag.IdNguoiThan" />
+
         <table class="table table-bordered text-center">
             <thead class="table-dark">
                 <tr>
@@ -34,7 +36,7 @@ else
                 @foreach (var cot in Model)
                 {
                     <tr>
-                        <td><input type="checkbox" name="selectedCotIds" value="@cot.Idcot" /></td>
+                        <td><input type="checkbox" name="selectedIds" value="@cot.Idcot" /></td>
                         <td>@cot.Idcot</td>
                         <td>@cot.Ho</td>
                         <td>@cot.Ten</td>
@@ -57,11 +59,49 @@ else
             </tbody>
         </table>
         <div class="mt-3">
-            <button type="submit" class="btn btn-danger" formaction="/NguoiThans/XoaNhieuCot" onclick="return confirm('Bạn có chắc muốn xóa các cốt đã chọn không?')">Xóa các cốt đã chọn</button>
-            <button type="submit" class="btn btn-success ms-2" formaction="/NguoiThans/InGiayDangKyNhieuCot" formtarget="_blank">
-                <i class="bi bi-printer"></i> In Tất Cả
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa các cốt đã chọn không?')">Xóa các cốt đã chọn</button>
+        </div>
+    </form>
+
+    <form method="post" asp-action="InGiayDangKyNhieuCot" target="_blank" id="formIn">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="idNguoiThan" value="@ViewBag.IdNguoiThan" />
+        @* Sử dụng lại checkbox đã chọn: JS hỗ trợ copy qua form này *@
+        <div class="mt-2">
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-printer"></i> In các cốt đã chọn
             </button>
         </div>
     </form>
 }
 <a asp-action="Index" class="btn btn-secondary mt-2">Quay lại danh sách</a>
+
+@section Scripts {
+    <script>
+        function prepareFormIn() {
+            const form = document.getElementById("formIn");
+            form.addEventListener("submit", function (e) {
+                // Xóa hidden cũ
+                form.querySelectorAll("input[name='selectedIds']").forEach(i => i.remove());
+
+                // Tạo hidden input từ các checkbox đã chọn
+                document.querySelectorAll("input[name='selectedIds']:checked").forEach(cb => {
+                    const hidden = document.createElement("input");
+                    hidden.type = "hidden";
+                    hidden.name = "selectedIds";
+                    hidden.value = cb.value;
+                    form.appendChild(hidden);
+                });
+
+                if (form.querySelectorAll("input[name='selectedIds']").length === 0) {
+                    e.preventDefault();
+                    alert("Vui lòng chọn ít nhất 1 cốt để in!");
+                }
+            });
+        }
+
+        prepareFormIn();
+    </script>
+}
+
+
