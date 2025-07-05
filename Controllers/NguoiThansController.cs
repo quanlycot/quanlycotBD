@@ -14,8 +14,6 @@ using X.PagedList.Mvc.Core;
 using TemplateEngine.Docx;
 using System.IO;
 using System.Collections.Generic;
-using QuanLyCotWeb.Models;
-using TemplateEngine.Docx;
 using X.PagedList.Extensions;
 
 
