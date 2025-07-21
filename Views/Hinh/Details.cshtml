@@ -1,0 +1,110 @@
+﻿@model QuanLyCotWeb.Models.Hinh
+
+@{
+    ViewData["Title"] = "Chi tiết Hình Thờ";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Chi tiết Hình Thờ</h2>
+
+    <div class="row justify-content-center">
+        <!-- Cột ảnh -->
+        <div class="col-md-5 text-center">
+            <div class="position-relative" style="max-width: 300px; margin: auto;">
+                <!-- Ảnh nền -->
+                <img src="~/images/bg.jpg" alt="Nền" class="img-fluid w-100 rounded" />
+
+                <!-- Ảnh hình thờ -->
+                @if (!string.IsNullOrEmpty(Model.AnhHinh))
+                {
+                    <img src="@($"{Model.AnhHinh}?ver={Guid.NewGuid()}")"
+                         alt="Ảnh hình thờ"
+                         class="position-absolute top-50 start-50 translate-middle"
+                         style="width: 120px; height: 150px; object-fit: cover; border-radius: 6px; box-shadow: 0 0 10px rgba(0,0,0,0.3);" />
+                }
+            </div>
+        </div>
+
+        <!-- Cột thông tin -->
+        <div class="col-md-6">
+            <table class="table table-borderless">
+                <tbody>
+                    <tr>
+                        <th scope="row">ID Hình:</th>
+                        <td>@Model.IDHinh</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Họ và Tên:</th>
+                        <td>@($"{Model.Ho} {Model.Ten}".Trim())</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Pháp danh:</th>
+                        <td>@Model.PhapDanh</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Năm sinh:</th>
+                        <td>@Model.NamSinh</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Ngày mất (ÂL):</th>
+                        <td>@Model.NgayMatAL</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Ngày mất (DL):</th>
+                        <td>@Model.NgayMatDL?.ToString("dd/MM/yyyy")</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Tuổi:</th>
+                        <td>@Model.Tuoi</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Ngày bắt đầu:</th>
+                        <td>@Model.NgayBatDau?.ToString("dd/MM/yyyy")</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Ngày kết thúc:</th>
+                        <td>@Model.NgayKetThuc?.ToString("dd/MM/yyyy")</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Tủ - Dãy:</th>
+                        <td>
+                            @(Model.ViTri != null ? $"{Model.ViTri.Tu} - {Model.ViTri.Day}" : "Chưa có vị trí")
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Người thân:</th>
+                        <td>
+                            @if (Model.NguoiThan == null)
+                            {
+                                <span class="text-danger">Chưa có người thân</span>
+                            }
+                            else if (Model.NguoiThan.Ho == "trong" || Model.NguoiThan.Ten == "trong")
+                            {
+                                <span class="text-danger">Gia đình vui lòng liên hệ Chùa đăng ký lại thông tin</span>
+                            }
+                            else
+                            {
+                                @($"{Model.NguoiThan.Ho} {Model.NguoiThan.Ten}")
+                            }
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <a asp-controller="Hinh" asp-action="Index" class="btn btn-primary">Quay lại quản lý hình</a>
+        }
+        else
+        {
+            <div class="d-flex justify-content-center gap-3 my-4">
+                <a href="https://chuabuuda.org/vn/trang-chu.html" class="btn btn-secondary">Quay lại</a>
+                <a href="http://chuabuuda.org/vn/dat-mam-cung.html" class="btn btn-warning">Đặt Mâm Cúng</a>
+                <a href="https://chuabuuda.org/vn/dat-hoa.html" class="btn btn-success">Đặt Hoa - Gửi Hoa</a>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,44 @@
+﻿@model QuanLyCotWeb.Models.HT_NguoiThan
+
+@{
+    ViewData["Title"] = "Xóa người thân";
+}
+
+<h2 class="text-center mb-4 text-danger">XÓA NGƯỜI THÂN</h2>
+
+<h5 class="text-center">Bạn có chắc chắn muốn xóa người thân sau?</h5>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <dl class="row">
+            <dt class="col-sm-4">ID Người Thân</dt>
+            <dd class="col-sm-8">@Model.IDNguoiThan</dd>
+
+            <dt class="col-sm-4">Họ tên</dt>
+            <dd class="col-sm-8">@Model.Ho @Model.Ten</dd>
+
+            <dt class="col-sm-4">Pháp danh</dt>
+            <dd class="col-sm-8">@Model.PhapDanh</dd>
+
+            <dt class="col-sm-4">Năm sinh</dt>
+            <dd class="col-sm-8">@Model.NamSinh</dd>
+
+            <dt class="col-sm-4">CCCD</dt>
+            <dd class="col-sm-8">@Model.CCCD</dd>
+
+            <dt class="col-sm-4">Địa chỉ</dt>
+            <dd class="col-sm-8">@Model.DiaChi</dd>
+
+            <dt class="col-sm-4">Số điện thoại</dt>
+            <dd class="col-sm-8">@Model.SoDienThoai</dd>
+        </dl>
+
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="IDNguoiThan" />
+            <div class="text-center">
+                <button type="submit" class="btn btn-danger">Xóa</button>
+                <a asp-action="Index" class="btn btn-secondary ms-2">Hủy bỏ</a>
+            </div>
+        </form>
+    </div>
+</div>

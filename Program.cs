@@ -1,11 +1,14 @@
 ﻿using QuanLyCotWeb.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.FileProviders;
+using QuanLyCotWeb.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<BlobService>();
 builder.Services.AddSingleton<QuanLyCotWeb.Services.BlobService>();
 builder.Services.AddDbContext<QuanLyCotContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

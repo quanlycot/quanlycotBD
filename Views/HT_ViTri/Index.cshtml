@@ -1,0 +1,138 @@
+﻿@model X.PagedList.IPagedList<QuanLyCotWeb.Models.HT_ViTri>
+@using X.PagedList.Mvc.Core
+
+@{
+    ViewData["Title"] = "Danh sách Vị Trí Hình Thờ";
+
+    string? tuSearch = Context.Request.Query["tu"];
+    string? daySearch = Context.Request.Query["day"];
+
+    int highlightId = 0;
+    if (Context.Request.Query["highlight"].Count > 0)
+    {
+        int.TryParse(Context.Request.Query["highlight"], out highlightId);
+    }
+}
+
+<h2 class="text-center mb-4">Danh sách Vị Trí Hình Thờ</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success text-center">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <form asp-action="Index" method="get" class="d-flex flex-wrap gap-2">
+        <div class="col">
+            <input type="text" name="tu"
+                   value="@tuSearch"
+                   class="form-control"
+                   placeholder="Tủ (vd: A, B, C...)" />
+        </div>
+
+        <div class="col">
+            <input type="text" name="day"
+                   value="@daySearch"
+                   class="form-control"
+                   placeholder="Dãy (vd: A1, B1...)" />
+        </div>
+
+        <div class="col">
+            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+        </div>
+    </form>
+
+    <div>
+        <a asp-action="Create" class="btn btn-success">+ Thêm Vị Trí</a>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover">
+        <thead class="table-dark text-center">
+            <tr>
+                <th>ID Vị Trí</th>
+                <th>Tủ</th>
+                <th>Dãy</th>
+                <th>ID Hình</th>
+                <th>Họ tên Hình</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count > 0)
+            {
+                foreach (var item in Model)
+                {
+                    var hinh = item.HinhThos?.FirstOrDefault();
+
+                    <tr class="text-center align-middle @(item.IDViTri == highlightId ? "table-warning" : "")" id="vitri-@item.IDViTri">
+                        <td>@item.IDViTri</td>
+                        <td>@item.Tu</td>
+                        <td>@item.Day</td>
+                        <td>@hinh?.IDHinh</td>
+                        <td>@hinh?.Ho @hinh?.Ten</td>
+                        <td>
+                            <a asp-controller="Hinh"
+                               asp-action="CreateFromViTri"
+                               asp-route-idViTri="@item.IDViTri"
+                               class="btn btn-sm btn-warning">
+                                Cập Nhật
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.IDViTri" class="btn btn-sm btn-danger mb-1">Xóa</a>
+                            @if (hinh != null)
+                            {
+                                <a asp-controller="HT_ViTri"
+                                   asp-action="InGiayDangKyTheoHinh"
+                                   asp-route-idHinh="@hinh.IDHinh"
+                                   class="btn btn-success"
+                                   target="_blank">
+                                    In giấy
+                                </a>
+                            }
+
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center">Không có dữ liệu.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="text-end me-3 mb-2 text-muted">
+    Tổng cộng: @Model.TotalItemCount vị trí
+</div>
+
+<div class="d-flex justify-content-center">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new
+        {
+            page,
+            tu = tuSearch,
+            day = daySearch
+        }), new PagedListRenderOptions
+{
+    MaximumPageNumbersToDisplay = 5,
+    LiElementClasses = new[] { "page-item" },
+    PageClasses = new[] { "page-link" },
+    UlElementClasses = new[] { "pagination justify-content-center" }
+})
+</div>
+
+@section Scripts {
+    <script>
+        const target = document.getElementById("vitri-@highlightId");
+        if (target) {
+            setTimeout(() => {
+                target.scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 300);
+        }
+    </script>
+}

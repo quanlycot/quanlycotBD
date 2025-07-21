@@ -1,0 +1,72 @@
+﻿@model QuanLyCotWeb.Models.HT_NguoiThan
+
+@{
+    ViewData["Title"] = "Thêm Người Thân";
+}
+
+<h2 class="text-center mb-4">THÊM NGƯỜI THÂN</h2>
+
+<form asp-action="Create" method="post" id="nguoiThanForm">
+    <div class="form-group mb-3">
+        <label>ID Người Thân</label>
+        <input asp-for="IDNguoiThan" class="form-control" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label>Họ</label>
+        <input asp-for="Ho" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Tên</label>
+        <input asp-for="Ten" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Pháp danh</label>
+        <input asp-for="PhapDanh" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Năm sinh</label>
+        <input asp-for="NamSinh" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>CCCD</label>
+        <input asp-for="CCCD" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Ngày cấp</label>
+        <input asp-for="NgayCap" class="form-control" type="date" />
+    </div>
+    <div class="mb-3">
+        <label>Nơi cấp</label>
+        <input asp-for="NoiCap" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Địa chỉ</label>
+        <input asp-for="DiaChi" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Số điện thoại</label>
+        <input asp-for="SoDienThoai" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Ghi chú</label>
+        <input asp-for="GhiChu" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Lưu</button>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</form>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll("#nguoiThanForm input").forEach((input, index, inputs) => {
+            input.addEventListener("keypress", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    let next = inputs[index + 1];
+                    if (next) next.focus();
+                }
+            });
+        });
+    </script>
+}

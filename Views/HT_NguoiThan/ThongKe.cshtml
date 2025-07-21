@@ -1,0 +1,113 @@
+﻿@model List<QuanLyCotWeb.Models.Hinh>
+@{
+    ViewData["Title"] = "Thống kê Hình Thờ theo Người Thân";
+}
+<h2 class="text-center">Các Hình Thờ do người thân: @ViewBag.HoTen (ID: @ViewBag.IdNguoiThan) quản lý</h2>
+<h4 class="text-center text-muted">Số lượng hình: @ViewBag.SoLuongHinh</h4>
+
+@if (Model.Count == 0)
+{
+    <p class="text-center text-muted">Người thân này chưa quản lý hình thờ nào.</p>
+}
+else
+{
+    <form method="post" asp-action="XoaNhieuHinh" asp-controller="HT_NguoiThan">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="idNguoiThan" value="@ViewBag.IdNguoiThan" />
+
+        <table class="table table-bordered text-center align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Chọn</th>
+                    <th>ID</th>
+                    <th>Ảnh</th>
+                    <th>Họ</th>
+                    <th>Tên</th>
+                    <th>Pháp danh</th>
+                    <th>Năm sinh</th>
+                    <th>Ngày mất (AL)</th>
+                    <th>Ngày mất (DL)</th>
+                    <th>Tuổi</th>
+                    <th>Tủ</th>
+                    <th>Dãy</th>
+                    <th>Ngày KT</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var hinh in Model)
+                {
+                    <tr>
+                        <td><input type="checkbox" name="selectedIds" value="@hinh.IDHinh" /></td>
+                        <td>@hinh.IDHinh</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(hinh.AnhHinh))
+                            {
+                                <img src="@hinh.AnhHinh" style="width: 60px; height: 80px; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <span class="text-muted">Chưa có</span>
+                            }
+                        </td>
+                        <td>@hinh.Ho</td>
+                        <td>@hinh.Ten</td>
+                        <td>@hinh.PhapDanh</td>
+                        <td>@hinh.NamSinh</td>
+                        <td>@hinh.NgayMatAL</td>
+                        <td>@hinh.NgayMatDL?.ToString("dd/MM/yyyy")</td>
+                        <td>@hinh.Tuoi</td>
+                        <td>@hinh.ViTri?.Tu</td>
+                        <td>@hinh.ViTri?.Day</td>
+                        <td>@hinh.NgayKetThuc?.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <a asp-controller="Hinh" asp-action="Edit" asp-route-id="@hinh.IDHinh" class="btn btn-sm btn-warning">Sửa</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-danger"
+                    onclick="return confirm('Bạn có chắc chắn muốn xóa các hình đã chọn không?')">
+                Xóa các hình đã chọn
+            </button>
+
+            <button type="submit" form="formIn" class="btn btn-success">
+                <i class="bi bi-printer"></i> In các hình đã chọn
+            </button>
+        </div>
+    </form>
+
+    <form method="post" asp-action="InGiayDangKyNhieuHinh" asp-controller="HT_NguoiThan" id="formIn" target="_blank">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="idNguoiThan" value="@ViewBag.IdNguoiThan" />
+        @* Các ID sẽ được thêm qua JavaScript *@
+    </form>
+}
+<a asp-action="Index" class="btn btn-secondary mt-3">Quay lại danh sách</a>
+
+@section Scripts {
+    <script>
+        document.querySelector("#formIn").addEventListener("submit", function (e) {
+            const form = this;
+            // Xoá input cũ
+            form.querySelectorAll("input[name='selectedIds']").forEach(i => i.remove());
+
+            // Lấy checkbox đã chọn
+            document.querySelectorAll("input[name='selectedIds']:checked").forEach(cb => {
+                const hidden = document.createElement("input");
+                hidden.type = "hidden";
+                hidden.name = "selectedIds";
+                hidden.value = cb.value;
+                form.appendChild(hidden);
+            });
+
+            if (form.querySelectorAll("input[name='selectedIds']").length === 0) {
+                e.preventDefault();
+                alert("Vui lòng chọn ít nhất 1 hình để in!");
+            }
+        });
+    </script>
+}

@@ -16,7 +16,9 @@ namespace QuanLyCotWeb.Models
         public virtual DbSet<ViTri> ViTris { get; set; }
         public virtual DbSet<TinhTrang> TinhTrangs { get; set; }
         public DbSet<RutCot> RutCot { get; set; }
-
+        public DbSet<Hinh> HT_Hinh { get; set; }
+        public DbSet<HT_ViTri> HT_ViTri { get; set; } = default!;
+        public DbSet<HT_NguoiThan> HT_NguoiThan { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -77,6 +79,18 @@ namespace QuanLyCotWeb.Models
                 entity.Property(e => e.IdTinhTrang).HasColumnName("IDTinhTrang");
                 entity.Property(e => e.TenTinhTrang).HasMaxLength(100);
             });
+
+            modelBuilder.Entity<Hinh>()
+            .HasOne(h => h.ViTri)
+            .WithMany(v => v.HinhThos)
+            .HasForeignKey(h => h.IDViTri);
+
+
+            modelBuilder.Entity<Hinh>()
+            .HasOne(h => h.NguoiThan)
+            .WithMany()
+            .HasForeignKey(h => h.IDNguoiThan);
+
 
             // Bảng ViTri
             modelBuilder.Entity<ViTri>(entity =>

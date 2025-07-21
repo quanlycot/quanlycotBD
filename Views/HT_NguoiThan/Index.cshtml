@@ -1,6 +1,6 @@
 ﻿@using X.PagedList
 @using X.PagedList.Mvc.Core
-@model X.PagedList.IPagedList<QuanLyCotWeb.Models.NguoiThan>
+@model X.PagedList.IPagedList<QuanLyCotWeb.Models.HT_NguoiThan>
 
 @{
     int highlightId = -1;
@@ -62,26 +62,26 @@
             {
                 foreach (var item in Model)
                 {
-                    <tr class="@(item.IdnguoiThan == highlightId ? "table-warning" : "")" id="nt-@item.IdnguoiThan">
-                        <td>@item.IdnguoiThan</td>
+                    <tr class="@(item.IDNguoiThan == highlightId ? "table-warning" : "")" id="nt-@item.IDNguoiThan">
+                        <td>@item.IDNguoiThan</td>
                         <td>@item.Ho @item.Ten</td>
                         <td>@item.PhapDanh</td>
-                        <td class="text-nowrap">@item.NgaySinh</td>
-                        <td class="text-nowrap">@item.Cccd</td>
-                        <td class="text-nowrap">@item.NgayCap</td>
+                        <td class="text-nowrap">@item.NamSinh</td> <!-- nếu chỉ có năm thì giữ nguyên -->
+                        <td class="text-nowrap">@item.CCCD</td>
+                        <td class="text-nowrap">@item.NgayCap?.ToString("dd/MM/yyyy")</td>
                         <td>@item.NoiCap</td>
                         <td>@item.DiaChi</td>
                         <td class="text-nowrap">@item.SoDienThoai</td>
                         
                         <td class="text-center">
                             <div class="d-flex justify-content-center mb-1">
-                                <a asp-action="Edit" asp-route-id="@item.IdnguoiThan" class="btn btn-sm btn-warning me-1">Sửa</a>
-                                <form asp-action="Delete" asp-route-id="@item.IdnguoiThan" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa người thân này không?')">
+                                <a asp-action="Edit" asp-route-id="@item.IDNguoiThan" class="btn btn-sm btn-warning me-1">Sửa</a>
+                                <form asp-action="Delete" asp-route-id="@item.IDNguoiThan" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa người thân này không?')">
                                     <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
                                 </form>
                             </div>
                             <div class="text-center">
-                                <a asp-action="ThongKe" asp-route-id="@item.IdnguoiThan" class="btn btn-sm btn-info">Thống Kê</a>
+                                <a asp-action="ThongKe" asp-route-id="@item.IDNguoiThan" class="btn btn-sm btn-info">Thống Kê</a>
                             </div>
                         </td>
 

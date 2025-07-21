@@ -1,0 +1,137 @@
+﻿@model QuanLyCotWeb.Models.Hinh
+
+@{
+    ViewData["Title"] = "Thêm Hình Thờ từ Vị Trí";
+}
+
+<h2 class="text-center mb-4">Thêm Hình Thờ Từ Vị Trí</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <form asp-action="CreateFromViTri" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label asp-for="IDHinh" class="form-label">ID Hình</label>
+                    <input asp-for="IDHinh" class="form-control" readonly />
+                </div>
+                <div class="col">
+                    <label asp-for="IDNguoiThan" class="form-label">ID Người Thân</label>
+                    <input asp-for="IDNguoiThan" class="form-control" tabindex="1" />
+                </div>
+                <div class="col">
+                    <label asp-for="IDViTri" class="form-label">ID Vị Trí</label>
+                    <input asp-for="IDViTri" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label asp-for="Ho" class="form-label">Họ</label>
+                    <input asp-for="Ho" class="form-control" tabindex="2" />
+                    <span asp-validation-for="Ho" class="text-danger"></span>
+                </div>
+                <div class="col">
+                    <label asp-for="Ten" class="form-label">Tên</label>
+                    <input asp-for="Ten" class="form-control" tabindex="3" />
+                    <span asp-validation-for="Ten" class="text-danger"></span>
+                </div>
+                <div class="col">
+                    <label asp-for="PhapDanh" class="form-label">Pháp danh</label>
+                    <input asp-for="PhapDanh" class="form-control" tabindex="4" />
+                    <span asp-validation-for="PhapDanh" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label asp-for="NamSinh" class="form-label">Năm sinh</label>
+                    <input asp-for="NamSinh" class="form-control" tabindex="5" />
+                </div>
+                <div class="col">
+                    <label asp-for="Tuoi" class="form-label">Tuổi</label>
+                    <input asp-for="Tuoi" class="form-control" tabindex="6" />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label asp-for="NgayMatAL" class="form-label">Ngày mất (AL)</label>
+                    <input asp-for="NgayMatAL" class="form-control" tabindex="7" />
+                </div>
+                <div class="col">
+                    <label asp-for="NgayMatDL" class="form-label">Ngày mất (DL)</label>
+                    <input asp-for="NgayMatDL" type="date" class="form-control" tabindex="8" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="NgayBatDau"></label>
+                    <input asp-for="NgayBatDau" type="date" class="form-control"
+                           value="@(Model.NgayBatDau != null ? Convert.ToDateTime(Model.NgayBatDau).ToString("yyyy-MM-dd") : "")" />
+                    <span asp-validation-for="NgayBatDau" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="NgayKetThuc"></label>
+                    <input asp-for="NgayKetThuc" type="date" class="form-control"
+                           value="@(Model.NgayKetThuc != null ? Convert.ToDateTime(Model.NgayKetThuc).ToString("yyyy-MM-dd") : "")" />
+                    <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Tải ảnh hình thờ (nếu có)</label>
+                <input type="file" name="AnhHinhUpload" class="form-control" accept="image/*" tabindex="9" />
+                @if (!string.IsNullOrEmpty(Model.AnhHinh))
+                {
+                    <div class="mt-3">
+                        <label class="form-label">Ảnh hiện tại:</label><br />
+                        <img src="@($"{Model.AnhHinh}?ver={Guid.NewGuid()}")" alt="Ảnh hình thờ" width="120" height="150" style="object-fit: cover;" class="border rounded" />
+                    </div>
+                }
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary">Lưu</button>
+                <a asp-action="Index" asp-controller="HT_ViTri" class="btn btn-secondary ms-2">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        // Tự động tính ngày kết thúc
+        document.addEventListener("DOMContentLoaded", function () {
+            const ngayBatDau = document.getElementById("NgayBatDau");
+            const ngayKetThuc = document.getElementById("NgayKetThuc");
+
+            if (ngayBatDau && ngayKetThuc) {
+                ngayBatDau.addEventListener("change", function () {
+                    const startDate = new Date(ngayBatDau.value);
+                    if (!isNaN(startDate)) {
+                        const endDate = new Date(startDate);
+                        endDate.setFullYear(startDate.getFullYear() + 10);
+                        ngayKetThuc.value = endDate.toISOString().split('T')[0];
+                    }
+                });
+            }
+        });
+
+        // Nhấn Enter chuyển ô tiếp theo
+        document.querySelectorAll('input, select').forEach((el, i, arr) => {
+            el.addEventListener("keypress", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    const tabindex = parseInt(this.getAttribute("tabindex"));
+                    const next = document.querySelector('[tabindex="' + (tabindex + 1) + '"]');
+                    if (next) next.focus();
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,19 @@
+﻿@model QuanLyCotWeb.Models.Hinh
+
+@{
+    ViewData["Title"] = "Xoá Hình Thờ";
+}
+
+<h2 class="text-danger text-center">Bạn có chắc muốn xoá?</h2>
+
+<div class="alert alert-warning text-center">
+    <strong>@Model.Ho @Model.Ten</strong> - Pháp danh: <strong>@Model.PhapDanh</strong>
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="IDHinh" />
+    <div class="text-center">
+        <button type="submit" class="btn btn-danger">Xác nhận xoá</button>
+        <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+    </div>
+</form>

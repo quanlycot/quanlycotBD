@@ -38,7 +38,17 @@
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-controller="RutCots" asp-action="Index">Rút Cốt</a>
                             </li>
-
+                            <!-- Nhóm: Quản Lý Hình -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="quanlyhinhDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Quản Lý Hình
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="quanlyhinhDropdown">
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Hinh" asp-action="Index">Hình Thờ</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="HT_ViTri" asp-action="Index">Vị Trí (Hình)</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="HT_NguoiThan" asp-action="Index">Người Thân (Hình)</a></li>
+                                </ul>
+                            </li>
                         }
                     </ul>
                     <ul class="navbar-nav">

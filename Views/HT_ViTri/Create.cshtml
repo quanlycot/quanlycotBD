@@ -1,0 +1,52 @@
+﻿@model QuanLyCotWeb.Models.HT_ViTri
+
+@{
+    ViewData["Title"] = "Thêm vị trí mới";
+}
+
+<h2 class="text-center mb-4">Thêm Vị Trí Mới</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Tu" class="form-label">Tủ</label>
+                <input asp-for="Tu" class="form-control" tabindex="1" />
+                <span asp-validation-for="Tu" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Day" class="form-label">Dãy</label>
+                <input asp-for="Day" class="form-control" tabindex="2" />
+                <span asp-validation-for="Day" class="text-danger"></span>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary" tabindex="3">Lưu</button>
+                <a asp-action="Index" class="btn btn-secondary ms-2">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const inputs = document.querySelectorAll("input[tabindex]");
+
+            inputs.forEach((input, index) => {
+                input.addEventListener("keydown", function (e) {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        const next = inputs[index + 1];
+                        if (next) next.focus();
+                    }
+                });
+            });
+        });
+    </script>
+}

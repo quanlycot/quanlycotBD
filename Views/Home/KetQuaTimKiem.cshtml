@@ -1,4 +1,5 @@
-﻿@model IEnumerable<QuanLyCotWeb.Models.Cot>
+﻿@model X.PagedList.IPagedList<QuanLyCotWeb.Models.TimKiemViewModel>
+@using X.PagedList.Mvc.Core
 
 @{
     ViewData["Title"] = "Kết quả tìm kiếm";
@@ -15,9 +16,10 @@
     }
     else
     {
-        <table class="table table-bordered table-hover bg-white">
+        <table class="table table-bordered table-hover bg-white rounded">
             <thead class="table-dark text-center align-middle">
                 <tr>
+                    <th>Loại</th>
                     <th>Họ tên</th>
                     <th>Pháp danh</th>
                     <th>Năm sinh</th>
@@ -32,32 +34,47 @@
             <tbody>
                 @foreach (var item in Model)
                 {
-                    <tr class="text-center align-middle">
+                    var rowClass = item.Loai == "Cốt" ? "table-success" : "table-warning";
+                    <tr class="@rowClass text-center align-middle">
+                        <td><strong>@item.Loai</strong></td>
                         <td>@item.Ho @item.Ten</td>
                         <td>@item.PhapDanh</td>
                         <td>@item.NamSinh</td>
-                        <td>@item.MatDl</td>
+                        <td>@item.NgayMatDL?.ToString("dd/MM/yyyy")</td>
                         <td>@item.Tuoi</td>
-                        <td>@(item.IdViTriNavigation?.Lau ?? "") - @(item.IdViTriNavigation?.LoSo ?? "")</td>
-                        <td>@(item.IdnguoiThanNavigation?.Ho) @(item.IdnguoiThanNavigation?.Ten)</td>
+                        <td>@item.ViTriHienThi</td>
+                        <td>@item.TenNguoiThan</td>
                         <td>
-                            @if (!string.IsNullOrEmpty(item.HinhNguoiMat))
+                            @if (!string.IsNullOrEmpty(item.AnhUrl))
                             {
-
-                                <img src="@($"{item.HinhNguoiMat}?ver={Guid.NewGuid()}")"
+                                <img src="@($"{item.AnhUrl}?ver={Guid.NewGuid()}")"
                                      width="70" height="90"
                                      style="object-fit: cover; border-radius: 5px;" />
                             }
                         </td>
-
                         <td>
-                            <a href="@Url.Action("Details", "Cots", new { id = item.Idcot })" class="btn btn-sm btn-info text-white">
-                                Chi tiết
+                            <a href="@Url.Action("Details", item.Loai == "Cốt" ? "Cots" : "Hinh", new { id = item.ID })"
+                               class="btn btn-sm btn-info text-white">
+                                Thông tin người mất
                             </a>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
+
+        <div class="d-flex justify-content-center mt-4">
+            @Html.PagedListPager(Model, page => Url.Action("KetQuaTimKiem", new { ten = Context.Request.Query["ten"], page }),
+                     new PagedListRenderOptions
+        {
+            DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+            DisplayLinkToLastPage = PagedListDisplayMode.Always,
+            DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+            DisplayLinkToNextPage = PagedListDisplayMode.Always,
+            DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+            LiElementClasses = new[] { "page-item" },
+            PageClasses = new[] { "page-link" }
+        })
+        </div>
     }
 </div>
