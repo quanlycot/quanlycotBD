@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<BlobService>();
 builder.Services.AddSingleton<QuanLyCotWeb.Services.BlobService>();
+builder.Services.AddScoped<IBlobService, BlobService>();
 builder.Services.AddDbContext<QuanLyCotContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 

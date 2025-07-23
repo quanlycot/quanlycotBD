@@ -7,8 +7,8 @@
         public string Ho { get; set; } = "";
         public string Ten { get; set; } = "";
         public string? PhapDanh { get; set; }
-        public int? NamSinh { get; set; }
-        public DateTime? NgayMatDL { get; set; }
+        public string? NamSinh { get; set; }
+        public string? NgayMatDL { get; set; }
         public int? Tuoi { get; set; }
         public string? ViTriHienThi { get; set; } // VD: "Lầu 1 - Dãy A1" hoặc "Tủ A - Dãy A1"
         public string? TenNguoiThan { get; set; }

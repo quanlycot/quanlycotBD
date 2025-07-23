@@ -50,7 +50,7 @@ namespace QuanLyCotWeb.Controllers
                 new FieldContent("PhapDanhNT", hinh.NguoiThan?.PhapDanh ?? ""),
                 new FieldContent("NgaySinhNT", hinh.NguoiThan?.NamSinh?.ToString() ?? ""),
                 new FieldContent("CCCD", hinh.NguoiThan?.CCCD ?? ""),
-                new FieldContent("NgayCap", hinh.NguoiThan?.NgayCap?.ToString("dd/MM/yyyy") ?? ""),
+                new FieldContent("NgayCap", hinh.NguoiThan?.NgayCap ?? ""),
                 new FieldContent("NoiCap", hinh.NguoiThan?.NoiCap ?? ""),
                 new FieldContent("DiaChi", hinh.NguoiThan?.DiaChi ?? ""),
                 new FieldContent("SDT", hinh.NguoiThan?.SoDienThoai ?? ""),
@@ -112,16 +112,23 @@ namespace QuanLyCotWeb.Controllers
                 _context.Add(viTri);
                 await _context.SaveChangesAsync();
 
-                int viTriMoi = viTri.IDViTri;
-                int index = await _context.HT_ViTri.CountAsync(v => v.IDViTri < viTriMoi);
+                // 👉 Tính vị trí đúng theo thứ tự hiển thị
                 int pageSize = 20;
+                var danhSach = await _context.HT_ViTri
+                    .OrderBy(v => v.Tu)
+                    .ThenBy(v => v.Day)
+                    .ToListAsync();
+
+                int index = danhSach.FindIndex(v => v.IDViTri == viTri.IDViTri);
                 int page = (index / pageSize) + 1;
 
                 TempData["SuccessMessage"] = "Thêm vị trí thành công!";
-                return RedirectToAction("Index", new { page = page, highlight = viTriMoi });
+                return RedirectToAction("Index", new { page = page, highlight = viTri.IDViTri });
             }
+
             return View(viTri);
         }
+
 
         // GET: HT_ViTri/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -147,18 +154,28 @@ namespace QuanLyCotWeb.Controllers
                 {
                     _context.Update(viTri);
                     await _context.SaveChangesAsync();
+
+                    // 👉 Tính trang chứa vị trí đó
+                    int index = await _context.HT_ViTri
+                        .Where(v => v.IDViTri < viTri.IDViTri)
+                        .CountAsync();
+
+                    int pageSize = 20;
+                    int page = (index / pageSize) + 1;
+
+                    TempData["SuccessMessage"] = "Cập nhật vị trí thành công!";
+                    return RedirectToAction("Index", new { page = page, highlight = viTri.IDViTri });
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ViTriExists(viTri.IDViTri))
-                        return NotFound();
-                    else
-                        throw;
+                    if (!ViTriExists(viTri.IDViTri)) return NotFound();
+                    else throw;
                 }
-                return RedirectToAction(nameof(Index));
             }
+
             return View(viTri);
         }
+
 
         // GET: HT_ViTri/Delete/5
         public async Task<IActionResult> Delete(int? id)

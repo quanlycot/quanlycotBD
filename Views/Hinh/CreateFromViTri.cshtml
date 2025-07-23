@@ -48,6 +48,7 @@
                 <div class="col">
                     <label asp-for="NamSinh" class="form-label">Năm sinh</label>
                     <input asp-for="NamSinh" class="form-control" tabindex="5" />
+                    <span asp-validation-for="NamSinh" class="text-danger"></span>
                 </div>
                 <div class="col">
                     <label asp-for="Tuoi" class="form-label">Tuổi</label>
@@ -58,13 +59,16 @@
             <div class="row mb-3">
                 <div class="col">
                     <label asp-for="NgayMatAL" class="form-label">Ngày mất (AL)</label>
-                    <input asp-for="NgayMatAL" class="form-control" tabindex="7" />
+                    <input asp-for="NgayMatAL" class="form-control" type="text" tabindex="7" placeholder="Ví dụ: Mùng 1 tháng 7" />
+                    <span asp-validation-for="NgayMatAL" class="text-danger"></span>
                 </div>
                 <div class="col">
                     <label asp-for="NgayMatDL" class="form-label">Ngày mất (DL)</label>
-                    <input asp-for="NgayMatDL" type="date" class="form-control" tabindex="8" />
+                    <input asp-for="NgayMatDL" class="form-control" type="text" tabindex="8" placeholder="Ví dụ: 12/07/2025 hoặc 1993_Quý Dậu" />
+                    <span asp-validation-for="NgayMatDL" class="text-danger"></span>
                 </div>
             </div>
+
 
             <div class="row">
                 <div class="col-md-6 mb-3">
@@ -86,6 +90,7 @@
                 <input type="file" name="AnhHinhUpload" class="form-control" accept="image/*" tabindex="9" />
                 @if (!string.IsNullOrEmpty(Model.AnhHinh))
                 {
+                    <input type="hidden" asp-for="AnhHinh" />
                     <div class="mt-3">
                         <label class="form-label">Ảnh hiện tại:</label><br />
                         <img src="@($"{Model.AnhHinh}?ver={Guid.NewGuid()}")" alt="Ảnh hình thờ" width="120" height="150" style="object-fit: cover;" class="border rounded" />

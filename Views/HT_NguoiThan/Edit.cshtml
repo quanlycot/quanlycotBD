@@ -32,8 +32,10 @@
             <div class="row mb-3">
                 <div class="col">
                     <label asp-for="NamSinh" class="form-label">Năm sinh</label>
-                    <input asp-for="NamSinh" class="form-control" placeholder="Ví dụ: 1970" />
+                    <input asp-for="NamSinh" class="form-control" type="text" placeholder="Ví dụ: 1970 hoặc 1970_Canh Tuất" />
+                    <span asp-validation-for="NamSinh" class="text-danger"></span>
                 </div>
+
                 <div class="col">
                     <label asp-for="CCCD" class="form-label">CCCD</label>
                     <input asp-for="CCCD" class="form-control" />
@@ -43,7 +45,8 @@
             <div class="row mb-3">
                 <div class="col">
                     <label asp-for="NgayCap" class="form-label">Ngày cấp</label>
-                    <input asp-for="NgayCap" class="form-control" type="date" />
+                    <input asp-for="NgayCap" class="form-control" type="text" placeholder="Ví dụ: 12/03/2024 hoặc Quý Tỵ 2013" />
+                    <span asp-validation-for="NgayCap" class="text-danger"></span>
                 </div>
                 <div class="col">
                     <label asp-for="NoiCap" class="form-label">Nơi cấp</label>

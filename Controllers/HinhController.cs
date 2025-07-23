@@ -66,12 +66,9 @@ namespace QuanLyCotWeb.Controllers
             var viTri = await _context.HT_ViTri.FindAsync(idViTri);
             if (viTri == null) return NotFound();
 
-            // Tìm hình đang dùng vị trí này (nếu có)
             var hinh = await _context.HT_Hinh.FirstOrDefaultAsync(h => h.IDViTri == idViTri);
-
             if (hinh == null)
             {
-                // Nếu chưa có thì tạo hình mới
                 hinh = new Hinh
                 {
                     IDViTri = idViTri,
@@ -82,78 +79,77 @@ namespace QuanLyCotWeb.Controllers
 
             return View("CreateFromViTri", hinh);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateFromViTri(Hinh hinh, IFormFile? HinhAnhUpload)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View("CreateFromViTri", hinh);
+
+            var existing = await _context.HT_Hinh.FirstOrDefaultAsync(h => h.IDViTri == hinh.IDViTri);
+            string? oldAnh = hinh.AnhHinh; // giữ lại ảnh cũ nếu không có ảnh mới
+
+            if (existing != null)
             {
-                var existing = await _context.HT_Hinh.FirstOrDefaultAsync(h => h.IDViTri == hinh.IDViTri);
+                // Cập nhật hình đã có
+                existing.Ho = hinh.Ho;
+                existing.Ten = hinh.Ten;
+                existing.PhapDanh = hinh.PhapDanh;
+                existing.NamSinh = hinh.NamSinh;
+                existing.Tuoi = hinh.Tuoi;
+                existing.NgayBatDau = hinh.NgayBatDau;
+                existing.NgayKetThuc = hinh.NgayKetThuc;
+                existing.NgayMatAL = hinh.NgayMatAL;
+                existing.NgayMatDL = hinh.NgayMatDL;
+                existing.IDNguoiThan = hinh.IDNguoiThan;
 
-                if (existing != null)
+                if (HinhAnhUpload != null && HinhAnhUpload.Length > 0)
                 {
-                    // Cập nhật hình đã có
-                    existing.Ho = hinh.Ho;
-                    existing.Ten = hinh.Ten;
-                    existing.PhapDanh = hinh.PhapDanh;
-                    existing.NamSinh = hinh.NamSinh;
-                    existing.Tuoi = hinh.Tuoi;
-                    existing.NgayBatDau = hinh.NgayBatDau;
-                    existing.NgayKetThuc = hinh.NgayKetThuc;
-                    existing.NgayMatAL = hinh.NgayMatAL;
-                    existing.NgayMatDL = hinh.NgayMatDL;
-                    existing.IDNguoiThan = hinh.IDNguoiThan;
-
-                    if (HinhAnhUpload != null && HinhAnhUpload.Length > 0)
-                    {
-                        var fileName = $"HT{existing.IDHinh}.jpg";
-
-                        using (var stream = HinhAnhUpload.OpenReadStream())
-                        {
-                            var blobUrl = await _blobService.UploadAsync(stream, fileName);
-                            existing.AnhHinh = blobUrl;
-                        }
-                    }
-                    else
-                    {
-                        existing.AnhHinh = hinh.AnhHinh; // giữ lại ảnh cũ nếu không upload mới
-                    }
-
-
-                    _context.Update(existing);
-                    await _context.SaveChangesAsync();
+                    var fileName = $"HT{existing.IDHinh}.jpg";
+                    using var stream = HinhAnhUpload.OpenReadStream();
+                    var blobUrl = await _blobService.UploadAsync(stream, fileName);
+                    existing.AnhHinh = blobUrl;
                 }
                 else
                 {
-                    _context.HT_Hinh.Add(hinh);
-                    await _context.SaveChangesAsync(); // sinh IDHinh
-
-                    if (HinhAnhUpload != null && HinhAnhUpload.Length > 0)
-                    {
-                        var fileName = $"HT{hinh.IDHinh}.jpg";
-
-                        var blobUrl = await _blobService.UploadAsync(HinhAnhUpload.OpenReadStream(), fileName);
-                        hinh.AnhHinh = blobUrl;
-
-                        _context.Update(hinh);
-                        await _context.SaveChangesAsync();
-                    }
+                    existing.AnhHinh = oldAnh; // không đổi ảnh
                 }
 
-                TempData["SuccessMessage"] = "Lưu thông tin hình thờ thành công!";
+                _context.Update(existing);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                _context.HT_Hinh.Add(hinh);
+                await _context.SaveChangesAsync(); // tạo IDHinh
 
-                int index = await _context.HT_ViTri
-                    .Where(v => v.IDViTri < hinh.IDViTri)
-                    .CountAsync();
+                if (HinhAnhUpload != null && HinhAnhUpload.Length > 0)
+                {
+                    var fileName = $"HT{hinh.IDHinh}.jpg";
+                    using var stream = HinhAnhUpload.OpenReadStream();
+                    var blobUrl = await _blobService.UploadAsync(stream, fileName);
+                    hinh.AnhHinh = blobUrl;
 
-                int pageSize = 20;
-                int page = (index / pageSize) + 1;
-
-                return RedirectToAction("Index", "HT_ViTri", new { page = page, highlight = hinh.IDViTri });
+                    _context.Update(hinh);
+                    await _context.SaveChangesAsync();
+                }
             }
 
-            return View("CreateFromViTri", hinh);
+            TempData["SuccessMessage"] = "Lưu thông tin hình thờ thành công!";
+
+            int pageSize = 20;
+            var danhSach = await _context.HT_ViTri
+                .OrderBy(v => v.Tu)
+                .ThenBy(v => v.Day)
+                .ToListAsync();
+
+            int index = danhSach.FindIndex(v => v.IDViTri == hinh.IDViTri);
+            int page = (index / pageSize) + 1;
+
+            return RedirectToAction("Index", "HT_ViTri", new { page = page, highlight = hinh.IDViTri });
         }
+
 
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
@@ -214,7 +210,16 @@ namespace QuanLyCotWeb.Controllers
                     throw;
                 }
 
-                return RedirectToAction("Index");
+                // Tính thứ tự dòng để biết trang
+                int index = await _context.HT_Hinh
+                    .Where(h => h.IDHinh < hinh.IDHinh)
+                    .CountAsync();
+
+                int pageSize = 20;
+                int page = (index / pageSize) + 1;
+
+                return RedirectToAction("Index", new { page = page, highlight = hinh.IDHinh });
+
             }
 
             return View(hinh);

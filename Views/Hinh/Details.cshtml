@@ -7,26 +7,29 @@
 <div class="container mt-4">
     <h2 class="text-center mb-4">Chi tiết Hình Thờ</h2>
 
-    <div class="row justify-content-center">
-        <!-- Cột ảnh -->
-        <div class="col-md-5 text-center">
-            <div class="position-relative" style="max-width: 300px; margin: auto;">
-                <!-- Ảnh nền -->
-                <img src="~/images/bg.jpg" alt="Nền" class="img-fluid w-100 rounded" />
-
-                <!-- Ảnh hình thờ -->
+    <div class="row">
+        <!-- Ảnh bên trái -->
+        <div class="col-md-5 text-center mb-4">
+            <div class="position-relative mx-auto" style="max-width: 300px;">
+                <!-- Ảnh người mất -->
                 @if (!string.IsNullOrEmpty(Model.AnhHinh))
                 {
                     <img src="@($"{Model.AnhHinh}?ver={Guid.NewGuid()}")"
                          alt="Ảnh hình thờ"
-                         class="position-absolute top-50 start-50 translate-middle"
-                         style="width: 120px; height: 150px; object-fit: cover; border-radius: 6px; box-shadow: 0 0 10px rgba(0,0,0,0.3);" />
+                         class="img-fluid rounded"
+                         style="width: 100%; height: auto; object-fit: cover;" />
                 }
+
+                <!-- Ảnh nền PNG trong suốt (nằm trên) -->
+                <img src="~/images/NenHT.png"
+                     alt="Khung nền"
+                     class="position-absolute top-0 start-0"
+                     style="width: 100%; height: 100%; pointer-events: none;" />
             </div>
         </div>
 
-        <!-- Cột thông tin -->
-        <div class="col-md-6">
+        <!-- Thông tin bên phải -->
+        <div class="col-md-7">
             <table class="table table-borderless">
                 <tbody>
                     <tr>
@@ -51,7 +54,7 @@
                     </tr>
                     <tr>
                         <th scope="row">Ngày mất (DL):</th>
-                        <td>@Model.NgayMatDL?.ToString("dd/MM/yyyy")</td>
+                        <td>@Model.NgayMatDL</td>
                     </tr>
                     <tr>
                         <th scope="row">Tuổi:</th>
@@ -93,6 +96,7 @@
         </div>
     </div>
 
+    <!-- Nút quay lại -->
     <div class="text-center mt-4">
         @if (User.Identity.IsAuthenticated)
         {
@@ -100,7 +104,7 @@
         }
         else
         {
-            <div class="d-flex justify-content-center gap-3 my-4">
+            <div class="d-flex justify-content-center gap-3 my-4 flex-wrap">
                 <a href="https://chuabuuda.org/vn/trang-chu.html" class="btn btn-secondary">Quay lại</a>
                 <a href="http://chuabuuda.org/vn/dat-mam-cung.html" class="btn btn-warning">Đặt Mâm Cúng</a>
                 <a href="https://chuabuuda.org/vn/dat-hoa.html" class="btn btn-success">Đặt Hoa - Gửi Hoa</a>

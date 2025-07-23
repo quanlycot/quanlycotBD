@@ -12,10 +12,10 @@ namespace QuanLyCotWeb.Models
         public string? Ho { get; set; }
         public string? Ten { get; set; }
         public string? PhapDanh { get; set; }
-        public int? NamSinh { get; set; } // ✅ Đúng với kiểu int trong SQL Server
+        public string? NamSinh { get; set; } // ✅ Đúng với kiểu int trong SQL Server
 
         public string? NgayMatAL { get; set; }
-        public DateTime? NgayMatDL { get; set; }
+        public string? NgayMatDL { get; set; }
         public int? Tuoi { get; set; }
 
         public DateTime? NgayBatDau { get; set; }

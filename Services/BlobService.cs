@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace QuanLyCotWeb.Services
 {
-    public class BlobService
+    public class BlobService : IBlobService
+
     {
         private readonly string _connectionString;
         private readonly string _containerName;

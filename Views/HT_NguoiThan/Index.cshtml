@@ -68,7 +68,7 @@
                         <td>@item.PhapDanh</td>
                         <td class="text-nowrap">@item.NamSinh</td> <!-- nếu chỉ có năm thì giữ nguyên -->
                         <td class="text-nowrap">@item.CCCD</td>
-                        <td class="text-nowrap">@item.NgayCap?.ToString("dd/MM/yyyy")</td>
+                        <td class="text-nowrap">@item.NgayCap</td>
                         <td>@item.NoiCap</td>
                         <td>@item.DiaChi</td>
                         <td class="text-nowrap">@item.SoDienThoai</td>
@@ -123,7 +123,13 @@
             const highlight = url.searchParams.get("highlight");
             if (highlight) {
                 const row = document.getElementById("nt-" + highlight);
-                if (row) row.scrollIntoView({ behavior: "smooth", block: "center" });
+                    if (row) {
+                                row.scrollIntoView({ behavior: "smooth", block: "center" });
+                                row.classList.add("border", "border-danger");
+                                row.style.transition = "box-shadow 0.6s";
+                                row.style.boxShadow = "0 0 10px red";
+                              }
+
             }
         };
     </script>

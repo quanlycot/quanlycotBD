@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuanLyCotWeb.Models;
+using QuanLyCotWeb.Services;
 using TemplateEngine.Docx;
 using X.PagedList;
 using X.PagedList.Extensions;
@@ -13,10 +14,13 @@ namespace QuanLyCotWeb.Controllers
     {
         private readonly QuanLyCotContext _context;
 
-        public HT_NguoiThanController(QuanLyCotContext context)
+        private readonly IBlobService _blobService;
+        public HT_NguoiThanController(QuanLyCotContext context, IBlobService blobService)
         {
             _context = context;
+            _blobService = blobService; // 👈 gán giá trị
         }
+
         // In giấy đăng ký theo hình thờ
         [HttpPost]
         public IActionResult InGiayDangKyNhieuHinh(List<int> selectedIds)
@@ -49,7 +53,7 @@ namespace QuanLyCotWeb.Controllers
                 new FieldContent("PhapDanhNT", nguoiThan.PhapDanh ?? ""),
                 new FieldContent("NgaySinhNT", nguoiThan.NamSinh?.ToString() ?? ""),
                 new FieldContent("CCCD", nguoiThan.CCCD ?? ""),
-                new FieldContent("NgayCap", nguoiThan.NgayCap?.ToString("dd/MM/yyyy") ?? ""),
+                new FieldContent("NgayCap", nguoiThan.NgayCap ?? ""),
                 new FieldContent("NoiCap", nguoiThan.NoiCap ?? ""),
                 new FieldContent("DiaChi", nguoiThan.DiaChi ?? ""),
                 new FieldContent("SDT", nguoiThan.SoDienThoai ?? ""),
@@ -79,6 +83,8 @@ namespace QuanLyCotWeb.Controllers
             int pageNumber = page ?? 1;
 
             var danhSach = _context.HT_NguoiThan.AsQueryable();
+
+            searchString = searchString?.Trim();
 
             if (!string.IsNullOrEmpty(searchString))
             {
@@ -219,5 +225,52 @@ namespace QuanLyCotWeb.Controllers
 
             return View(danhSachHinh);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> XoaNhieuHinh(int idNguoiThan, List<int> selectedIds)
+        {
+            if (selectedIds != null && selectedIds.Count > 0)
+            {
+                foreach (int idHinh in selectedIds)
+                {
+                    var hinh = await _context.HT_Hinh.FindAsync(idHinh);
+                    if (hinh != null)
+                    {
+                        // Xóa ảnh trên Azure nếu có
+                        if (!string.IsNullOrEmpty(hinh.AnhHinh))
+                        {
+                            var fileName = Path.GetFileName(new Uri(hinh.AnhHinh).LocalPath);
+                            await _blobService.DeleteAsync(fileName);
+                        }
+
+                        // Xóa hình thờ
+                        _context.HT_Hinh.Remove(hinh);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Đã xóa các hình thờ được chọn và ảnh kèm theo (nếu có).";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Vui lòng chọn ít nhất một hình thờ để xóa.";
+            }
+
+            // Trở về đúng trang của Người Thân sau khi xóa
+            var danhSach = await _context.HT_NguoiThan.OrderBy(n => n.IDNguoiThan).ToListAsync();
+
+            var viTriTrongDanhSach = danhSach
+                .Select((nt, index) => new { nt.IDNguoiThan, Index = index })
+                .FirstOrDefault(x => x.IDNguoiThan == idNguoiThan);
+
+            int page = 1;
+            if (viTriTrongDanhSach != null)
+            {
+                page = (viTriTrongDanhSach.Index / 20) + 1;
+            }
+
+            return RedirectToAction("Index", "HT_NguoiThan", new { page = page, highlight = idNguoiThan });
+        }
+
     }
 }

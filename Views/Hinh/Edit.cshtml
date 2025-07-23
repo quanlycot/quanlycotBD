@@ -51,9 +51,10 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label asp-for="NamSinh"></label>
-                    <input asp-for="NamSinh" class="form-control" />
+                    <input asp-for="NamSinh" class="form-control" type="text" />
                     <span asp-validation-for="NamSinh" class="text-danger"></span>
                 </div>
+
                 <div class="col-md-6 mb-3">
                     <label asp-for="Tuoi"></label>
                     <input asp-for="Tuoi" class="form-control" />
@@ -69,7 +70,7 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <label asp-for="NgayMatDL"></label>
-                    <input asp-for="NgayMatDL" type="date" class="form-control" />
+                    <input asp-for="NgayMatDL" class="form-control" />
                     <span asp-validation-for="NgayMatDL" class="text-danger"></span>
                 </div>
             </div>

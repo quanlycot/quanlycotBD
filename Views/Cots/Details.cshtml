@@ -7,27 +7,29 @@
 <div class="container mt-4">
     <h2 class="text-center mb-4">Chi tiết Cốt</h2>
 
-    <div class="row justify-content-center">
-        <!-- Cột ảnh -->
-        <div class="col-md-5 text-center">
-            <div class="position-relative" style="max-width: 300px; margin: auto;">
-                <!-- Ảnh nền cố định -->
-                <img src="~/images/bg.jpg" alt="Nền" class="img-fluid w-100 rounded" />
-
-                <!-- Ảnh người mất từ Azure -->
+    <div class="row">
+        <!-- Cột ảnh bên trái -->
+        <div class="col-md-5 text-center mb-4">
+            <div class="position-relative mx-auto" style="max-width: 300px;">
+                <!-- Ảnh người mất (nằm dưới) -->
                 @if (!string.IsNullOrEmpty(Model.HinhNguoiMat))
                 {
                     <img src="@($"{Model.HinhNguoiMat}?ver={Guid.NewGuid()}")"
                          alt="Ảnh người mất"
-                         class="position-absolute top-50 start-50 translate-middle"
-                         style="width: 120px; height: 150px; object-fit: cover; border-radius: 6px; box-shadow: 0 0 10px rgba(0,0,0,0.3);" />
+                         class="img-fluid rounded"
+                         style="width: 100%; height: auto; object-fit: cover;" />
                 }
+
+                <!-- Ảnh nền PNG trong suốt (nằm trên) -->
+                <img src="~/images/Nen.PNG"
+                     alt="Khung nền"
+                     class="position-absolute top-0 start-0"
+                     style="width: 100%; height: 100%; pointer-events: none;" />
             </div>
         </div>
 
-
-        <!-- Cột thông tin -->
-        <div class="col-md-6">
+        <!-- Cột thông tin bên phải -->
+        <div class="col-md-7">
             <table class="table table-borderless">
                 <tbody>
                     <tr>
@@ -36,7 +38,7 @@
                     </tr>
                     <tr>
                         <th scope="row">Họ và Tên:</th>
-                        <td>@Model.Ho @Model.Ten</td>
+                        <td>@($"{Model.Ho} {Model.Ten}".Trim())</td>
                     </tr>
                     <tr>
                         <th scope="row">Pháp danh:</th>
@@ -66,7 +68,6 @@
                         <th scope="row">Ngày kết thúc:</th>
                         <td>@Model.NgayKetThuc?.ToString("dd/MM/yyyy")</td>
                     </tr>
-
                     <tr>
                         <th scope="row">Lầu - Lô Số:</th>
                         <td>@Model.IdViTriNavigation?.Lau - @Model.IdViTriNavigation?.LoSo</td>
@@ -88,13 +89,12 @@
                             }
                         </td>
                     </tr>
-
-
                 </tbody>
             </table>
         </div>
     </div>
 
+    <!-- Nút quay lại hoặc mâm cúng -->
     <div class="text-center mt-4">
         @if (User.Identity.IsAuthenticated)
         {
@@ -102,12 +102,11 @@
         }
         else
         {
-            <div class="d-flex justify-content-center gap-3 my-4">
+            <div class="d-flex justify-content-center gap-3 my-4 flex-wrap">
                 <a href="https://chuabuuda.org/vn/trang-chu.html" class="btn btn-secondary">Quay lại</a>
                 <a href="http://chuabuuda.org/vn/dat-mam-cung.html" class="btn btn-warning">Đặt Mâm Cúng</a>
                 <a href="https://chuabuuda.org/vn/dat-hoa.html" class="btn btn-success">Đặt Hoa - Gửi Hoa</a>
             </div>
         }
     </div>
-
 </div>
