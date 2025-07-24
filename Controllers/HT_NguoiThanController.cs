@@ -84,20 +84,20 @@ namespace QuanLyCotWeb.Controllers
 
             var danhSach = _context.HT_NguoiThan.AsQueryable();
 
-            searchString = searchString?.Trim();
-
             if (!string.IsNullOrEmpty(searchString))
             {
-                bool isId = int.TryParse(searchString, out int idValue);
+                searchString = searchString.Trim().ToLower();
 
                 danhSach = danhSach.Where(nt =>
-                    (isId && nt.IDNguoiThan == idValue) ||
-                    nt.Ho.Contains(searchString) ||
-                    nt.Ten.Contains(searchString) ||
-                    (nt.Ho + " " + nt.Ten).Contains(searchString));
+                    nt.IDNguoiThan.ToString().Contains(searchString) ||
+                    (!string.IsNullOrEmpty(nt.Ho) && nt.Ho.ToLower().Contains(searchString)) ||
+                    (!string.IsNullOrEmpty(nt.Ten) && nt.Ten.ToLower().Contains(searchString)) ||
+                    ((!string.IsNullOrEmpty(nt.Ho) && !string.IsNullOrEmpty(nt.Ten)) && (nt.Ho + " " + nt.Ten).ToLower().Contains(searchString))
+                );
             }
 
             var pagedList = danhSach.OrderBy(nt => nt.IDNguoiThan).ToPagedList(pageNumber, pageSize);
+
             return View(pagedList);
         }
 

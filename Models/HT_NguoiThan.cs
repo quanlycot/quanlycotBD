@@ -10,7 +10,7 @@ namespace QuanLyCotWeb.Models
         public string? Ho { get; set; }
         public string? Ten { get; set; }
         public string? PhapDanh { get; set; }
-        public int? NamSinh { get; set; }
+        public string? NamSinh { get; set; }
         public string? CCCD { get; set; }
         public string? NgayCap { get; set; }
         public string? NoiCap { get; set; }

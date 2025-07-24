@@ -7,58 +7,87 @@
 <h2 class="text-center mb-4">THÊM NGƯỜI THÂN</h2>
 
 <form asp-action="Create" method="post" id="nguoiThanForm">
+    <!-- Hiển thị lỗi tổng quát -->
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+    <!-- ID Người Thân: hiển thị + gửi ngầm -->
     <div class="form-group mb-3">
         <label>ID Người Thân</label>
-        <input asp-for="IDNguoiThan" class="form-control" readonly />
+        <input class="form-control" value="@Model.IDNguoiThan" readonly />
+        <input asp-for="IDNguoiThan" type="hidden" />
     </div>
 
     <div class="mb-3">
         <label>Họ</label>
         <input asp-for="Ho" class="form-control" />
+        <span asp-validation-for="Ho" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
         <label>Tên</label>
         <input asp-for="Ten" class="form-control" />
+        <span asp-validation-for="Ten" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
         <label>Pháp danh</label>
         <input asp-for="PhapDanh" class="form-control" />
+        <span asp-validation-for="PhapDanh" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
         <label>Năm sinh</label>
-        <input asp-for="NamSinh" class="form-control" type="text" placeholder="Ví dụ: 1990 hoặc 1/1/1990" />
+        <input asp-for="NamSinh" class="form-control" type="text" placeholder="Ví dụ: 1990 hoặc Quý Dậu" />
+        <span asp-validation-for="NamSinh" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
         <label>CCCD</label>
         <input asp-for="CCCD" class="form-control" />
+        <span asp-validation-for="CCCD" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
         <label>Ngày cấp</label>
         <input asp-for="NgayCap" class="form-control" type="text" placeholder="Ví dụ: 01/05/2010 hoặc 2025" />
+        <span asp-validation-for="NgayCap" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
         <label>Nơi cấp</label>
         <input asp-for="NoiCap" class="form-control" />
+        <span asp-validation-for="NoiCap" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
         <label>Địa chỉ</label>
         <input asp-for="DiaChi" class="form-control" />
+        <span asp-validation-for="DiaChi" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
         <label>Số điện thoại</label>
         <input asp-for="SoDienThoai" class="form-control" />
+        <span asp-validation-for="SoDienThoai" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
         <label>Ghi chú</label>
         <input asp-for="GhiChu" class="form-control" />
+        <span asp-validation-for="GhiChu" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-success">Lưu</button>
-    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+    <div class="text-center">
+        <button type="submit" class="btn btn-success">Lưu</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Quay lại</a>
+    </div>
 </form>
 
 @section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
     <script>
+        // Tự động nhảy ô nhập tiếp theo khi nhấn Enter
         document.querySelectorAll("#nguoiThanForm input").forEach((input, index, inputs) => {
             input.addEventListener("keypress", function (e) {
                 if (e.key === "Enter") {
