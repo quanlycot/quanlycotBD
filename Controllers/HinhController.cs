@@ -79,20 +79,18 @@ namespace QuanLyCotWeb.Controllers
 
             return View("CreateFromViTri", hinh);
         }
-
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]       
         public async Task<IActionResult> CreateFromViTri(Hinh hinh, IFormFile? HinhAnhUpload)
         {
             if (!ModelState.IsValid)
                 return View("CreateFromViTri", hinh);
 
             var existing = await _context.HT_Hinh.FirstOrDefaultAsync(h => h.IDViTri == hinh.IDViTri);
-            string? oldAnh = hinh.AnhHinh; // giữ lại ảnh cũ nếu không có ảnh mới
 
             if (existing != null)
             {
-                // Cập nhật hình đã có
+                // Cập nhật thông tin
                 existing.Ho = hinh.Ho;
                 existing.Ten = hinh.Ten;
                 existing.PhapDanh = hinh.PhapDanh;
@@ -104,16 +102,18 @@ namespace QuanLyCotWeb.Controllers
                 existing.NgayMatDL = hinh.NgayMatDL;
                 existing.IDNguoiThan = hinh.IDNguoiThan;
 
+                // Cập nhật ảnh giống như bên Edit
                 if (HinhAnhUpload != null && HinhAnhUpload.Length > 0)
                 {
                     var fileName = $"HT{existing.IDHinh}.jpg";
-                    using var stream = HinhAnhUpload.OpenReadStream();
-                    var blobUrl = await _blobService.UploadAsync(stream, fileName);
+                    var blobUrl = await _blobService.UploadAsync(HinhAnhUpload.OpenReadStream(), fileName);
                     existing.AnhHinh = blobUrl;
                 }
                 else
                 {
-                    existing.AnhHinh = oldAnh; // không đổi ảnh
+                    var old = await _context.HT_Hinh.AsNoTracking().FirstOrDefaultAsync(h => h.IDHinh == existing.IDHinh);
+                    if (old != null)
+                        existing.AnhHinh = old.AnhHinh;
                 }
 
                 _context.Update(existing);
@@ -122,13 +122,12 @@ namespace QuanLyCotWeb.Controllers
             else
             {
                 _context.HT_Hinh.Add(hinh);
-                await _context.SaveChangesAsync(); // tạo IDHinh
+                await _context.SaveChangesAsync(); // có IDHinh
 
                 if (HinhAnhUpload != null && HinhAnhUpload.Length > 0)
                 {
                     var fileName = $"HT{hinh.IDHinh}.jpg";
-                    using var stream = HinhAnhUpload.OpenReadStream();
-                    var blobUrl = await _blobService.UploadAsync(stream, fileName);
+                    var blobUrl = await _blobService.UploadAsync(HinhAnhUpload.OpenReadStream(), fileName);
                     hinh.AnhHinh = blobUrl;
 
                     _context.Update(hinh);
@@ -138,12 +137,9 @@ namespace QuanLyCotWeb.Controllers
 
             TempData["SuccessMessage"] = "Lưu thông tin hình thờ thành công!";
 
+            // Điều hướng về đúng trang và vị trí
             int pageSize = 20;
-            var danhSach = await _context.HT_ViTri
-                .OrderBy(v => v.Tu)
-                .ThenBy(v => v.Day)
-                .ToListAsync();
-
+            var danhSach = await _context.HT_ViTri.OrderBy(v => v.Tu).ThenBy(v => v.Day).ToListAsync();
             int index = danhSach.FindIndex(v => v.IDViTri == hinh.IDViTri);
             int page = (index / pageSize) + 1;
 

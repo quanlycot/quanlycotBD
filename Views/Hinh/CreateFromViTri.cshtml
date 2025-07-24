@@ -85,17 +85,19 @@
                 </div>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Tải ảnh hình thờ (nếu có)</label>
-                <input type="file" name="AnhHinhUpload" class="form-control" accept="image/*" tabindex="9" />
-                @if (!string.IsNullOrEmpty(Model.AnhHinh))
-                {
-                    <input type="hidden" asp-for="AnhHinh" />
-                    <div class="mt-3">
-                        <label class="form-label">Ảnh hiện tại:</label><br />
-                        <img src="@($"{Model.AnhHinh}?ver={Guid.NewGuid()}")" alt="Ảnh hình thờ" width="120" height="150" style="object-fit: cover;" class="border rounded" />
-                    </div>
-                }
+            @if (!string.IsNullOrEmpty(Model.AnhHinh))
+            {
+                <div class="mb-3">
+                    <label>Ảnh hiện tại:</label><br />
+                    <img src="@($"{Model.AnhHinh}?ver={Guid.NewGuid()}")"
+                         alt="Ảnh hiện tại"
+                         style="width: 120px; height: 150px; object-fit: cover;" class="border rounded" />
+                </div>
+            }
+
+            <div class="mb-4">
+                <label class="form-label">Tải ảnh mới (nếu muốn thay)</label>
+                <input type="file" name="HinhAnhUpload" class="form-control" accept="image/*" />
             </div>
 
             <div class="text-center mt-4">
