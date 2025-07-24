@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using QuanLyCotWeb.Helpers;
 using QuanLyCotWeb.Models;
 using QuanLyCotWeb.Services;
 using TemplateEngine.Docx;
@@ -82,23 +83,26 @@ namespace QuanLyCotWeb.Controllers
             int pageSize = 20;
             int pageNumber = page ?? 1;
 
-            var danhSach = _context.HT_NguoiThan.AsQueryable();
+            var danhSach = _context.HT_NguoiThan.ToList(); // chuyển sang bộ nhớ để dùng hàm C#
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                searchString = searchString.Trim().ToLower();
+                searchString = StringHelper.NormalizeString(searchString);
+
+                int idSearch;
+                bool isID = int.TryParse(searchString, out idSearch);
 
                 danhSach = danhSach.Where(nt =>
-                    nt.IDNguoiThan.ToString().Contains(searchString) ||
-                    (!string.IsNullOrEmpty(nt.Ho) && nt.Ho.ToLower().Contains(searchString)) ||
-                    (!string.IsNullOrEmpty(nt.Ten) && nt.Ten.ToLower().Contains(searchString)) ||
-                    ((!string.IsNullOrEmpty(nt.Ho) && !string.IsNullOrEmpty(nt.Ten)) && (nt.Ho + " " + nt.Ten).ToLower().Contains(searchString))
-                );
+                    (isID && nt.IDNguoiThan == idSearch) ||
+                    StringHelper.NormalizeString(nt.Ho ?? "").Contains(searchString) ||
+                    StringHelper.NormalizeString(nt.Ten ?? "").Contains(searchString) ||
+                    StringHelper.NormalizeString($"{nt.Ho} {nt.Ten}").Contains(searchString)
+                ).ToList();
             }
 
             var pagedList = danhSach.OrderBy(nt => nt.IDNguoiThan).ToPagedList(pageNumber, pageSize);
-
             return View(pagedList);
+
         }
 
         // GET: HT_NguoiThans/Create

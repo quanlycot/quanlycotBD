@@ -20,7 +20,11 @@ namespace QuanLyCotWeb.Helpers
                     sb.Append(c);
             }
 
-            return sb.ToString().Normalize(NormalizationForm.FormC).ToLower();
+            // Bỏ khoảng trắng thừa, chỉ giữ 1 khoảng trắng giữa các từ
+            string result = sb.ToString().Normalize(NormalizationForm.FormC).ToLower();
+            result = System.Text.RegularExpressions.Regex.Replace(result, @"\s+", " "); // bỏ khoảng trắng dư
+            return result.Trim();
         }
+
     }
 }
