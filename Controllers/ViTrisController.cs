@@ -87,7 +87,7 @@ namespace QuanLyCotWeb.Controllers
 
             return File(bytes,
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                $"DonDangKy_{cot.Idcot}.docx");
+                $"DonDangKy_{nguoiThan.IdnguoiThan}.docx");
         }
 
         // GET: ViTris

@@ -45,7 +45,7 @@ namespace QuanLyCotWeb.Controllers
             using var outputDoc = new TemplateProcessor(memStream).SetRemoveContentControls(true);
 
             var content = new Content(
-                new FieldContent("MaSoHoSo", hinh.IDHinh.ToString()),
+                new FieldContent("MaSoHoSo", hinh.IDNguoiThan.ToString()),
                 new FieldContent("HoTenNT", $"{hinh.NguoiThan?.Ho} {hinh.NguoiThan?.Ten}"),
                 new FieldContent("PhapDanhNT", hinh.NguoiThan?.PhapDanh ?? ""),
                 new FieldContent("NgaySinhNT", hinh.NguoiThan?.NamSinh?.ToString() ?? ""),
@@ -71,7 +71,7 @@ namespace QuanLyCotWeb.Controllers
 
             return File(memStream.ToArray(),
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                $"Giay_DK_Hinh_{hinh.IDHinh}.docx");
+                $"Giay_DK_Hinh_{hinh.IDNguoiThan}.docx");
         }
 
 
