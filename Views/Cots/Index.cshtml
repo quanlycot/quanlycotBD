@@ -105,14 +105,16 @@
                         <td>@item.MatDl</td>
                         <td>@item.Tuoi</td>
                         <td>
-                            @if (!string.IsNullOrEmpty(item.HinhNguoiMat))
-                            {
-                                <img src="@($"{item.HinhNguoiMat}?ver={Guid.NewGuid()}")"
-                                     alt="Ảnh người mất"
-                                     style="width:80px; height:100px; object-fit:cover;" />
+                            @{
+                                var anhNguoiMat = string.IsNullOrEmpty(item.HinhNguoiMat)
+                                ? Url.Content("~/images/anhcot.jpg")
+                                : item.HinhNguoiMat + "?ver=" + Guid.NewGuid();
                             }
-
+                            <img src="@anhNguoiMat"
+                                 alt="Ảnh người mất"
+                                 style="width:80px; height:100px; object-fit:cover;" />
                         </td>
+
                         <td>
                             @(item.IdViTriNavigation?.Lau ?? "") - @(item.IdViTriNavigation?.LoSo ?? "")
                         </td>

@@ -74,12 +74,11 @@
                         <td>@hinh.NgayMatDL</td>
                         <td>@hinh.Tuoi</td>
                         <td>
-                            @if (!string.IsNullOrEmpty(hinh.AnhHinh))
-                            {
-                                <img src="@($"{hinh.AnhHinh}?ver={Guid.NewGuid()}")"
-                                     alt="Ảnh hình thờ"
-                                     style="width:80px; height:100px; object-fit:cover;" />
-                            }
+                            <img src="@(!string.IsNullOrEmpty(hinh.AnhHinh)
+                                 ? $"{hinh.AnhHinh}?ver={Guid.NewGuid()}"
+                                 : Url.Content("~/images/Hinh.png"))"
+                                 alt="Ảnh hình thờ"
+                                 style="width:80px; height:100px; object-fit:cover;" />
                         </td>
                         <td>@($"{hinh.ViTri?.Tu} - {hinh.ViTri?.Day}".Trim(' ', '-'))</td>
                         <td>@hinh.NgayKetThuc?.ToString("dd/MM/yyyy")</td>

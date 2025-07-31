@@ -12,13 +12,14 @@
         <div class="col-md-5 text-center mb-4">
             <div class="position-relative mx-auto" style="max-width: 300px;">
                 <!-- Ảnh người mất -->
-                @if (!string.IsNullOrEmpty(Model.AnhHinh))
-                {
-                    <img src="@($"{Model.AnhHinh}?ver={Guid.NewGuid()}")"
+               
+                    <img src="@(!string.IsNullOrEmpty(Model.AnhHinh)
+                     ? $"{Model.AnhHinh}?ver={Guid.NewGuid()}"
+                     : Url.Content("~/images/Hinh.png"))"
                          alt="Ảnh hình thờ"
                          class="img-fluid rounded"
                          style="width: 100%; height: auto; object-fit: cover;" />
-                }
+                
 
                 <!-- Ảnh nền PNG trong suốt (nằm trên) -->
                 <img src="~/images/NenHT.png"
