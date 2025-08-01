@@ -119,7 +119,16 @@
                             @(item.IdViTriNavigation?.Lau ?? "") - @(item.IdViTriNavigation?.LoSo ?? "")
                         </td>
                         <td>@item.NgayKetThuc</td>
-                        <td>@item.IdnguoiThan</td>
+                        <td>
+                            <a asp-controller="NguoiThans"
+                               asp-action="ThongKe"
+                               asp-route-id="@item.IdnguoiThan"
+                               class="text-decoration-none"
+                               target="_blank">
+                                @item.IdnguoiThan
+                            </a>
+                        </td>
+
                         <td>
                             @if (User.IsInRole("Admin"))
                             {

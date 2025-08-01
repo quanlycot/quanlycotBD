@@ -45,13 +45,13 @@
                         <td>@item.ViTriHienThi</td>
                         <td>@item.TenNguoiThan</td>
                         <td>
-                            @if (!string.IsNullOrEmpty(item.AnhUrl))
-                            {
-                                <img src="@($"{item.AnhUrl}?ver={Guid.NewGuid()}")"
-                                     width="70" height="90"
-                                     style="object-fit: cover; border-radius: 5px;" />
-                            }
+                            <img src="@(!string.IsNullOrEmpty(item.AnhUrl)
+                                 ? $"{item.AnhUrl}?ver={Guid.NewGuid()}"
+                                 : Url.Content("~/images/Hinh.png"))"
+                                 width="70" height="90"
+                                 style="object-fit: cover; border-radius: 5px;" />
                         </td>
+
                         <td>
                             <a href="@Url.Action("Details", item.Loai == "Cốt" ? "Cots" : "Hinh", new { id = item.ID })"
                                class="btn btn-sm btn-info text-white">

@@ -82,7 +82,15 @@
                         </td>
                         <td>@($"{hinh.ViTri?.Tu} - {hinh.ViTri?.Day}".Trim(' ', '-'))</td>
                         <td>@hinh.NgayKetThuc?.ToString("dd/MM/yyyy")</td>
-                        <td>@hinh.IDNguoiThan</td>
+                        <td>
+                            <a asp-controller="HT_NguoiThan"
+                               asp-action="ThongKe"
+                               asp-route-id="@hinh.IDNguoiThan"
+                               class="text-decoration-none">
+                                @hinh.IDNguoiThan
+                            </a>
+                        </td>
+
                         <td>
                             @if (User.IsInRole("Admin"))
                             {
