@@ -105,8 +105,23 @@
                         <img src="@($"{Model.HinhNguoiMat}?ver={Guid.NewGuid()}")" alt="Ảnh người mất" width="120" height="150" style="object-fit: cover;" class="border rounded" />
                     </div>
                 }
+            </div>
+            <div class="mb-3">
+                <label asp-for="LinkAnh" class="form-label">
+                    Link hình ảnh / video tang lễ
+                </label>
 
+                <input asp-for="LinkAnh"
+                       class="form-control"
+                       type="url"
+                       placeholder="Dán link Flickr, Google Drive, OneDrive..."
+                       tabindex="12" />
 
+                <div class="form-text">
+                    Chỉ cần dán link album ảnh hoặc video tang lễ, không cần tải ảnh lên website.
+                </div>
+
+                <span asp-validation-for="LinkAnh" class="text-danger"></span>
             </div>
 
             <div class="text-center">

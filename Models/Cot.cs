@@ -38,6 +38,8 @@ public partial class Cot
 
     public string? HinhNguoiMat { get; set; }
 
+    public string? LinkAnh { get; set; }
+
     public int? IdviTri { get; set; }
 
     public int? IdnguoiThan { get; set; }

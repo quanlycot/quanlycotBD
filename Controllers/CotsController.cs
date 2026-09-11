@@ -210,6 +210,7 @@ namespace QuanLyCotWeb.Controllers
                     existingCot.NgayKetThuc = cot.NgayKetThuc;
                     existingCot.NamSinh = cot.NamSinh;
                     existingCot.IdnguoiThan = cot.IdnguoiThan;
+                    existingCot.LinkAnh = cot.LinkAnh;
 
                     // Nếu có ảnh mới thì upload lên Azure
                     if (HinhAnhUpload != null && HinhAnhUpload.Length > 0)
@@ -398,7 +399,7 @@ namespace QuanLyCotWeb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Idcot,Ho,Ten,PhapDanh,NamSinh,MatAl,MatDl,Tuoi,NgayBatDau,NgayKetThuc,HinhNguoiMat,IdviTri,IdnguoiThan")] Cot cot, IFormFile? HinhAnhUpload, int? idNguoiThan)
+        public async Task<IActionResult> Edit(int id, [Bind("Idcot,Ho,Ten,PhapDanh,NamSinh,MatAl,MatDl,Tuoi,NgayBatDau,NgayKetThuc,HinhNguoiMat,LinkAnh,IdviTri,IdnguoiThan")] Cot cot, IFormFile? HinhAnhUpload, int? idNguoiThan)
         {
             if (id != cot.Idcot)
                 return NotFound();

@@ -46,6 +46,7 @@ namespace QuanLyCotWeb.Models
                 entity.Property(e => e.MatAl).HasMaxLength(50).HasColumnName("MatAL");
                 entity.Property(e => e.MatDl).HasMaxLength(50).HasColumnName("MatDL");
                 entity.Property(e => e.HinhNguoiMat).HasMaxLength(100);
+                entity.Property(e => e.LinkAnh).HasMaxLength(2000);
                 entity.Property(e => e.IdviTri).HasColumnName("IDViTri");
                 entity.Property(e => e.IdnguoiThan).HasColumnName("IDNguoiThan");
             });
