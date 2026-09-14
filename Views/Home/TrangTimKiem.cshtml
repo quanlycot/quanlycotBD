@@ -21,7 +21,7 @@
         font-family: 'Merriweather', serif;
     }
 
-    /* ================= THIẾT KẾ TẦNG 1: BANNER 3 LỚP HOÀNG GIA ================= */
+    /* ================= 1. GIAO DIỆN MÁY TÍNH (GIỮ NGUYÊN BẢN CŨ 100%) ================= */
     .search-banner-container {
         position: relative;
         background: radial-gradient(circle at center, rgba(40, 30, 18, 0.92) 0%, rgba(18, 14, 10, 0.96) 80%);
@@ -35,7 +35,6 @@
         min-height: 380px;
     }
 
-    /* Lớp phủ ảnh trong suốt: Tượng Đức Địa Tạng, hoa sen và hoa văn mây */
     .banner-overlay-art {
         position: absolute;
         top: 0;
@@ -44,12 +43,11 @@
         height: 100%;
         background: url('/images/bg-search-banner.png?v=@DateTime.Now.Ticks') no-repeat center center;
         background-size: 100% 100%;
-        pointer-events: none; /* Không cản trở click chuột vào form */
+        pointer-events: none;
         z-index: 1;
         opacity: 0.95;
     }
 
-    /* Khung nội dung thao tác nổi lên trên cùng */
     .banner-interactive-content {
         position: relative;
         z-index: 2;
@@ -57,7 +55,6 @@
         margin: 0 auto;
     }
 
-    /* Chữ tiêu đề ánh kim */
     .banner-title-gold {
         font-family: 'Merriweather', serif;
         font-weight: 800;
@@ -76,7 +73,6 @@
         text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
     }
 
-    /* Bộ nút lọc danh mục hoàng gia */
     .filter-pills-bar {
         display: inline-flex;
         gap: 10px;
@@ -114,7 +110,6 @@
             box-shadow: 0 4px 15px rgba(217, 119, 6, 0.5);
         }
 
-    /* Thanh tìm kiếm hình viên thuốc mạ vàng */
     .search-input-capsule {
         background: #fdfaf3;
         border-radius: 9999px;
@@ -168,7 +163,7 @@
         text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
     }
 
-    /* ================= THIẾT KẾ THẺ CARD & PHÂN TRANG ================= */
+    /* Thẻ Card & Phân trang */
     .card-item {
         cursor: pointer;
         transition: transform 0.2s, box-shadow 0.2s;
@@ -207,6 +202,77 @@
 
     .page-item .page-link:hover:not(.active) {
         background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* ================= THIẾT KẾ GỌN GÀNG VỚI ẢNH 4:3 CHO ĐIỆN THOẠI ================= */
+    @@media (max-width: 767.98px) {
+        .search-banner-container {
+            padding: 16px 12px 14px 12px !important;
+            min-height: auto !important;
+            max-height: 320px !important; /* Giới hạn khung vừa vặn nửa màn hình dọc */
+            margin-bottom: 20px !important;
+            border-radius: 18px !important;
+        }
+        /* Nạp ảnh 4:3 mới cho điện thoại, chống lưu bộ nhớ đệm */
+        .banner-overlay-art {
+            background-image: url('/images/bg-search-banner-mobile.png?v=@DateTime.Now.Ticks') !important;
+            background-size: cover !important;
+            background-position: center center !important;
+            opacity: 0.45 !important; /* Làm mờ nhẹ nền để thanh nhập và nút bấm nổi bật */
+        }
+
+        .banner-title-gold {
+            font-size: 19px !important; /* Tiêu đề vừa đẹp 1 hàng */
+            letter-spacing: 0.5px !important;
+            margin-bottom: 2px !important;
+        }
+
+        .banner-quote {
+            font-size: 11.5px !important;
+            margin-bottom: 10px !important;
+            line-height: 1.3 !important;
+        }
+
+        .filter-pills-bar {
+            display: flex !important;
+            width: 100% !important;
+            max-width: 320px !important;
+            margin: 0 auto 10px auto !important;
+            padding: 2px !important;
+            gap: 4px !important;
+        }
+
+        .btn-pill-choice {
+            flex: 1 !important;
+            justify-content: center !important;
+            padding: 5px 2px !important;
+            font-size: 12px !important;
+            white-space: nowrap !important;
+        }
+
+        .search-input-capsule {
+            padding: 2px 2px 2px 10px !important;
+            max-width: 360px !important;
+            margin: 0 auto !important;
+        }
+
+            .search-input-capsule input {
+                font-size: 13px !important;
+                padding: 5px 4px !important;
+                min-width: 0 !important;
+            }
+
+        .btn-search-capsule {
+            padding: 6px 14px !important;
+            font-size: 12.5px !important;
+            flex-shrink: 0 !important;
+        }
+
+        .search-note {
+            font-size: 11px !important;
+            margin-top: 6px !important;
+            line-height: 1.3 !important;
+        }
     }
 </style>
 
@@ -314,7 +380,6 @@
                     var detailPath = isCot ? $"/Cots/Details/{item.ID}" : $"/Hinh/Details/{item.ID}";
 
                     <div class="col-12 col-md-6 col-lg-4">
-                        <!-- Bấm thẻ sẽ gọi hàm AJAX nạp trực tiếp file Details vào Tầng 3 -->
                         <div onclick="taiChiTietVaoTang3('@detailPath')"
                              class="card h-100 p-3 rounded-4 border-2 card-item d-block"
                              style="@(isCot ? "background: linear-gradient(135deg, rgba(69, 26, 3, 0.85), rgba(28, 25, 23, 0.95)); border-color: rgba(245, 158, 11, 0.65);"
@@ -357,7 +422,6 @@
                                 </div>
 
                                 <div class="d-flex align-items-center gap-2">
-                                    @* Nút xem ảnh trực tiếp trên Card nếu có LinkAnh *@
                                     @if (!string.IsNullOrWhiteSpace(item.LinkAnh))
                                     {
                                         <a href="@item.LinkAnh" target="_blank" rel="noopener noreferrer"
@@ -375,7 +439,7 @@
                 }
             </div>
 
-            <!-- PHÂN TRANG 20 MỤC/TRANG -->
+            <!-- PHÂN TRANG -->
             <div class="mt-5 d-flex justify-content-center">
                 @Html.PagedListPager(Model, page => Url.Action("TrangTimKiem", new { ten = tuKhoa, loai = loaiHienTai, page = page }),
                          new PagedListRenderOptions
@@ -393,7 +457,6 @@
 
         <!-- ================= TẦNG 3: NƠI HIỂN THỊ TRỰC TIẾP FILE DETAILS ================= -->
         <div id="khungChiTietHoSo" class="d-none mt-5">
-            <!-- Toàn bộ giao diện của Details.cshtml sẽ được tải nguyên vẹn vào đây -->
         </div>
 
     </div>
@@ -406,7 +469,6 @@
         khung.classList.remove('d-none');
         khung.scrollIntoView({ behavior: 'smooth' });
 
-        // Gửi Header XMLHttpRequest để Details.cshtml biết là tải vào Tầng 3
         fetch(url, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
