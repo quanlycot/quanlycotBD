@@ -1,0 +1,155 @@
+﻿@{
+    ViewData["Title"] = "Quản lý Chùa Bửu Đà";
+}
+
+<div class="container py-4">
+
+    <!-- Tiêu đề -->
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">QUẢN LÝ CHÙA BỬU ĐÀ</h2>
+        <p class="text-muted mb-0">
+            Hệ thống quản lý Cốt và Hình Thờ
+        </p>
+    </div>
+
+    <!-- Các chức năng -->
+    <div class="row g-4">
+
+        <!-- Quản lý Cốt -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <a asp-controller="Cots"
+               asp-action="Index"
+               class="text-decoration-none">
+
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center p-4">
+                        <div class="fs-1 mb-3">🏺</div>
+
+                        <h4 class="fw-bold text-dark">
+                            Quản lý Cốt
+                        </h4>
+
+                        <p class="text-muted mb-0">
+                            Thêm, sửa, xóa, tìm kiếm và quản lý vị trí Cốt
+                        </p>
+                    </div>
+                </div>
+
+            </a>
+        </div>
+
+        <!-- Quản lý Hình Thờ -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <a asp-controller="Hinh"
+               asp-action="Index"
+               class="text-decoration-none">
+
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center p-4">
+                        <div class="fs-1 mb-3">🖼️</div>
+
+                        <h4 class="fw-bold text-dark">
+                            Quản lý Hình Thờ
+                        </h4>
+
+                        <p class="text-muted mb-0">
+                            Quản lý thông tin, hình ảnh và vị trí Hình Thờ
+                        </p>
+                    </div>
+                </div>
+
+            </a>
+        </div>
+
+        <!-- Vị trí Cốt -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <a asp-controller="ViTris"
+               asp-action="Index"
+               class="text-decoration-none">
+
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center p-4">
+                        <div class="fs-1 mb-3">📍</div>
+
+                        <h4 class="fw-bold text-dark">
+                            Vị trí Cốt
+                        </h4>
+
+                        <p class="text-muted mb-0">
+                            Quản lý Lầu, Lô và tình trạng vị trí
+                        </p>
+                    </div>
+                </div>
+
+            </a>
+        </div>
+
+        <!-- Người thân -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <a href="#"
+               class="text-decoration-none">
+
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center p-4">
+                        <div class="fs-1 mb-3">👥</div>
+
+                        <h4 class="fw-bold text-dark">
+                            Người thân
+                        </h4>
+
+                        <p class="text-muted mb-0">
+                            Quản lý thông tin người thân
+                        </p>
+                    </div>
+                </div>
+
+            </a>
+        </div>
+
+        <!-- Rút Cốt -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <a asp-controller="RutCots"
+               asp-action="Index"
+               class="text-decoration-none">
+
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center p-4">
+                        <div class="fs-1 mb-3">📦</div>
+
+                        <h4 class="fw-bold text-dark">
+                            Quản lý Rút Cốt
+                        </h4>
+
+                        <p class="text-muted mb-0">
+                            Theo dõi các Cốt đã được rút khỏi chùa
+                        </p>
+                    </div>
+                </div>
+
+            </a>
+        </div>
+
+        <!-- Thống kê -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <a href="#"
+               class="text-decoration-none">
+
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center p-4">
+                        <div class="fs-1 mb-3">📊</div>
+
+                        <h4 class="fw-bold text-dark">
+                            Thống kê
+                        </h4>
+
+                        <p class="text-muted mb-0">
+                            Thống kê Cốt, Hình Thờ và vị trí
+                        </p>
+                    </div>
+                </div>
+
+            </a>
+        </div>
+
+    </div>
+</div>

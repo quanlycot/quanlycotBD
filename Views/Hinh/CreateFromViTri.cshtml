@@ -69,17 +69,16 @@
                 </div>
             </div>
 
-
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label asp-for="NgayBatDau"></label>
-                    <input asp-for="NgayBatDau" type="date" class="form-control"
+                    <label asp-for="NgayBatDau" class="form-label">Ngày bắt đầu</label>
+                    <input asp-for="NgayBatDau" id="NgayBatDau" type="date" class="form-control" tabindex="9"
                            value="@(Model.NgayBatDau != null ? Convert.ToDateTime(Model.NgayBatDau).ToString("yyyy-MM-dd") : "")" />
                     <span asp-validation-for="NgayBatDau" class="text-danger"></span>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label asp-for="NgayKetThuc"></label>
-                    <input asp-for="NgayKetThuc" type="date" class="form-control"
+                    <label asp-for="NgayKetThuc" class="form-label">Ngày kết thúc</label>
+                    <input asp-for="NgayKetThuc" id="NgayKetThuc" type="date" class="form-control" tabindex="10"
                            value="@(Model.NgayKetThuc != null ? Convert.ToDateTime(Model.NgayKetThuc).ToString("yyyy-MM-dd") : "")" />
                     <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
                 </div>
@@ -88,20 +87,36 @@
             @if (!string.IsNullOrEmpty(Model.AnhHinh))
             {
                 <div class="mb-3">
-                    <label>Ảnh hiện tại:</label><br />
+                    <label class="form-label">Ảnh hiện tại:</label><br />
                     <img src="@($"{Model.AnhHinh}?ver={Guid.NewGuid()}")"
                          alt="Ảnh hiện tại"
                          style="width: 120px; height: 150px; object-fit: cover;" class="border rounded" />
                 </div>
             }
 
-            <div class="mb-4">
+            <div class="mb-3">
                 <label class="form-label">Tải ảnh mới (nếu muốn thay)</label>
-                <input type="file" name="HinhAnhUpload" class="form-control" accept="image/*" />
+                <input type="file" name="HinhAnhUpload" class="form-control" accept="image/*" tabindex="11" />
+            </div>
+
+            <!-- BỔ SUNG Ô NHẬP LINK ẢNH / ALBUM MỞ RỘNG GIỐNG BÊN CỐT -->
+            <div class="mb-4">
+                <label asp-for="LinkAnh" class="form-label fw-bold text-primary">
+                    Link hình ảnh / video mở rộng
+                </label>
+                <input asp-for="LinkAnh"
+                       class="form-control"
+                       type="url"
+                       placeholder="Dán link Flickr, Google Drive, OneDrive..."
+                       tabindex="12" />
+                <div class="form-text">
+                    Chỉ cần dán link album ảnh ngoài nếu có, người xem có thể bấm vào để xem thêm hình ảnh.
+                </div>
+                <span asp-validation-for="LinkAnh" class="text-danger"></span>
             </div>
 
             <div class="text-center mt-4">
-                <button type="submit" class="btn btn-primary">Lưu</button>
+                <button type="submit" class="btn btn-primary px-4 fw-bold" tabindex="13">Lưu</button>
                 <a asp-action="Index" asp-controller="HT_ViTri" class="btn btn-secondary ms-2">Quay lại</a>
             </div>
         </form>
@@ -112,7 +127,7 @@
     @await Html.PartialAsync("_ValidationScriptsPartial")
 
     <script>
-        // Tự động tính ngày kết thúc
+        // Tự động tính ngày kết thúc (+10 năm)
         document.addEventListener("DOMContentLoaded", function () {
             const ngayBatDau = document.getElementById("NgayBatDau");
             const ngayKetThuc = document.getElementById("NgayKetThuc");
@@ -129,14 +144,16 @@
             }
         });
 
-        // Nhấn Enter chuyển ô tiếp theo
-        document.querySelectorAll('input, select').forEach((el, i, arr) => {
+        // Nhấn Enter chuyển sang ô có tabindex tiếp theo
+        document.querySelectorAll('input, select').forEach((el) => {
             el.addEventListener("keypress", function (e) {
                 if (e.key === "Enter") {
                     e.preventDefault();
                     const tabindex = parseInt(this.getAttribute("tabindex"));
-                    const next = document.querySelector('[tabindex="' + (tabindex + 1) + '"]');
-                    if (next) next.focus();
+                    if (!isNaN(tabindex)) {
+                        const next = document.querySelector('[tabindex="' + (tabindex + 1) + '"]');
+                        if (next) next.focus();
+                    }
                 }
             });
         });

@@ -1,115 +1,219 @@
 ﻿@model QuanLyCotWeb.Models.Hinh
 
 @{
-    ViewData["Title"] = "Chi tiết Hình Thờ";
+    ViewData["Title"] = "Chi tiết Hình Thờ - " + Model.Ho + " " + Model.Ten;
+    bool isAjax = Context.Request.Headers["X-Requested-With"] == "XMLHttpRequest";
+    Layout = isAjax ? null : "_Layout";
 }
 
-<div class="container mt-4">
-    <h2 class="text-center mb-4">Chi tiết Hình Thờ</h2>
+<style>
+    .bg-details-container {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.88)), url('/images/bg-cot.jpg');
+        background-size: cover;
+        background-position: center top;
+        background-attachment: fixed;
+        min-height: calc(100vh - 280px);
+        padding: 40px 15px 60px 15px;
+    }
 
-    <div class="row">
-        <!-- Ảnh bên trái -->
-        <div class="col-md-5 text-center mb-4">
-            <div class="position-relative mx-auto" style="max-width: 300px;">
-                <!-- Ảnh người mất -->
-               
-                    <img src="@(!string.IsNullOrEmpty(Model.AnhHinh)
-                     ? $"{Model.AnhHinh}?ver={Guid.NewGuid()}"
-                     : Url.Content("~/images/Hinh.png"))"
-                         alt="Ảnh hình thờ"
-                         class="img-fluid rounded"
-                         style="width: 100%; height: auto; object-fit: cover;" />
-                
+    .serif-title {
+        font-family: 'Merriweather', serif;
+    }
 
-                <!-- Ảnh nền PNG trong suốt (nằm trên) -->
-                <img src="~/images/NenHT.png"
-                     alt="Khung nền"
-                     class="position-absolute top-0 start-0"
-                     style="width: 100%; height: 100%; pointer-events: none;" />
+    .detail-card-hinh {
+        background: #0d0b09 !important;
+        border: 2px solid #059669;
+        border-radius: 24px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.95);
+        color: #ffffff;
+    }
+
+    /* Triệt tiêu hoàn toàn nền trắng của table */
+    .table-details-inner {
+        --bs-table-bg: transparent !important;
+        background-color: transparent !important;
+        color: #ffffff !important;
+        margin-bottom: 0;
+    }
+
+        .table-details-inner tbody,
+        .table-details-inner tr,
+        .table-details-inner th,
+        .table-details-inner td {
+            background-color: transparent !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .table-details-inner th {
+            color: #a8a29e !important;
+            font-weight: 500;
+            font-size: 14px;
+            width: 170px;
+            padding: 10px 8px;
+        }
+
+        .table-details-inner td {
+            color: #ffffff !important;
+            font-weight: 600;
+            font-size: 15px;
+            padding: 10px 8px;
+        }
+</style>
+
+<div class="@(isAjax ? "" : "bg-details-container")">
+    <div class="@(isAjax ? "" : "container")" style="max-width: 950px; margin: auto;">
+
+        <div class="card p-4 p-md-5 detail-card-hinh">
+
+            <!-- Tiêu đề hồ sơ -->
+            <div class="d-flex justify-content-between align-items-center border-bottom border-success pb-3 mb-4">
+                <h3 class="serif-title fw-bold text-success mb-0 fs-4">
+                    🖼️ HỒ SƠ LƯU TRỮ HÌNH THỜ
+                </h3>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-success text-white fw-bold px-3 py-2 rounded-pill">
+                        Mã hình: #@Model.IDHinh
+                    </span>
+                    @if (isAjax)
+                    {
+                        <button type="button" onclick="dongChiTietTang3()" class="btn btn-sm btn-dark text-stone-300 border border-secondary px-3 py-1">
+                            ✕ Đóng lại
+                        </button>
+                    }
+                </div>
             </div>
+
+            <div class="row g-4 align-items-start">
+
+                <!-- Cột ảnh: Lồng viền hoa văn NenHT.png -->
+                <div class="col-12 col-md-5 text-center">
+                    <div class="position-relative mx-auto rounded-3 overflow-hidden border border-secondary shadow-lg" style="max-width: 250px;">
+                        <img src="@(!string.IsNullOrEmpty(Model.AnhHinh)
+                                     ? $"{Model.AnhHinh}?ver={Guid.NewGuid()}"
+                                     : Url.Content("~/images/Hinh.png"))"
+                             alt="Ảnh hình thờ"
+                             class="img-fluid"
+                             style="width: 100%; height: auto; object-fit: cover; display: block;" />
+
+                        <img src="~/images/NenHT.png"
+                             alt="Khung hoa văn"
+                             class="position-absolute top-0 start-0"
+                             style="width: 100%; height: 100%; pointer-events: none;" />
+                    </div>
+
+                    <!-- NÚT XEM THÊM ẢNH (BỔ SUNG CHO HÌNH THỜ) -->
+                    @if (!string.IsNullOrWhiteSpace(Model.LinkAnh))
+                    {
+                        <div class="mt-3">
+                            <a href="@Model.LinkAnh" target="_blank" rel="noopener noreferrer"
+                               class="btn btn-primary btn-sm fw-bold px-4 py-2 rounded-3 shadow"
+                               style="background-color: #2563eb; border-color: #2563eb;">
+                                📷 Xem Thêm Ảnh
+                            </a>
+                        </div>
+                    }
+                </div>
+
+                <!-- Cột thông tin: Nền đen mun -->
+                <div class="col-12 col-md-7">
+                    <div class="p-3 rounded-3 border border-secondary-subtle" style="background-color: #14110e !important;">
+                        <table class="table table-borderless table-details-inner">
+                            <tbody>
+                                <tr>
+                                    <th>Họ và Tên:</th>
+                                    <td class="text-success text-uppercase fs-5 fw-bold">
+                                        @($"{Model.Ho} {Model.Ten}".Trim())
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Pháp danh:</th>
+                                    <td>@(!string.IsNullOrEmpty(Model.PhapDanh) ? Model.PhapDanh : "Chưa có")</td>
+                                </tr>
+                                <tr>
+                                    <th>Năm sinh:</th>
+                                    <td>@(Model.NamSinh ?? "---")</td>
+                                </tr>
+                                <tr>
+                                    <th>Ngày mất (ÂL):</th>
+                                    <td class="text-success-emphasis">@(Model.NgayMatAL ?? "---")</td>
+                                </tr>
+                                <tr>
+                                    <th>Ngày mất (DL):</th>
+                                    <td>@(Model.NgayMatDL ?? "---")</td>
+                                </tr>
+                                <tr>
+                                    <th>Hưởng thọ:</th>
+                                    <td>@(Model.Tuoi.HasValue ? $"{Model.Tuoi} tuổi" : "---")</td>
+                                </tr>
+                                <tr>
+                                    <th>Ngày bắt đầu:</th>
+                                    <td>@Model.NgayBatDau?.ToString("dd/MM/yyyy")</td>
+                                </tr>
+                                <tr>
+                                    <th>Ngày kết thúc:</th>
+                                    <td>@Model.NgayKetThuc?.ToString("dd/MM/yyyy")</td>
+                                </tr>
+                                <tr>
+                                    <th>Vị trí an vị:</th>
+                                    <td class="text-success fw-bold">
+                                        📍 @(Model.ViTri != null ? $"Tủ {Model.ViTri.Tu} - Dãy {Model.ViTri.Day}" : "Chưa có vị trí")
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Người thân:</th>
+                                    <td>
+                                        @if (Model.NguoiThan == null)
+                                        {
+                                            <span class="text-danger fw-semibold">Chưa có người thân</span>
+                                        }
+                                        else if (Model.NguoiThan.Ho == "trong" || Model.NguoiThan.Ten == "trong")
+                                        {
+                                            <span class="text-danger fw-semibold">Gia đình vui lòng liên hệ Chùa đăng ký lại thông tin</span>
+                                        }
+                                        else
+                                        {
+                                            <span>@($"{Model.NguoiThan.Ho} {Model.NguoiThan.Ten}".Trim())</span>
+                                        }
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Cụm nút nghiệp vụ: Bổ sung Zalo, Đặt Mâm Cúng, Đặt Hoa -->
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+                        @if (isAjax)
+                        {
+                            <button type="button" onclick="dongChiTietTang3()" class="btn btn-secondary px-4 fw-bold">
+                                Quay lại
+                            </button>
+                        }
+                        else
+                        {
+                            <a href="javascript:history.back()" class="btn btn-secondary px-4 fw-bold">
+                                Quay lại
+                            </a>
+                        }
+
+                        <a href="https://zalo.me/0703676073" target="_blank" rel="noopener noreferrer"
+                           class="btn fw-bold px-4 shadow text-white" style="background-color: #0068ff; border-color: #0068ff;">
+                            💬 Bổ Sung Thông Tin
+                        </a>
+
+                        <a href="http://chuabuuda.org/vn/dat-mam-cung.html" target="_blank"
+                           class="btn btn-warning text-dark px-4 fw-bold shadow" style="background-color: #f59e0b; border-color: #f59e0b;">
+                            Đặt Mâm Cúng
+                        </a>
+                        <a href="https://chuabuuda.org/vn/dat-hoa.html" target="_blank"
+                           class="btn btn-success px-4 fw-bold shadow" style="background-color: #10b981; border-color: #10b981;">
+                            Đặt Hoa - Gửi Hoa
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
 
-        <!-- Thông tin bên phải -->
-        <div class="col-md-7">
-            <table class="table table-borderless">
-                <tbody>
-                    <tr>
-                        <th scope="row">ID Hình:</th>
-                        <td>@Model.IDHinh</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Họ và Tên:</th>
-                        <td>@($"{Model.Ho} {Model.Ten}".Trim())</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Pháp danh:</th>
-                        <td>@Model.PhapDanh</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Năm sinh:</th>
-                        <td>@Model.NamSinh</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Ngày mất (ÂL):</th>
-                        <td>@Model.NgayMatAL</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Ngày mất (DL):</th>
-                        <td>@Model.NgayMatDL</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Tuổi:</th>
-                        <td>@Model.Tuoi</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Ngày bắt đầu:</th>
-                        <td>@Model.NgayBatDau?.ToString("dd/MM/yyyy")</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Ngày kết thúc:</th>
-                        <td>@Model.NgayKetThuc?.ToString("dd/MM/yyyy")</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Tủ - Dãy:</th>
-                        <td>
-                            @(Model.ViTri != null ? $"{Model.ViTri.Tu} - {Model.ViTri.Day}" : "Chưa có vị trí")
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Người thân:</th>
-                        <td>
-                            @if (Model.NguoiThan == null)
-                            {
-                                <span class="text-danger">Chưa có người thân</span>
-                            }
-                            else if (Model.NguoiThan.Ho == "trong" || Model.NguoiThan.Ten == "trong")
-                            {
-                                <span class="text-danger">Gia đình vui lòng liên hệ Chùa đăng ký lại thông tin</span>
-                            }
-                            else
-                            {
-                                @($"{Model.NguoiThan.Ho} {Model.NguoiThan.Ten}")
-                            }
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Nút quay lại -->
-    <div class="text-center mt-4">
-        @if (User.Identity.IsAuthenticated)
-        {
-            <a asp-controller="Hinh" asp-action="Index" class="btn btn-primary">Quay lại quản lý hình</a>
-        }
-        else
-        {
-            <div class="d-flex justify-content-center gap-3 my-4 flex-wrap">
-                <a href="https://chuabuuda.org/vn/trang-chu.html" class="btn btn-secondary">Quay lại</a>
-                <a href="http://chuabuuda.org/vn/dat-mam-cung.html" class="btn btn-warning">Đặt Mâm Cúng</a>
-                <a href="https://chuabuuda.org/vn/dat-hoa.html" class="btn btn-success">Đặt Hoa - Gửi Hoa</a>
-            </div>
-        }
     </div>
 </div>

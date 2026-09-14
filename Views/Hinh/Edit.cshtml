@@ -98,9 +98,24 @@
                 </div>
             }
 
-            <div class="mb-4">
+            <div class="mb-3">
                 <label class="form-label">Tải ảnh mới (nếu muốn thay)</label>
                 <input type="file" name="HinhAnhUpload" class="form-control" accept="image/*" />
+            </div>
+
+            <!-- Ô NHẬP LINK HÌNH ẢNH / ALBUM MỞ RỘNG -->
+            <div class="mb-4">
+                <label asp-for="LinkAnh" class="form-label fw-bold text-primary">
+                    Link hình ảnh / video mở rộng
+                </label>
+                <input asp-for="LinkAnh"
+                       class="form-control"
+                       type="url"
+                       placeholder="Dán link Flickr, Google Drive, OneDrive..." />
+                <div class="form-text">
+                    Dán đường dẫn album ảnh lưu trữ ngoài nếu có, người xem có thể bấm vào xem thêm hình ảnh.
+                </div>
+                <span asp-validation-for="LinkAnh" class="text-danger"></span>
             </div>
 
             <div class="text-center">

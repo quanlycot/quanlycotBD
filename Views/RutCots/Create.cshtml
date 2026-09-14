@@ -2,94 +2,160 @@
 
 @{
     ViewData["Title"] = "Thêm mới rút cốt";
-    // Lấy IDRut tiếp theo nếu có ViewBag.NextID
     var nextID = ViewBag.NextID as int?;
 }
 
-<h2 class="text-center mb-4">Thêm mới rút cốt</h2>
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <label asp-for="IDRut" class="form-label">Mã số hồ sơ</label>
-                    <input asp-for="IDRut" class="form-control" value="@nextID" readonly />
-                    <span asp-validation-for="IDRut" class="text-danger"></span>
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="HoNguoiRut" class="form-label"></label>
-                    <input asp-for="HoNguoiRut" class="form-control enter-next" />
-                    <span asp-validation-for="HoNguoiRut" class="text-danger"></span>
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="TenNguoiRut" class="form-label"></label>
-                    <input asp-for="TenNguoiRut" class="form-control enter-next" />
-                    <span asp-validation-for="TenNguoiRut" class="text-danger"></span>
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="NamSinhNguoiRut" class="form-label"></label>
-                    <input asp-for="NamSinhNguoiRut" class="form-control enter-next" />
-                    <span asp-validation-for="NamSinhNguoiRut" class="text-danger"></span>
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="CMND" class="form-label"></label>
-                    <input asp-for="CMND" class="form-control enter-next" />
-                    <span asp-validation-for="CMND" class="text-danger"></span>
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="NgayCap" class="form-label"></label>
-                    <input asp-for="NgayCap" class="form-control enter-next" />
-                    <span asp-validation-for="NgayCap" class="text-danger"></span>
-                </div>
-                <div class="col-md-6">
-                    <label asp-for="NoiCap" class="form-label"></label>
-                    <input asp-for="NoiCap" class="form-control enter-next" />
-                    <span asp-validation-for="NoiCap" class="text-danger"></span>
-                </div>
-                <div class="col-md-6">
-                    <label asp-for="DiaChi" class="form-label"></label>
-                    <input asp-for="DiaChi" class="form-control enter-next" />
-                    <span asp-validation-for="DiaChi" class="text-danger"></span>
-                </div>
-                <div class="col-md-6">
-                    <label asp-for="SDT" class="form-label"></label>
-                    <input asp-for="SDT" class="form-control enter-next" />
-                    <span asp-validation-for="SDT" class="text-danger"></span>
+<style>
+    .card-rutcot-form {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-title {
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #1e293b;
+        letter-spacing: 0.5px;
+        border-left: 4px solid #0d6efd;
+        padding-left: 10px;
+        margin-bottom: 16px;
+    }
+
+    .form-label-custom {
+        font-size: 13px;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 4px;
+    }
+
+    .input-custom {
+        border-color: #cbd5e1;
+        font-size: 14px;
+        border-radius: 8px;
+    }
+
+        .input-custom:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+        }
+</style>
+
+<div class="container py-4" style="max-width: 860px;">
+    <!-- Tiêu đề trang nhã -->
+    <div class="text-center mb-4">
+        <h4 class="fw-bold text-dark mb-1">TIẾP NHẬN HỒ SƠ RÚT CỐT</h4>
+        <small class="text-muted">Nhập thông tin người đại diện và vị trí cốt cần làm thủ tục</small>
+    </div>
+
+    <div class="card card-rutcot-form p-4">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small mb-3"></div>
+
+            <!-- PHẦN 1: THÔNG TIN NGƯỜI ĐẠI DIỆN RÚT CỐT -->
+            <div class="section-title">1. Thông tin người rút cốt</div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <label class="form-label form-label-custom">Mã số hồ sơ</label>
+                    <input asp-for="IDRut" class="form-control input-custom bg-light fw-bold text-primary" value="@nextID" readonly />
+                    <span asp-validation-for="IDRut" class="text-danger small"></span>
                 </div>
 
-                <div class="col-md-12">
-                    <label class="form-label">Thông tin cốt (Họ tên - Lô - Lầu)</label>
-                    <div class="row g-2">
-                        <div class="col-md-6">
-                            <textarea asp-for="HoTenCot" class="form-control allow-enter" rows="3"></textarea>
-                            <span asp-validation-for="HoTenCot" class="text-danger"></span>
-                        </div>
-                        <div class="col-md-3">
-                            <textarea asp-for="Lo" class="form-control allow-enter" rows="3"></textarea>
-                            <span asp-validation-for="Lo" class="text-danger"></span>
-                        </div>
-                        <div class="col-md-3">
-                            <textarea asp-for="Lau" class="form-control allow-enter" rows="3"></textarea>
-                            <span asp-validation-for="Lau" class="text-danger"></span>
-                        </div>
-                    </div>
+                <div class="col-md-4">
+                    <label class="form-label form-label-custom">Họ người rút <span class="text-danger">*</span></label>
+                    <input asp-for="HoNguoiRut" class="form-control input-custom enter-next" placeholder="Ví dụ: Nguyễn Văn" required autofocus />
+                    <span asp-validation-for="HoNguoiRut" class="text-danger small"></span>
                 </div>
 
-                <div class="col-md-6">
-                    <label asp-for="NgayRut" class="form-label"></label>
-                    <input asp-for="NgayRut" class="form-control enter-next" />
-                    <span asp-validation-for="NgayRut" class="text-danger"></span>
+                <div class="col-md-5">
+                    <label class="form-label form-label-custom">Tên người rút <span class="text-danger">*</span></label>
+                    <input asp-for="TenNguoiRut" class="form-control input-custom enter-next" placeholder="Ví dụ: An" required />
+                    <span asp-validation-for="TenNguoiRut" class="text-danger small"></span>
                 </div>
-                <div class="col-md-6">
-                    <label asp-for="LyDo" class="form-label"></label>
-                    <input asp-for="LyDo" class="form-control enter-next" />
-                    <span asp-validation-for="LyDo" class="text-danger"></span>
+
+                <div class="col-md-3">
+                    <label class="form-label form-label-custom">Năm sinh</label>
+                    <input asp-for="NamSinhNguoiRut" class="form-control input-custom enter-next" placeholder="Ví dụ: 1980" />
+                    <span asp-validation-for="NamSinhNguoiRut" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label form-label-custom">Số CCCD / CMND</label>
+                    <input asp-for="CMND" class="form-control input-custom enter-next" placeholder="Số định danh/CCCD" />
+                    <span asp-validation-for="CMND" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-5">
+                    <label class="form-label form-label-custom">Số điện thoại liên hệ</label>
+                    <input asp-for="SDT" class="form-control input-custom enter-next" placeholder="Ví dụ: 0918..." />
+                    <span asp-validation-for="SDT" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label form-label-custom">Ngày cấp CCCD</label>
+                    <input asp-for="NgayCap" class="form-control input-custom enter-next" placeholder="Ví dụ: 12/05/2021" />
+                    <span asp-validation-for="NgayCap" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-8">
+                    <label class="form-label form-label-custom">Nơi cấp</label>
+                    <input asp-for="NoiCap" class="form-control input-custom enter-next" placeholder="Ví dụ: Cục Cảnh sát QLHC về TTXH" />
+                    <span asp-validation-for="NoiCap" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label form-label-custom">Địa chỉ thường trú / liên hệ</label>
+                    <input asp-for="DiaChi" class="form-control input-custom enter-next" placeholder="Số nhà, tên đường, phường/xã, quận/huyện..." />
+                    <span asp-validation-for="DiaChi" class="text-danger small"></span>
                 </div>
             </div>
-            <div class="text-end mt-4">
-                <input type="submit" value="Lưu" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary ms-2">Quay lại</a>
+
+            <!-- PHẦN 2: THÔNG TIN CỐT & THỦ TỤC RÚT -->
+            <div class="section-title">2. Thông tin cốt & vị trí an vị</div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label form-label-custom">Họ tên cốt cần rút (nhập mỗi người một dòng)</label>
+                    <textarea asp-for="HoTenCot" class="form-control input-custom allow-enter" rows="3" placeholder="Nhập họ tên cốt..."></textarea>
+                    <span asp-validation-for="HoTenCot" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label form-label-custom">Lô số</label>
+                    <textarea asp-for="Lo" class="form-control input-custom allow-enter" rows="3" placeholder="Ví dụ: R38..."></textarea>
+                    <span asp-validation-for="Lo" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label form-label-custom">Lầu</label>
+                    <textarea asp-for="Lau" class="form-control input-custom allow-enter" rows="3" placeholder="Ví dụ: 1..."></textarea>
+                    <span asp-validation-for="Lau" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label form-label-custom">Ngày thực hiện rút</label>
+                    <input asp-for="NgayRut" class="form-control input-custom enter-next" value="@DateTime.Today.ToString("dd/MM/yyyy")" placeholder="dd/MM/yyyy" />
+                    <span asp-validation-for="NgayRut" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-8">
+                    <label class="form-label form-label-custom">Lý do rút</label>
+                    <input asp-for="LyDo" class="form-control input-custom enter-next" placeholder="Ví dụ: Chuyển về quê an táng, rải tro biển..." />
+                    <span asp-validation-for="LyDo" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <!-- CỤM NÚT ĐIỀU HƯỚNG -->
+            <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                <a asp-action="Index" class="btn btn-light border px-4 fw-semibold text-secondary">
+                    Quay lại
+                </a>
+                <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm">
+                    💾 Lưu hồ sơ
+                </button>
             </div>
         </form>
     </div>
@@ -100,8 +166,8 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        // Di chuyển qua các ô input khi nhấn Enter (trừ textarea nhập nhiều dòng)
-        const inputs = document.querySelectorAll('.enter-next');
+        // Nhấn phím Enter để chuyển tiếp sang ô tiếp theo (bỏ qua textarea nhiều dòng)
+        const inputs = Array.from(document.querySelectorAll('.enter-next'));
         inputs.forEach((el, idx) => {
             el.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') {

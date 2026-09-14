@@ -13,5 +13,6 @@
         public string? ViTriHienThi { get; set; } // VD: "Lầu 1 - Dãy A1" hoặc "Tủ A - Dãy A1"
         public string? TenNguoiThan { get; set; }
         public string? AnhUrl { get; set; }
+        public string? LinkAnh { get; set; }
     }
 }

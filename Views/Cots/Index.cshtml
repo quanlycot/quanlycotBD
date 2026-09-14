@@ -8,188 +8,749 @@
     {
         int.TryParse(Context.Request.Query["highlight"], out highlightId);
     }
-}
-
-
-@{
     ViewData["Title"] = "Danh sách Cốt";
 }
 
-
-<h2 class="text-center mb-4">Danh sách Cốt</h2>
-
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success text-center">
-        @TempData["SuccessMessage"]
-    </div>
-}
-
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <form asp-action="Index" method="get" class="d-flex mb-3">
-        <input type="text" name="searchString"
-               value="@Context.Request.Query["searchString"]"
-               class="form-control me-2"
-               placeholder="Nhập ID, họ tên, pháp danh"
-               style="flex: 1; min-width: 300px;" />
-
-        <input type="number" name="namKetThuc"
-               value="@Context.Request.Query["namKetThuc"]"
-               class="form-control me-2"
-               placeholder="Năm kết thúc" />
-
-        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-    </form>
-   
-
-</div>
-
-
-<!-- Nhóm nút xuất dữ liệu -->
-<div class="mb-4">
-    <form asp-action="XuatCot" method="get" class="d-inline">
-        <button type="submit" class="btn btn-success me-2">Xuất Cốt</button>
-    </form>
-    <form asp-action="XuatNguoiThan" method="get" class="d-inline">
-        <button type="submit" class="btn btn-primary me-2">Xuất Người Thân</button>
-    </form>
-    <form asp-action="XuatViTri" method="get" class="d-inline">
-        <button type="submit" class="btn btn-warning">Xuất Vị Trí</button>
-    </form>
-    @if (Model != null && Model.Any())
-    {
-        <a class="btn btn-success ms-2"
-           asp-action="XuatKetQua"
-           asp-route-searchString="@Context.Request.Query["searchString"]"
-           asp-route-namKetThuc="@Context.Request.Query["namKetThuc"]">
-            Xuất Thông Báo
-        </a>
+<style>
+    /* ================= TÔNG MÀU DỊU NHẸ - CHỮ TO RÕ NÉT ================= */
+    .page-title-gold {
+        font-family: 'Merriweather', serif;
+        font-size: 26px;
+        font-weight: 800;
+        color: #fef08a; /* Vàng rơm dịu */
+        letter-spacing: 0.5px;
     }
-</div>
 
+    /* Khung tìm kiếm nền nâu gỗ trầm dịu mắt */
+    .toolbar-box {
+        background: #241c16;
+        border: 1px solid #785a3c;
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin-bottom: 22px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+    }
 
+    .input-custom-lg {
+        height: 46px;
+        font-size: 16px;
+        font-weight: 600;
+        background-color: #1a1410 !important;
+        border: 1px solid #8c6843 !important;
+        color: #fffbeb !important;
+        border-radius: 10px;
+    }
 
-<div class="table-responsive">
-    <table class="table table-striped table-bordered table-hover">
-        <thead class="table-dark text-center">
-            <tr>
-                <th>STT</th>
-                <th>Họ</th>
-                <th>Tên</th>
-                <th>Pháp danh</th>
-                <th>Năm sinh</th>
-                <th>Ngày mất (AL)</th>
-                <th>Ngày mất (DL)</th>
-                <th>Tuổi</th>
-                <th>Ảnh Người Mất</th>
-                <th>Vị trí (Lầu - Lô)</th>
-                <th>Ngày KT</th>
-                <th>ID Người Thân</th>
-                <th>Thao tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Count > 0)
-            {
-                int stt = (Model.PageNumber - 1) * Model.PageSize;
-                foreach (var item in Model)
+        .input-custom-lg:focus {
+            border-color: #f59e0b !important;
+            box-shadow: 0 0 0 0.2rem rgba(245, 158, 11, 0.25) !important;
+        }
+
+        .input-custom-lg::placeholder {
+            color: #a89f91 !important;
+        }
+
+    /* BẢNG DỮ LIỆU: NỀN NÂU ẤM - CHỮ SÁNG DỊU KHÔNG CHÓI */
+    .table-cot-custom {
+        font-size: 16px; /* Chữ to rõ */
+        color: #fdfbf7 !important; /* Trắng ngà dịu mắt */
+        border-color: #4a3828 !important;
+    }
+
+        .table-cot-custom thead th {
+            background-color: #1d1611 !important;
+            color: #fef08a !important; /* Tiêu đề vàng ấm */
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 14px 8px;
+            vertical-align: middle;
+            border-bottom: 2px solid #b45309 !important;
+        }
+
+        /* Dòng xen kẽ (Zebra) để đọc thông tin không bị rối mắt */
+        .table-cot-custom tbody tr:nth-child(odd) td {
+            background-color: #2b221a !important;
+            color: #fdfbf7 !important;
+            border-color: #4a3828 !important;
+        }
+
+        .table-cot-custom tbody tr:nth-child(even) td {
+            background-color: #231b14 !important;
+            color: #fdfbf7 !important;
+            border-color: #4a3828 !important;
+        }
+
+        .table-cot-custom tbody tr:hover td {
+            background-color: #3b2f23 !important; /* Rê chuột sáng nhẹ */
+        }
+
+        /* Dòng chữ giá trị luôn đảm bảo sáng rõ */
+        .table-cot-custom td,
+        .table-cot-custom td span,
+        .table-cot-custom td div {
+            color: #fdfbf7 !important;
+            font-size: 16px;
+        }
+
+    /* Dòng được Highlight viền vàng nổi bật */
+    .row-highlight td {
+        background-color: #5c3810 !important;
+        border-top: 2px solid #f59e0b !important;
+        border-bottom: 2px solid #f59e0b !important;
+        transition: background-color 0.5s ease;
+    }
+
+    /* Modal 3 Tầng */
+    .modal-content-dark {
+        background-color: #221a14;
+        border: 2px solid #b45309;
+        color: #fdfbf7;
+        border-radius: 18px;
+    }
+
+    .tier-box {
+        background: #2d231b;
+        border: 1px solid #634b35;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+
+    .tier-title {
+        color: #fbbf24;
+        font-weight: 700;
+        font-size: 16px;
+        border-bottom: 1px dashed #785a3c;
+        padding-bottom: 6px;
+        margin-bottom: 14px;
+    }
+
+    .input-dark {
+        background-color: #1a1410 !important;
+        border: 1px solid #785a3c !important;
+        color: #ffffff !important;
+        font-size: 15px;
+    }
+
+        .input-dark:focus {
+            border-color: #f59e0b !important;
+            box-shadow: 0 0 0 0.2rem rgba(245, 158, 11, 0.25) !important;
+        }
+
+    .modal-body-scroll {
+        max-height: 70vh !important;
+        overflow-y: auto !important;
+        scrollbar-width: thin;
+        scrollbar-color: #b45309 #1a1410;
+    }
+
+        .modal-body-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-body-scroll::-webkit-scrollbar-track {
+            background: #1a1410;
+        }
+
+        .modal-body-scroll::-webkit-scrollbar-thumb {
+            background: #b45309;
+            border-radius: 4px;
+        }
+
+    .box-tim-nt-scroll {
+        max-height: 180px !important;
+        overflow-y: auto !important;
+        scrollbar-width: thin;
+        scrollbar-color: #f59e0b #1a1410;
+    }
+
+        .box-tim-nt-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .box-tim-nt-scroll::-webkit-scrollbar-track {
+            background: #1a1410;
+        }
+
+        .box-tim-nt-scroll::-webkit-scrollbar-thumb {
+            background: #f59e0b;
+            border-radius: 3px;
+        }
+</style>
+
+<div class="container-fluid px-lg-4 py-3">
+
+    <!-- Tiêu đề màu vàng ấm -->
+    <div class="text-center mb-3">
+        <h2 class="page-title-gold text-uppercase mb-1">🏺 QUẢN LÝ DANH SÁCH CỐT</h2>
+        <div class="text-stone-300" style="color: #d6cfc4; font-size: 14px;">Chùa Bửu Đà - Hệ thống quản lý tro cốt bổn tự</div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success text-center fw-bold shadow-sm py-2 fs-6">
+            <i class="bi bi-check-circle-fill me-1"></i> @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger text-center fw-bold shadow-sm py-2 fs-6">
+            <i class="bi bi-exclamation-triangle-fill me-1"></i> @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <!-- THANH CÔNG CỤ TÌM KIẾM & NÚT THAO TÁC -->
+    <div class="toolbar-box">
+        <div class="row g-3 align-items-center">
+
+            <!-- Cụm tìm kiếm -->
+            <div class="col-xl-6 col-lg-7">
+                <form asp-action="Index" method="get" class="row g-2 align-items-center">
+                    <div class="col-sm-7">
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-warning" style="background-color: #1a1410 !important; border-color: #785a3c !important;">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" name="searchString"
+                                   value="@Context.Request.Query["searchString"]"
+                                   class="form-control input-custom-lg"
+                                   placeholder="Họ tên, pháp danh, ID cốt..." />
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-6">
+                        <input type="number" name="namKetThuc"
+                               value="@Context.Request.Query["namKetThuc"]"
+                               class="form-control input-custom-lg text-center"
+                               placeholder="Năm kết thúc" />
+                    </div>
+                    <div class="col-sm-2 col-6">
+                        <button type="submit" class="btn btn-warning w-100 fw-bold d-flex align-items-center justify-content-center text-dark shadow-sm" style="height: 46px !important; font-size: 16px;">
+                            Tìm
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Cụm nút Xuất file và Thêm mới -->
+            <div class="col-xl-6 col-lg-5 text-lg-end text-center">
+                <div class="d-inline-flex flex-wrap gap-2 justify-content-lg-end justify-content-center">
+                    <a asp-action="XuatCot" class="btn btn-outline-success fw-bold btn-sm px-2.5 py-2" style="font-size: 14px;">
+                        <i class="bi bi-file-earmark-excel me-1"></i> Xuất Cốt
+                    </a>
+                    <a asp-action="XuatNguoiThan" class="btn btn-outline-primary fw-bold btn-sm px-2.5 py-2" style="font-size: 14px;">
+                        <i class="bi bi-people me-1"></i> Xuất Người Thân
+                    </a>
+                    <a asp-action="XuatViTri" class="btn btn-outline-warning fw-bold btn-sm px-2.5 py-2" style="font-size: 14px;">
+                        <i class="bi bi-grid me-1"></i> Xuất Vị Trí
+                    </a>
+                    @if (Model != null && Model.Any())
+                    {
+                        <a asp-action="XuatKetQua"
+                           asp-route-searchString="@Context.Request.Query["searchString"]"
+                           asp-route-namKetThuc="@Context.Request.Query["namKetThuc"]"
+                           class="btn btn-outline-info fw-bold btn-sm px-2.5 py-2" style="font-size: 14px;">
+                            <i class="bi bi-bell me-1"></i> Xuất Thông Báo
+                        </a>
+                    }
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <button type="button" class="btn btn-success fw-bold px-3 py-2 shadow ms-lg-1" style="font-size: 15px;" data-bs-toggle="modal" data-bs-target="#modalThemCot">
+                            <i class="bi bi-plus-circle-fill me-1"></i> + THÊM CỐT MỚI
+                        </button>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- BẢNG DỮ LIỆU CHỮ TO RÕ, MÀU DỊU NHẸ -->
+    <div class="table-responsive rounded-3 shadow-lg border border-secondary" style="border-color: #5c432d !important;">
+        <table class="table table-cot-custom text-center align-middle mb-0">
+            <thead>
+                <tr>
+                    <th style="width: 55px;">STT</th>
+                    <th style="width: 130px;">Họ</th>
+                    <th style="width: 120px;">Tên</th>
+                    <th style="width: 120px;">Pháp danh</th>
+                    <th style="width: 110px;">Năm sinh</th>
+                    <th style="width: 130px;">Ngày mất (AL)</th>
+                    <th style="width: 120px;">Ngày mất (DL)</th>
+                    <th style="width: 70px;">Tuổi</th>
+                    <th style="width: 105px;">Ảnh Người Mất</th>
+                    <th style="width: 130px;">Vị trí (Lầu - Lô)</th>
+                    <th style="width: 110px;">Ngày KT</th>
+                    <th style="width: 100px;">ID Thân Nhân</th>
+                    <th style="width: 180px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
                 {
-                    stt++;
-                    <tr class="text-center align-middle @(item.Idcot == highlightId ? "table-warning" : "")" id="cot-@item.Idcot">
-                        <td>@stt</td>
-                        <td>@item.Ho</td>
-                        <td>@item.Ten</td>
-                        <td>@item.PhapDanh</td>
-                        <td>@item.NamSinh</td>
-                        <td>@item.MatAl</td>
-                        <td>@item.MatDl</td>
-                        <td>@item.Tuoi</td>
-                        <td>
-                            @{
-                                var anhNguoiMat = string.IsNullOrEmpty(item.HinhNguoiMat)
-                                ? Url.Content("~/images/anhcot.jpg")
-                                : item.HinhNguoiMat + "?ver=" + Guid.NewGuid();
-                            }
-                            <img src="@anhNguoiMat"
-                                 alt="Ảnh người mất"
-                                 style="width:80px; height:100px; object-fit:cover;" />
-                        </td>
-
-                        <td>
-                            @(item.IdViTriNavigation?.Lau ?? "") - @(item.IdViTriNavigation?.LoSo ?? "")
-                        </td>
-                        <td>@item.NgayKetThuc</td>
-                        <td>
-                            <a asp-controller="NguoiThans"
-                               asp-action="ThongKe"
-                               asp-route-id="@item.IdnguoiThan"
-                               class="text-decoration-none"
-                               target="_blank">
-                                @item.IdnguoiThan
-                            </a>
-                        </td>
-
-                        <td>
-                            @if (User.IsInRole("Admin"))
-                            {
-                                <a asp-action="Edit" asp-route-id="@item.Idcot" class="btn btn-sm btn-warning">Sửa</a>
-                                <a asp-action="Delete" asp-route-id="@item.Idcot" class="btn btn-sm btn-danger">Xóa</a>
-                            }
-                            <a asp-action="Details" asp-route-id="@item.Idcot" class="btn btn-sm btn-info">Chi tiết</a>
+                    int stt = (Model.PageNumber - 1) * Model.PageSize;
+                    foreach (var item in Model)
+                    {
+                        stt++;
+                        <tr class="@(item.Idcot == highlightId ? "row-highlight" : "")" id="cot-@item.Idcot">
+                            <td style="color: #c9c0b5 !important;">@stt</td>
+                            <td class="text-nowrap" style="color: #fdfbf7 !important; font-weight: 500;">@item.Ho</td>
+                            <td class="text-nowrap" style="color: #fbbf24 !important; font-weight: 800; font-size: 17px;">@item.Ten</td>
+                            <td style="color: #e6dfd5 !important;">@(string.IsNullOrEmpty(item.PhapDanh) ? "---" : item.PhapDanh)</td>
+                            <td style="color: #fdfbf7 !important; font-weight: 600;">@(string.IsNullOrEmpty(item.NamSinh) ? "---" : item.NamSinh)</td>
+                            <td style="color: #fdfbf7 !important;">@(string.IsNullOrEmpty(item.MatAl) ? "---" : item.MatAl)</td>
+                            <td style="color: #fdfbf7 !important;">@(string.IsNullOrEmpty(item.MatDl) ? "---" : item.MatDl)</td>
+                            <td style="color: #fef08a !important; font-weight: 700;">@(item.Tuoi.HasValue ? item.Tuoi.ToString() : "---")</td>
+                            <td>
+                                @{
+                                    var anhNguoiMat = string.IsNullOrEmpty(item.HinhNguoiMat)
+                                    ? Url.Content("~/images/anhcot.jpg")
+                                    : item.HinhNguoiMat + "?ver=" + Guid.NewGuid();
+                                }
+                                <img src="@anhNguoiMat"
+                                     alt="Ảnh"
+                                     style="width: 85px; height: 110px; object-fit: cover;"
+                                     class="rounded-3 border border-secondary shadow-sm mx-auto d-block" />
+                            </td>
+                            <td>
+                                <span class="badge px-3 py-2" style="background-color: #17110c; border: 1px solid #d97706; color: #fef08a !important; font-size: 15px; font-weight: 700;">
+                                    @(item.IdViTriNavigation?.Lau ?? "") - @(item.IdViTriNavigation?.LoSo ?? "")
+                                </span>
+                            </td>
+                            <td class="text-nowrap" style="color: #fdfbf7 !important; font-weight: 600;">
+                                @(item.NgayKetThuc?.ToString("dd/MM/yyyy") ?? "---")
+                            </td>
+                            <td>
+                                @if (item.IdnguoiThan.HasValue && item.IdnguoiThan > 0)
+                                {
+                                    <a asp-controller="NguoiThans"
+                                       asp-action="ThongKe"
+                                       asp-route-id="@item.IdnguoiThan"
+                                       class="btn btn-sm btn-outline-info fw-bold px-2 py-1"
+                                       style="font-size: 14px;"
+                                       target="_blank" title="Xem thống kê thân nhân">
+                                        #@item.IdnguoiThan
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span style="color: #9c9284 !important; font-size: 14px;">Chưa có</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-1">
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.Idcot" class="btn btn-sm btn-warning text-dark fw-bold px-2 py-1" style="font-size: 14px;">
+                                            Sửa
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Idcot" class="btn btn-sm btn-danger fw-bold px-2 py-1" style="font-size: 14px;">
+                                            Xóa
+                                        </a>
+                                    }
+                                    <a asp-action="Details" asp-route-id="@item.Idcot" class="btn btn-sm btn-info text-white fw-bold px-2 py-1" style="font-size: 14px;">
+                                        Chi tiết
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="13" class="text-center py-5 fs-5" style="color: #c9c0b5 !important;">
+                            Không tìm thấy dữ liệu phù hợp.
                         </td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="12" class="text-center">Không có dữ liệu.</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Phân trang -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mt-3" style="color: #d6cfc4;">
+        <div class="fw-semibold fs-6">
+            Tổng cộng: <strong style="color: #fbbf24;">@Model.TotalItemCount</strong> hồ sơ cốt
+        </div>
+        <div>
+            @Html.PagedListPager(Model, page => Url.Action("Index", new
+                {
+                    page,
+                    highlight = highlightId,
+                    searchString = Context.Request.Query["searchString"],
+                    namKetThuc = Context.Request.Query["namKetThuc"]
+                }), new PagedListRenderOptions
+       {
+           MaximumPageNumbersToDisplay = 5,
+           LiElementClasses = new[] { "page-item" },
+           PageClasses = new[] { "page-link bg-dark text-white border-secondary" },
+           UlElementClasses = new[] { "pagination pagination-sm mb-0" }
+       })
+        </div>
+    </div>
+
 </div>
 
-<div class="text-end me-3 mb-2 text-muted">
-    Tổng cộng: @Model.TotalItemCount cốt
+<!-- ================= MODAL TIẾP NHẬN CỐT 3 TẦNG ================= -->
+<div class="modal fade" id="modalThemCot" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <form asp-action="CreateAllInOne" method="post" enctype="multipart/form-data" class="modal-content modal-content-dark shadow-lg">
+            @Html.AntiForgeryToken()
+
+            <div class="modal-header border-bottom border-warning">
+                <h5 class="modal-title fw-bold text-warning fs-5">
+                    <i class="bi bi-file-earmark-plus-fill me-1"></i> TIẾP NHẬN HỒ SƠ TRO CỐT (3 TẦNG)
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body p-3 p-md-4 modal-body-scroll">
+
+                <!-- TẦNG 1 -->
+                <div class="tier-box">
+                    <div class="tier-title">TẦNG 1: THÔNG TIN NGƯỜI MẤT, ẢNH & LINK ẢNH</div>
+                    <div class="row g-2">
+                        <div class="col-md-3">
+                            <label class="form-label small">Họ (*):</label>
+                            <input type="text" name="Ho" class="form-control form-control-sm input-dark" required placeholder="Họ" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Tên (*):</label>
+                            <input type="text" name="Ten" class="form-control form-control-sm input-dark" required placeholder="Tên" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Pháp danh:</label>
+                            <input type="text" name="PhapDanh" class="form-control form-control-sm input-dark" placeholder="Pháp danh" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Năm sinh:</label>
+                            <input type="text" name="NamSinh" class="form-control form-control-sm input-dark" placeholder="1950" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Ngày mất (AL):</label>
+                            <input type="text" name="MatAl" class="form-control form-control-sm input-dark" placeholder="Ví dụ: 15/7 ÂL" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Ngày mất (DL):</label>
+                            <input type="text" name="MatDl" class="form-control form-control-sm input-dark" placeholder="Ví dụ: 2023-08-30" />
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small">Tuổi:</label>
+                            <input type="number" name="Tuoi" class="form-control form-control-sm input-dark" placeholder="Tuổi" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small text-info">Link xem thêm ảnh (nếu có):</label>
+                            <input type="text" name="LinkAnh" class="form-control form-control-sm input-dark" placeholder="Link Google Drive..." />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">Ngày bắt đầu:</label>
+                            <input type="date" id="modalNgayBatDau" name="NgayBatDau" value="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control form-control-sm input-dark" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">Ngày kết thúc (+10 năm):</label>
+                            <input type="date" id="modalNgayKetThuc" name="NgayKetThuc" value="@DateTime.Today.AddYears(10).ToString("yyyy-MM-dd")" class="form-control form-control-sm input-dark" />
+                        </div>
+                        <div class="col-12 mt-2">
+                            <label class="form-label small fw-bold text-warning">Tải ảnh đại diện (Lưu trực tiếp Azure Blob):</label>
+                            <input type="file" name="HinhAnhUpload" accept="image/*" class="form-control form-control-sm input-dark" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TẦNG 2 -->
+                <div class="tier-box">
+                    <div class="tier-title">TẦNG 2: VỊ TRÍ AN VỊ</div>
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label small">Lầu:</label>
+                            <input type="text" id="inpVT_Lau" name="VT_Lau" class="form-control form-control-sm input-dark" placeholder="T, 1, 2, 3" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small">Lô số / Dãy:</label>
+                            <input type="text" id="inpVT_LoSo" name="VT_LoSo" class="form-control form-control-sm input-dark" placeholder="H14, B59" />
+                        </div>
+                        <div class="col-md-5">
+                            <button type="button" class="btn btn-sm btn-primary w-100 fw-bold" style="height: 34px;" onclick="kiemTraViTri()">
+                                <i class="bi bi-search me-1"></i> Kiểm Tra Vị Trí
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="msgViTri" class="alert small mt-2 p-2 rounded d-none"></div>
+
+                    <input type="hidden" id="hdnIdViTri" name="IdviTri" value="0" />
+                    <input type="hidden" id="hdnTaoViTriMoi" name="TaoViTriMoi" value="false" />
+                </div>
+
+                <!-- TẦNG 3 -->
+                <div class="tier-box mb-0">
+                    <div class="d-flex justify-content-between align-items-center tier-title">
+                        <span>TẦNG 3: THÔNG TIN NGƯỜI THÂN LIÊN HỆ</span>
+                        <button type="button" class="btn btn-sm btn-success fw-bold px-3 py-1 shadow-sm" onclick="kichHoatThemNguoiThanMoi()">
+                            <i class="bi bi-person-plus-fill me-1"></i> + Thêm Thân Nhân Mới
+                        </button>
+                    </div>
+
+                    <div class="row g-2 align-items-end mb-2">
+                        <div class="col-md-8">
+                            <label class="form-label small">Tìm kiếm theo Họ Tên, SĐT hoặc CCCD:</label>
+                            <input type="text" id="inpTimNT" class="form-control form-control-sm input-dark" placeholder="Nhập tên, số điện thoại hoặc CCCD..." />
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-sm btn-info w-100 fw-bold text-white" style="height: 34px;" onclick="timNguoiThan()">
+                                <i class="bi bi-search me-1"></i> Tìm Danh Bạ
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="boxKetQuaNT" class="d-none mb-2 p-2 rounded bg-black border border-warning small box-tim-nt-scroll"></div>
+                    <div id="msgStatusNT" class="alert alert-info py-1 px-2 small mb-2 d-none"></div>
+
+                    <div class="row g-2 mt-1 pt-2 border-top border-secondary">
+                        <div class="col-md-2">
+                            <label class="form-label small text-warning fw-bold">ID Người Thân:</label>
+                            <input type="text" id="nt_CustomId_Display" class="form-control form-control-sm input-dark text-warning fw-bold text-center" readonly placeholder="Tự cấp" />
+                            <input type="hidden" id="hdnCustomId" name="NT_CustomId" value="0" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Họ:</label>
+                            <input type="text" id="nt_Ho" name="NT_Ho" class="form-control form-control-sm input-dark" placeholder="Họ đệm" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small">Tên (*):</label>
+                            <input type="text" id="nt_Ten" name="NT_Ten" class="form-control form-control-sm input-dark" placeholder="Tên chính" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Pháp danh:</label>
+                            <input type="text" id="nt_PhapDanh" name="NT_PhapDanh" class="form-control form-control-sm input-dark" placeholder="Pháp danh" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label small">Ngày sinh:</label>
+                            <input type="text" id="nt_NgaySinh" name="NT_NgaySinh" class="form-control form-control-sm input-dark" placeholder="Ngày sinh" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small text-warning fw-bold">CCCD / CMND:</label>
+                            <input type="text" id="nt_CCCD" name="NT_CCCD" class="form-control form-control-sm input-dark" placeholder="Số CCCD" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Ngày cấp:</label>
+                            <input type="text" id="nt_NgayCap" name="NT_NgayCap" class="form-control form-control-sm input-dark" placeholder="Ngày cấp" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Nơi cấp:</label>
+                            <input type="text" id="nt_NoiCap" name="NT_NoiCap" class="form-control form-control-sm input-dark" placeholder="Nơi cấp" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label small">Số điện thoại (*):</label>
+                            <input type="text" id="nt_SDT" name="NT_SDT" class="form-control form-control-sm input-dark" placeholder="Số điện thoại" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">Địa chỉ:</label>
+                            <input type="text" id="nt_DiaChi" name="NT_DiaChi" class="form-control form-control-sm input-dark" placeholder="Địa chỉ liên hệ" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Ngày đăng ký:</label>
+                            <input type="text" id="nt_NgayDangKy" name="NT_NgayDangKy" value="@DateTime.Today.ToString("dd/MM/yyyy")" class="form-control form-control-sm input-dark" />
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label small">Ghi chú:</label>
+                            <input type="text" id="nt_GhiChu" name="NT_GhiChu" class="form-control form-control-sm input-dark" placeholder="Ghi chú thêm" />
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="hdnIdNguoiThan" name="IdnguoiThan" value="0" />
+                    <input type="hidden" id="hdnTaoNguoiThanMoi" name="TaoNguoiThanMoi" value="false" />
+                </div>
+
+            </div>
+
+            <div class="modal-footer border-top border-warning">
+                <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Đóng</button>
+                <button type="submit" class="btn btn-warning text-dark fw-bold px-4 shadow fs-6">
+                    <i class="bi bi-check-circle-fill me-1"></i> LƯU TOÀN BỘ HỒ SƠ
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
-<div class="d-flex justify-content-center">
-    @Html.PagedListPager(Model, page => Url.Action("Index", new
-        {
-            page,
-            highlight = highlightId,
-            searchString = Context.Request.Query["searchString"],
-            namKetThuc = Context.Request.Query["namKetThuc"]
-        }), new PagedListRenderOptions
-{
-    MaximumPageNumbersToDisplay = 5,
-    LiElementClasses = new[] { "page-item" },
-    PageClasses = new[] { "page-link" },
-    UlElementClasses = new[] { "pagination justify-content-center" }
-})
-</div>
-
-<script>
-    const highlight = '@highlightId';
-    if (highlight) {
-        const row = document.getElementById("cot-" + highlight);
-        if (row) {
-            row.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
-    }
-</script>
 @section Scripts {
     <script>
-        window.onload = function () {
-            const url = new URL(window.location.href);
-            const highlight = url.searchParams.get("highlight");
-            if (highlight) {
-                const row = document.getElementById("cot-" + highlight);
-                if (row) row.scrollIntoView({ behavior: "smooth", block: "center" });
+        // Tự động tính ngày kết thúc (+10 năm)
+        document.addEventListener("DOMContentLoaded", function () {
+            const batDau = document.getElementById("modalNgayBatDau");
+            const ketThuc = document.getElementById("modalNgayKetThuc");
+            if (batDau && ketThuc) {
+                batDau.addEventListener("change", function () {
+                    const d = new Date(batDau.value);
+                    if (!isNaN(d)) {
+                        d.setFullYear(d.getFullYear() + 10);
+                        ketThuc.value = d.toISOString().split('T')[0];
+                    }
+                });
             }
-        };
+        });
+
+        // Đợi toàn bộ trang và hình ảnh render xong mới kích hoạt cuộn
+        window.addEventListener("load", function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const highlightId = urlParams.get("highlight");
+
+            if (highlightId) {
+                const targetRow = document.getElementById("cot-" + highlightId);
+                if (targetRow) {
+                    setTimeout(() => {
+                        targetRow.scrollIntoView({ behavior: "smooth", block: "center" });
+                        targetRow.classList.add("row-highlight");
+                    }, 400);
+                }
+            }
+        });
+
+        function kiemTraViTri() {
+            const lau = document.getElementById('inpVT_Lau').value;
+            const loSo = document.getElementById('inpVT_LoSo').value;
+            const msg = document.getElementById('msgViTri');
+
+            if (!lau || !loSo) {
+                alert("Vui lòng nhập Lầu và Lô số để kiểm tra!");
+                return;
+            }
+
+            fetch(`/Cots/KiemTraViTri?lau=${encodeURIComponent(lau)}&loSo=${encodeURIComponent(loSo)}`)
+                .then(res => res.json())
+                .then(data => {
+                    msg.classList.remove('d-none', 'alert-success', 'alert-danger', 'alert-warning');
+
+                    if (!data.tonTai) {
+                        msg.classList.add('alert-warning');
+                        msg.innerHTML = `
+                            <div>⚠️ ${data.message}</div>
+                            <div class="mt-2">
+                                <button type="button" class="btn btn-xs btn-warning text-dark fw-bold px-3 py-1" onclick="dongYThemViTriMoi()">
+                                    <i class="bi bi-plus-circle me-1"></i> Đồng ý tạo mới vị trí này
+                                </button>
+                                <span class="ms-2 text-muted">(Bấm vào đây nếu chắc chắn không gõ nhầm)</span>
+                            </div>
+                        `;
+                        document.getElementById('hdnTaoViTriMoi').value = "false";
+                        document.getElementById('hdnIdViTri').value = "0";
+                    } else if (data.isTrong) {
+                        msg.classList.add('alert-success');
+                        msg.innerHTML = `✅ ${data.message} <br><strong>👉 Đã chọn vị trí này cho cốt mới!</strong>`;
+                        document.getElementById('hdnTaoViTriMoi').value = "false";
+                        document.getElementById('hdnIdViTri').value = data.idViTri;
+                    } else {
+                        msg.classList.add('alert-danger');
+                        msg.innerHTML = `❌ ${data.message} Vui lòng chọn vị trí khác!`;
+                        document.getElementById('hdnIdViTri').value = "0";
+                        document.getElementById('hdnTaoViTriMoi').value = "false";
+                    }
+                });
+        }
+
+        function dongYThemViTriMoi() {
+            document.getElementById('hdnTaoViTriMoi').value = "true";
+            document.getElementById('hdnIdViTri').value = "0";
+            const msg = document.getElementById('msgViTri');
+            msg.className = "alert alert-info small mt-2 p-2 rounded";
+            msg.innerHTML = "✅ <strong>Đã xác nhận:</strong> Vị trí mới này sẽ được tự động lưu vào cơ sở dữ liệu khi bạn bấm Lưu Toàn Bộ Hồ Sơ!";
+        }
+
+        function kichHoatThemNguoiThanMoi() {
+            fetch('/Cots/GetNextIdNguoiThan')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('nt_Ho').value = "";
+                        document.getElementById('nt_Ten').value = "";
+                        document.getElementById('nt_PhapDanh').value = "";
+                        document.getElementById('nt_NgaySinh').value = "";
+                        document.getElementById('nt_CCCD').value = "";
+                        document.getElementById('nt_NgayCap').value = "";
+                        document.getElementById('nt_NoiCap').value = "";
+                        document.getElementById('nt_DiaChi').value = "";
+                        document.getElementById('nt_SDT').value = "";
+                        document.getElementById('nt_GhiChu').value = "";
+
+                        document.getElementById('hdnIdNguoiThan').value = "0";
+                        document.getElementById('hdnTaoNguoiThanMoi').value = "true";
+                        document.getElementById('hdnCustomId').value = data.id;
+                        document.getElementById('nt_CustomId_Display').value = data.id;
+
+                        const msgBox = document.getElementById('msgStatusNT');
+                        msgBox.classList.remove('d-none', 'alert-warning', 'alert-info');
+                        msgBox.classList.add(data.isReused ? 'alert-warning' : 'alert-info');
+                        msgBox.innerHTML = `<strong>${data.message}</strong>. Mời bạn nhập thông tin người thân mới!`;
+
+                        document.getElementById('boxKetQuaNT').classList.add('d-none');
+                        document.getElementById('nt_Ten').focus();
+                    }
+                })
+                .catch(err => alert("Lỗi khi kiểm tra ID người thân: " + err));
+        }
+
+        function timNguoiThan() {
+            const tuKhoa = document.getElementById('inpTimNT').value;
+            const box = document.getElementById('boxKetQuaNT');
+
+            if (!tuKhoa) {
+                alert("Vui lòng nhập Tên, Số Điện Thoại hoặc CCCD!");
+                return;
+            }
+
+            fetch(`/Cots/TimKiemNguoiThan?tuKhoa=${encodeURIComponent(tuKhoa)}`)
+                .then(res => res.json())
+                .then(res => {
+                    box.classList.remove('d-none');
+                    if (res.timThay) {
+                        let html = '<div class="text-warning fw-bold mb-1">Tìm thấy thân nhân trong hệ thống:</div>';
+                        res.data.forEach(n => {
+                            html += `
+                                <div class="d-flex justify-content-between align-items-center py-1 border-bottom border-secondary">
+                                    <span><strong>[#${n.id}]</strong> ${n.hoTen} - SĐT: ${n.sdt || '---'} | CCCD: ${n.cccd || '---'}</span>
+                                    <button type="button" class="btn btn-sm btn-warning text-dark fw-bold px-2 py-0" onclick='chonNguoiThan(${JSON.stringify(n)})'>Chọn</button>
+                                </div>`;
+                        });
+                        box.innerHTML = html;
+                    } else {
+                        box.innerHTML = `
+                            <div class="d-flex justify-content-between align-items-center py-1">
+                                <span class="text-info">ℹ️ Không tìm thấy thân nhân "${tuKhoa}".</span>
+                                <button type="button" class="btn btn-xs btn-success fw-bold" onclick="kichHoatThemNguoiThanMoi()">
+                                    + Thêm mới ngay
+                                </button>
+                            </div>`;
+                    }
+                });
+        }
+
+        function chonNguoiThan(nt) {
+            document.getElementById('hdnIdNguoiThan').value = nt.id;
+            document.getElementById('hdnTaoNguoiThanMoi').value = "false";
+            document.getElementById('hdnCustomId').value = nt.id;
+            document.getElementById('nt_CustomId_Display').value = nt.id;
+
+            document.getElementById('nt_Ho').value = nt.ho || "";
+            document.getElementById('nt_Ten').value = nt.ten || "";
+            document.getElementById('nt_PhapDanh').value = nt.phapDanh || "";
+            document.getElementById('nt_NgaySinh').value = nt.ngaySinh || "";
+            document.getElementById('nt_CCCD').value = nt.cccd || "";
+            document.getElementById('nt_NgayCap').value = nt.ngayCap || "";
+            document.getElementById('nt_NoiCap').value = nt.noiCap || "";
+            document.getElementById('nt_DiaChi').value = nt.diaChi || "";
+            document.getElementById('nt_SDT').value = nt.sdt || "";
+            document.getElementById('nt_GhiChu').value = nt.ghiChu || "";
+
+            const msgBox = document.getElementById('msgStatusNT');
+            msgBox.classList.remove('d-none', 'alert-warning');
+            msgBox.classList.add('alert-info');
+            msgBox.innerHTML = `✅ <strong>Đã chọn thân nhân #${nt.id} - ${nt.hoTen}</strong>. (Bạn có thể cập nhật lại thông tin ở các ô dưới nếu gia đình có thay đổi).`;
+        }
     </script>
 }
-
-

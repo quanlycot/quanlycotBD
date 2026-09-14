@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuanLyCotWeb.Models;
-using QuanLyCotWeb.Helpers;
-using Azure.Core;
 using X.PagedList.Extensions;
 using X.PagedList;
 
@@ -11,7 +9,6 @@ namespace QuanLyCotWeb.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
         private readonly QuanLyCotContext _context;
 
         public HomeController(QuanLyCotContext context)
@@ -19,126 +16,105 @@ namespace QuanLyCotWeb.Controllers
             _context = context;
         }
 
-        // Trang chủ: nếu đã đăng nhập thì chuyển về Quản lý Cốt
         public IActionResult Index()
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Index", "Cots");
-            }
-
             return RedirectToAction("TrangTimKiem");
         }
 
-        // Trang tìm kiếm: ẩn nếu đã đăng nhập
-        public IActionResult TrangTimKiem()
+        // Trang tra cứu: Đẩy điều kiện lọc xuống thẳng SQL Server và phân trang 20 mục
+        public async Task<IActionResult> TrangTimKiem(string ten, string loai = "ALL", int page = 1)
         {
-            if (User.Identity.IsAuthenticated)
+            string keyword = string.IsNullOrWhiteSpace(ten) ? "" : ten.Trim().ToLower();
+            var ketQua = new List<TimKiemViewModel>();
+
+            // 1. TÌM TRONG BẢNG CỐT TRỰC TIẾP TẠI SQL SERVER
+            if (loai == "ALL" || loai == "COT")
             {
-                return RedirectToAction("Index", "Cots");
+                var queryCot = _context.Cots.AsNoTracking();
+
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    queryCot = queryCot.Where(c =>
+                        c.Idcot.ToString() == keyword ||
+                        (c.Ho + " " + c.Ten).ToLower().Contains(keyword) ||
+                        (c.Ho != null && c.Ho.ToLower().Contains(keyword)) ||
+                        (c.Ten != null && c.Ten.ToLower().Contains(keyword)) ||
+                        (c.PhapDanh != null && c.PhapDanh.ToLower().Contains(keyword)) ||
+                        (c.NamSinh != null && c.NamSinh.Contains(keyword)) ||
+                        (c.MatDl != null && c.MatDl.Contains(keyword))
+                    );
+                }
+
+                var dsCot = await queryCot
+                    .OrderByDescending(c => c.Idcot)
+                    .Take(string.IsNullOrEmpty(keyword) ? 6 : 100) // Lọc tối đa trên SQL
+                    .Select(c => new TimKiemViewModel
+                    {
+                        Loai = "Cốt",
+                        ID = c.Idcot,
+                        Ho = c.Ho,
+                        Ten = c.Ten,
+                        PhapDanh = c.PhapDanh,
+                        NamSinh = c.NamSinh,
+                        NgayMatDL = c.MatDl,
+                        Tuoi = c.Tuoi,
+                        ViTriHienThi = c.IdViTriNavigation != null ? "Lầu " + c.IdViTriNavigation.Lau + " - Dãy " + c.IdViTriNavigation.LoSo : "Chưa cập nhật",
+                        TenNguoiThan = c.IdnguoiThanNavigation != null ? c.IdnguoiThanNavigation.Ho + " " + c.IdnguoiThanNavigation.Ten : "",
+                        AnhUrl = c.HinhNguoiMat
+                    })
+                    .ToListAsync();
+
+                ketQua.AddRange(dsCot);
             }
 
-            return View();
-        }
-
-        // Xử lý kết quả tìm kiếm
-       
-
-public async Task<IActionResult> KetQuaTimKiem(string ten)
-    {
-        if (string.IsNullOrWhiteSpace(ten))
-            return RedirectToAction("TrangTimKiem");
-
-        string keyword = StringHelper.NormalizeString(ten);
-        var ketQua = new List<TimKiemViewModel>();
-
-        // 🔹 Lấy toàn bộ dữ liệu Cốt rồi lọc bằng LINQ in-memory
-        var dsCotRaw = await _context.Cots
-            .Include(c => c.IdViTriNavigation)
-            .Include(c => c.IdnguoiThanNavigation)
-            .ToListAsync();
-
-        var dsCot = dsCotRaw
-            .Where(c =>
-                c.Idcot.ToString() == ten ||
-                StringHelper.NormalizeString(c.Ho + " " + c.Ten).Contains(keyword) ||
-                StringHelper.NormalizeString(c.Ho).Contains(keyword) ||
-                StringHelper.NormalizeString(c.Ten).Contains(keyword) ||
-                StringHelper.NormalizeString(c.PhapDanh ?? "").Contains(keyword)
-            )
-            .Select(c => new TimKiemViewModel
+            // 2. TÌM TRONG BẢNG HÌNH THỜ TRỰC TIẾP TẠI SQL SERVER
+            if (loai == "ALL" || loai == "HINH_THO")
             {
-                Loai = "Cốt",
-                ID = c.Idcot,
-                Ho = c.Ho,
-                Ten = c.Ten,
-                PhapDanh = c.PhapDanh,
-                NamSinh = c.NamSinh,
-                NgayMatDL = c.MatDl,
-                Tuoi = c.Tuoi,
-                ViTriHienThi = "Lầu " + c.IdViTriNavigation?.Lau + " - Dãy " + c.IdViTriNavigation?.LoSo,
-                TenNguoiThan = c.IdnguoiThanNavigation?.Ho + " " + c.IdnguoiThanNavigation?.Ten,
-                AnhUrl = c.HinhNguoiMat
-            }).ToList();
+                var queryHinh = _context.HT_Hinh.AsNoTracking();
 
-        ketQua.AddRange(dsCot);
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    queryHinh = queryHinh.Where(h =>
+                        h.IDHinh.ToString() == keyword ||
+                        (h.Ho + " " + h.Ten).ToLower().Contains(keyword) ||
+                        (h.Ho != null && h.Ho.ToLower().Contains(keyword)) ||
+                        (h.Ten != null && h.Ten.ToLower().Contains(keyword)) ||
+                        (h.PhapDanh != null && h.PhapDanh.ToLower().Contains(keyword)) ||
+                        (h.NamSinh != null && h.NamSinh.Contains(keyword)) ||
+                        (h.NgayMatDL != null && h.NgayMatDL.Contains(keyword))
+                    );
+                }
 
-        // 🔹 Lấy toàn bộ dữ liệu Hình Thờ rồi lọc bằng LINQ in-memory
-        var dsHinhRaw = await _context.HT_Hinh
-            .Include(h => h.ViTri)
-            .Include(h => h.NguoiThan)
-            .ToListAsync();
+                var dsHinh = await queryHinh
+                    .OrderByDescending(h => h.IDHinh)
+                    .Take(string.IsNullOrEmpty(keyword) ? 6 : 100)
+                    .Select(h => new TimKiemViewModel
+                    {
+                        Loai = "Hình",
+                        ID = h.IDHinh,
+                        Ho = h.Ho,
+                        Ten = h.Ten,
+                        PhapDanh = h.PhapDanh,
+                        NamSinh = h.NamSinh,
+                        NgayMatDL = h.NgayMatDL,
+                        Tuoi = h.Tuoi,
+                        ViTriHienThi = h.ViTri != null ? "Tủ " + h.ViTri.Tu + " - Dãy " + h.ViTri.Day : "Chưa cập nhật",
+                        TenNguoiThan = h.NguoiThan != null ? h.NguoiThan.Ho + " " + h.NguoiThan.Ten : "",
+                        AnhUrl = h.AnhHinh
+                    })
+                    .ToListAsync();
 
-        var dsHinh = dsHinhRaw
-            .Where(h =>
-                h.IDHinh.ToString() == ten ||
-                StringHelper.NormalizeString(h.Ho + " " + h.Ten).Contains(keyword) ||
-                StringHelper.NormalizeString(h.Ho).Contains(keyword) ||
-                StringHelper.NormalizeString(h.Ten).Contains(keyword) ||
-                StringHelper.NormalizeString(h.PhapDanh ?? "").Contains(keyword)
-            )
-            .Select(h => new TimKiemViewModel
-            {
-                Loai = "Hình",
-                ID = h.IDHinh,
-                Ho = h.Ho,
-                Ten = h.Ten,
-                PhapDanh = h.PhapDanh,
-                NamSinh = h.NamSinh,
-                NgayMatDL = h.NgayMatDL,
-                Tuoi = h.Tuoi,
-                ViTriHienThi = "Tủ " + h.ViTri?.Tu + " - Dãy " + h.ViTri?.Day,
-                TenNguoiThan = h.NguoiThan?.Ho + " " + h.NguoiThan?.Ten,
-                AnhUrl = h.AnhHinh
-            }).ToList();
+                ketQua.AddRange(dsHinh);
+            }
 
-        ketQua.AddRange(dsHinh);
+            ViewBag.TuKhoa = ten ?? "";
+            ViewBag.LoaiHienTai = loai;
 
-        // 🔸 Phân trang kết quả
-        int pageSize = 20;
-        int pageNumber = 1;
+            // Phân trang 20 mục/trang
+            int pageSize = 20;
+            int pageNumber = page <= 0 ? 1 : page;
 
-        if (Request.Query.ContainsKey("page"))
-        {
-            int.TryParse(Request.Query["page"], out pageNumber);
-            pageNumber = pageNumber <= 0 ? 1 : pageNumber;
-        }
-
-        return View(ketQua.ToPagedList(pageNumber, pageSize));
-    }
-
-
-    // Mặc định
-    public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        // Lỗi
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(ketQua.ToPagedList(pageNumber, pageSize));
         }
     }
 }

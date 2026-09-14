@@ -1,51 +1,430 @@
-﻿@model string
+﻿@model X.PagedList.IPagedList<QuanLyCotWeb.Models.TimKiemViewModel>
+@using X.PagedList.Mvc.Core
 @{
-    ViewData["Title"] = "Tìm kiếm thông tin cốt";
-    
+    ViewData["Title"] = "Tra cứu thông tin Tro Cốt & Hình Thờ - Chùa Bửu Đà";
+    Layout = "_Layout";
+    var tuKhoa = ViewBag.TuKhoa as string ?? "";
+    var loaiHienTai = ViewBag.LoaiHienTai as string ?? "ALL";
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-        body {
-            background-image: url('/images/bg-cot.jpg'); /* Bạn có thể đổi ảnh nền */
-            background-size: cover;
-            background-position: center;
-            color: white;
+<style>
+    .bg-search-main {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.82)), url('/images/bg-cot.jpg?v=@DateTime.Now.Ticks');
+        background-size: cover;
+        background-position: center top;
+        background-attachment: fixed;
+        min-height: calc(100vh - 270px);
+        padding: 35px 15px 60px 15px;
+    }
+
+    .serif-title {
+        font-family: 'Merriweather', serif;
+    }
+
+    /* ================= THIẾT KẾ TẦNG 1: BANNER 3 LỚP HOÀNG GIA ================= */
+    .search-banner-container {
+        position: relative;
+        background: radial-gradient(circle at center, rgba(40, 30, 18, 0.92) 0%, rgba(18, 14, 10, 0.96) 80%);
+        border: 2px solid rgba(245, 158, 11, 0.55);
+        border-radius: 28px;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), inset 0 0 40px rgba(245, 158, 11, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 60px 25px 50px 25px;
+        margin-bottom: 45px;
+        overflow: hidden;
+        min-height: 380px;
+    }
+
+    /* Lớp phủ ảnh trong suốt: Tượng Đức Địa Tạng, hoa sen và hoa văn mây */
+    .banner-overlay-art {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('/images/bg-search-banner.png?v=@DateTime.Now.Ticks') no-repeat center center;
+        background-size: 100% 100%;
+        pointer-events: none; /* Không cản trở click chuột vào form */
+        z-index: 1;
+        opacity: 0.95;
+    }
+
+    /* Khung nội dung thao tác nổi lên trên cùng */
+    .banner-interactive-content {
+        position: relative;
+        z-index: 2;
+        max-width: 640px;
+        margin: 0 auto;
+    }
+
+    /* Chữ tiêu đề ánh kim */
+    .banner-title-gold {
+        font-family: 'Merriweather', serif;
+        font-weight: 800;
+        font-size: 32px;
+        letter-spacing: 2px;
+        background: linear-gradient(180deg, #fffbeb 0%, #fef08a 40%, #f59e0b 80%, #b45309 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 4px 15px rgba(0, 0, 0, 0.9);
+    }
+
+    .banner-quote {
+        color: #fef08a;
+        font-size: 15px;
+        font-style: italic;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+    }
+
+    /* Bộ nút lọc danh mục hoàng gia */
+    .filter-pills-bar {
+        display: inline-flex;
+        gap: 10px;
+        background: rgba(10, 8, 6, 0.75);
+        padding: 5px;
+        border-radius: 16px;
+        border: 1px solid rgba(245, 158, 11, 0.4);
+        box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+    }
+
+    .btn-pill-choice {
+        padding: 8px 22px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 14px;
+        color: #e7e5e4;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        border: 1px solid transparent;
+        background: transparent;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .btn-pill-choice:hover {
+            color: #fef08a;
+            background: rgba(245, 158, 11, 0.15);
         }
 
-        .search-box {
-            max-width: 600px;
-            margin: 20% auto;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 30px;
-            border-radius: 12px;
+        .btn-pill-choice.active {
+            background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+            color: #1c1917 !important;
+            border: 1px solid #fef08a;
+            box-shadow: 0 4px 15px rgba(217, 119, 6, 0.5);
         }
 
-        .form-control, .btn {
-            height: 48px;
-            font-size: 18px;
-        }
-    </style>
-</head>
-<body>
-    <div class="text-white p-5 rounded" style="background: rgba(0,0,0,0.6); max-width: 600px; margin: auto; margin-top: 120px;">
-        <h2 class="text-center mb-3">LƯU TRỮ TRO - CỐT</h2>
-        <p class="text-center mb-4">Không gian lưu trữ tro cốt trang nghiêm phù hợp với mọi tôn giáo, tín ngưỡng</p>
+    /* Thanh tìm kiếm hình viên thuốc mạ vàng */
+    .search-input-capsule {
+        background: #fdfaf3;
+        border-radius: 9999px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+        padding: 4px 6px 4px 18px;
+        display: flex;
+        align-items: center;
+        border: 2px solid #eab308;
+    }
 
-        <form asp-action="KetQuaTimKiem" method="get">
-            <div class="input-group">
-                <input type="text" name="ten" class="form-control" placeholder="Nhập thông tin người thân..." />
-                <button class="btn btn-warning" type="submit">
-                    <i class="bi bi-search"></i> Tìm kiếm
-                </button>
+        .search-input-capsule input {
+            border: none !important;
+            outline: none !important;
+            background: transparent !important;
+            font-size: 15px;
+            font-weight: 500;
+            color: #1c1917 !important;
+            width: 100%;
+            padding: 8px 12px;
+        }
+
+            .search-input-capsule input::placeholder {
+                color: #78716c;
+                font-weight: 400;
+            }
+
+    .btn-search-capsule {
+        background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+        border: 1px solid #fef08a;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 15px;
+        padding: 10px 30px;
+        border-radius: 9999px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 4px 12px rgba(180, 83, 9, 0.4);
+        transition: all 0.2s;
+    }
+
+        .btn-search-capsule:hover {
+            background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
+            color: #ffffff;
+        }
+
+    .search-note {
+        color: #fef08a;
+        font-size: 13px;
+        margin-top: 14px;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+    }
+
+    /* ================= THIẾT KẾ THẺ CARD & PHÂN TRANG ================= */
+    .card-item {
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .card-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+        }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.35rem;
+        list-style: none;
+        padding: 0;
+    }
+
+    .page-item .page-link {
+        padding: 0.45rem 0.85rem;
+        border-radius: 0.5rem;
+        background: rgba(20, 16, 12, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #E7E5E4;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    .page-item.active .page-link {
+        background-color: #d97706;
+        border-color: #f59e0b;
+        color: white;
+        font-weight: bold;
+    }
+
+    .page-item .page-link:hover:not(.active) {
+        background: rgba(255, 255, 255, 0.2);
+    }
+</style>
+
+<div class="bg-search-main">
+    <div class="container" style="max-width: 1100px;">
+
+        <!-- ================= TẦNG 1: KHUNG TÌM KIẾM 3 LỚP THEO THIẾT KẾ BANNER ================= -->
+        <div class="search-banner-container text-center">
+
+            <!-- LỚP HOA VĂN PHẬT & HOA SEN TRONG SUỐT PHỦ LÊN -->
+            <div class="banner-overlay-art"></div>
+
+            <!-- LỚP NỘI DUNG TƯƠNG TÁC NỔI PHÍA TRÊN -->
+            <div class="banner-interactive-content">
+
+                <!-- Tiêu đề & Câu danh ngôn -->
+                <h1 class="banner-title-gold mb-2 text-uppercase">
+                    TRA CỨU NGƯỜI THÂN
+                </h1>
+                <p class="banner-quote mb-4">
+                    “Người còn thương nhớ là còn hiện hữu trong trái tim chúng ta.”
+                </p>
+
+                <!-- Form tìm kiếm & Bộ lọc -->
+                <form asp-controller="Home" asp-action="TrangTimKiem" method="get">
+
+                    <!-- 3 Nút lọc Phân loại -->
+                    <div class="mb-4">
+                        <div class="filter-pills-bar">
+                            <input type="radio" class="btn-check" name="loai" id="loaiAll" value="ALL" @(loaiHienTai == "ALL" ? "checked" : "") onchange="this.form.submit()">
+                            <label class="btn-pill-choice @(loaiHienTai == "ALL" ? "active" : "")" for="loaiAll">
+                                <i class="bi bi-grid-fill"></i> Tất cả
+                            </label>
+
+                            <input type="radio" class="btn-check" name="loai" id="loaiCot" value="COT" @(loaiHienTai == "COT" ? "checked" : "") onchange="this.form.submit()">
+                            <label class="btn-pill-choice @(loaiHienTai == "COT" ? "active" : "")" for="loaiCot">
+                                🏺 Tro Cốt
+                            </label>
+
+                            <input type="radio" class="btn-check" name="loai" id="loaiHinh" value="HINH_THO" @(loaiHienTai == "HINH_THO" ? "checked" : "") onchange="this.form.submit()">
+                            <label class="btn-pill-choice @(loaiHienTai == "HINH_THO" ? "active" : "")" for="loaiHinh">
+                                🖼️ Hình Thờ
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Thanh Input viên thuốc bo tròn mạ vàng -->
+                    <div class="search-input-capsule">
+                        <span class="ps-2 text-secondary fs-5" style="filter: grayscale(100%) opacity(0.6);">🪷</span>
+                        <input type="text"
+                               name="ten"
+                               value="@tuKhoa"
+                               placeholder="Nhập họ tên, pháp danh hoặc năm mất..."
+                               autofocus />
+                        <button type="submit" class="btn-search-capsule">
+                            <i class="bi bi-search"></i> Tìm kiếm
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Chú thích hỗ trợ người dùng -->
+                <div class="search-note">
+                    💡 Quý Phật tử có thể gõ tiếng Việt không dấu hoặc chỉ cần nhập năm sinh/mất để tra cứu nhanh.
+                </div>
+
             </div>
-        </form>
-    </div>
 
-</body>
-</html>
+        </div>
+
+        <!-- ================= TẦNG 2: DANH SÁCH THẺ KẾT QUẢ ================= -->
+        <div class="d-flex justify-content-between align-items-center mb-3 text-white border-bottom border-secondary pb-2">
+            <div class="d-flex align-items-center gap-2">
+                <h5 class="fw-bold mb-0 text-warning">
+                    <i class="bi bi-collection me-1"></i> Danh sách hồ sơ
+                    <span class="badge bg-warning text-dark ms-1">@Model.TotalItemCount kết quả</span>
+                </h5>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-controller="RutCots" asp-action="Index" class="btn btn-xs btn-outline-info ms-2 px-2 py-0.5 small fw-bold">
+                        📦 Rút Cốt
+                    </a>
+                }
+            </div>
+            <small class="text-secondary">Bấm vào thẻ để xem chi tiết bên dưới 👇</small>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center p-5 rounded-4 border border-secondary" style="background: rgba(18, 14, 10, 0.85);">
+                <div class="text-secondary fs-1 mb-2">🪷</div>
+                <h5 class="text-white">Không tìm thấy hồ sơ phù hợp</h5>
+                <p class="text-secondary small">Xin vui lòng kiểm tra lại họ tên hoặc thử tìm với năm mất.</p>
+            </div>
+        }
+        else
+        {
+            <div class="row g-3">
+                @foreach (var item in Model)
+                {
+                    var isCot = item.Loai == "Cốt";
+                    var avatarUrl = !string.IsNullOrEmpty(item.AnhUrl)
+                    ? $"{item.AnhUrl}?ver={Guid.NewGuid()}"
+                    : Url.Content(isCot ? "~/images/anhcot.jpg" : "~/images/Hinh.png");
+
+                    var detailPath = isCot ? $"/Cots/Details/{item.ID}" : $"/Hinh/Details/{item.ID}";
+
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <!-- Bấm thẻ sẽ gọi hàm AJAX nạp trực tiếp file Details vào Tầng 3 -->
+                        <div onclick="taiChiTietVaoTang3('@detailPath')"
+                             class="card h-100 p-3 rounded-4 border-2 card-item d-block"
+                             style="@(isCot ? "background: linear-gradient(135deg, rgba(69, 26, 3, 0.85), rgba(28, 25, 23, 0.95)); border-color: rgba(245, 158, 11, 0.65);"
+                                            : "background: linear-gradient(135deg, rgba(6, 78, 59, 0.85), rgba(28, 25, 23, 0.95)); border-color: rgba(16, 185, 129, 0.65);")">
+
+                            <div class="d-flex gap-3">
+                                <div class="position-relative flex-shrink-0">
+                                    <img src="@avatarUrl"
+                                         alt="@item.Ho @item.Ten"
+                                         class="rounded-3 border border-secondary shadow-sm object-fit-cover"
+                                         style="width: 75px; height: 95px; background: #0c0a09;" />
+                                    <span class="position-absolute bottom-0 start-50 translate-middle-x badge @(isCot ? "bg-warning text-dark fw-bold" : "bg-success text-white fw-bold")" style="font-size: 9px;">
+                                        @(isCot ? "TRO CỐT" : "HÌNH THỜ")
+                                    </span>
+                                </div>
+
+                                <div class="flex-grow-1 min-w-0 text-white">
+                                    <h6 class="fw-bold mb-1 text-truncate" style="font-size: 16px;">@item.Ho @item.Ten</h6>
+
+                                    <div class="small fw-bold @(isCot ? "text-warning" : "text-success-emphasis") mb-1">
+                                        PD: @(!string.IsNullOrEmpty(item.PhapDanh) ? item.PhapDanh : "Chưa có")
+                                    </div>
+
+                                    <div class="text-secondary small" style="font-size: 12px;">
+                                        Sinh: <span class="text-light">@(item.NamSinh ?? "---")</span> | Mất: <span class="text-light">@(item.NgayMatDL ?? "---")</span>
+                                    </div>
+
+                                    @if (item.Tuoi.HasValue)
+                                    {
+                                        <div class="text-secondary small" style="font-size: 12px;">
+                                            Thọ: <span class="text-light">@item.Tuoi tuổi</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="mt-3 pt-2 border-top border-secondary-subtle d-flex justify-content-between align-items-center small">
+                                <div class="text-secondary text-truncate" style="max-width: 60%;">
+                                    📍 <span class="text-light">@item.ViTriHienThi</span>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2">
+                                    @* Nút xem ảnh trực tiếp trên Card nếu có LinkAnh *@
+                                    @if (!string.IsNullOrWhiteSpace(item.LinkAnh))
+                                    {
+                                        <a href="@item.LinkAnh" target="_blank" rel="noopener noreferrer"
+                                           onclick="event.stopPropagation();"
+                                           class="badge bg-primary text-white text-decoration-none py-1 px-2 shadow-sm"
+                                           style="font-size: 11px; background-color: #2563eb !important;">
+                                            📷 Xem ảnh
+                                        </a>
+                                    }
+                                    <span class="text-warning fw-bold">Chi tiết ▾</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- PHÂN TRANG 20 MỤC/TRANG -->
+            <div class="mt-5 d-flex justify-content-center">
+                @Html.PagedListPager(Model, page => Url.Action("TrangTimKiem", new { ten = tuKhoa, loai = loaiHienTai, page = page }),
+                         new PagedListRenderOptions
+            {
+                DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+                LiElementClasses = new[] { "page-item" },
+                PageClasses = new[] { "page-link" }
+            })
+            </div>
+        }
+
+        <!-- ================= TẦNG 3: NƠI HIỂN THỊ TRỰC TIẾP FILE DETAILS ================= -->
+        <div id="khungChiTietHoSo" class="d-none mt-5">
+            <!-- Toàn bộ giao diện của Details.cshtml sẽ được tải nguyên vẹn vào đây -->
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function taiChiTietVaoTang3(url) {
+        const khung = document.getElementById('khungChiTietHoSo');
+        khung.innerHTML = '<div class="text-center text-warning p-4">Đang tải hồ sơ chi tiết...</div>';
+        khung.classList.remove('d-none');
+        khung.scrollIntoView({ behavior: 'smooth' });
+
+        // Gửi Header XMLHttpRequest để Details.cshtml biết là tải vào Tầng 3
+        fetch(url, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Không thể tải trang");
+            return response.text();
+        })
+        .then(html => {
+            khung.innerHTML = html;
+        })
+        .catch(err => {
+            khung.innerHTML = '<div class="text-danger text-center p-4">Có lỗi xảy ra khi tải chi tiết hồ sơ.</div>';
+        });
+    }
+
+    function dongChiTietTang3() {
+        const khung = document.getElementById('khungChiTietHoSo');
+        khung.classList.add('d-none');
+        khung.innerHTML = '';
+    }
+</script>

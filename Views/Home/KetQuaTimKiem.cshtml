@@ -2,79 +2,225 @@
 @using X.PagedList.Mvc.Core
 
 @{
-    ViewData["Title"] = "Kết quả tìm kiếm";
-    Layout = "_Layout";
+    ViewData["Title"] = "Kết quả tra cứu - Chùa Bửu Đà";
+    Layout = null;
+    var keyword = Context.Request.Query["ten"].ToString();
 }
 
-<div class="container py-5">
-    <a href="@Url.Action("TrangTimKiem", "Home")" class="btn btn-secondary mb-4">← Quay lại tìm kiếm</a>
-    <h2 class="mb-4 text-center">Kết quả tìm kiếm</h2>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,300&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-image: url('/images/bg-cot.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
 
-    @if (!Model.Any())
-    {
-        <div class="alert alert-warning text-center">Không tìm thấy kết quả phù hợp.</div>
-    }
-    else
-    {
-        <table class="table table-bordered table-hover bg-white rounded">
-            <thead class="table-dark text-center align-middle">
-                <tr>
-                    <th>Loại</th>
-                    <th>Họ tên</th>
-                    <th>Pháp danh</th>
-                    <th>Năm sinh</th>
-                    <th>Ngày mất</th>
-                    <th>Tuổi</th>
-                    <th>Vị trí</th>
-                    <th>Người thân</th>
-                    <th>Ảnh</th>
-                    <th>Chi tiết</th>
-                </tr>
-            </thead>
-            <tbody>
+        .serif-font {
+            font-family: 'Merriweather', serif;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.35rem;
+            list-style: none;
+            padding: 0;
+        }
+
+        .page-item .page-link {
+            padding: 0.5rem 0.85rem;
+            border-radius: 0.5rem;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #E7E5E4;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            backdrop-filter: blur(4px);
+        }
+
+        .page-item.active .page-link {
+            background-color: #D97706;
+            border-color: #F59E0B;
+            color: white;
+            font-weight: bold;
+        }
+
+        .page-item .page-link:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-stone-100 bg-black/75">
+
+    <!-- 1. Header -->
+    <header class="bg-black/80 backdrop-blur-md border-b border-amber-500/30 px-4 py-3 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 text-xl font-bold">
+                    ☸
+                </div>
+                <div>
+                    <h1 class="text-base md:text-lg font-bold text-amber-200 tracking-wide uppercase">Chùa Bửu Đà</h1>
+                    <p class="text-[10px] md:text-xs text-stone-300">Từ Bi - Trí Tuệ - Hướng Thiện</p>
+                </div>
+            </div>
+
+            <a href="@Url.Action("TrangTimKiem", "Home")" class="text-xs bg-amber-600/30 hover:bg-amber-600 text-amber-200 hover:text-white px-3.5 py-1.5 rounded-xl transition border border-amber-400/40 flex items-center gap-1.5 font-bold">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Tìm kiếm khác
+            </a>
+        </div>
+    </header>
+
+    <!-- 2. Nội dung kết quả tra cứu -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-6 md:py-8">
+
+        <!-- Thanh tiêu đề & Ô tìm nhanh -->
+        <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-white/15 pb-4">
+            <div>
+                <h2 class="text-2xl font-bold text-amber-200 serif-font">Kết quả tra cứu</h2>
+                <p class="text-stone-300 text-xs md:text-sm mt-0.5">
+                    @if (!string.IsNullOrEmpty(keyword))
+                    {
+                        <span>Từ khóa: <strong class="text-amber-400">"@keyword"</strong> — </span>
+                    }
+                    Tìm thấy <strong class="text-white">@Model.TotalItemCount</strong> kết quả
+                </p>
+            </div>
+
+            <form asp-action="KetQuaTimKiem" method="get" class="flex gap-2 max-w-sm w-full">
+                <input type="text" name="ten" value="@keyword" placeholder="Nhập tên, pháp danh..."
+                       class="w-full text-xs md:text-sm px-3.5 py-2.5 bg-black/60 text-white border border-white/20 rounded-xl outline-none focus:border-amber-400" />
+                <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-4 py-2.5 rounded-xl shrink-0 font-bold">
+                    Tìm
+                </button>
+            </form>
+        </div>
+
+        <!-- Chú thích nhận diện màu thẻ -->
+        <div class="flex items-center gap-4 mb-4 text-xs">
+            <span class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-amber-500 border border-amber-300"></span> Thẻ màu Vàng Nâu: <strong>Tro Cốt</strong>
+            </span>
+            <span class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-emerald-500 border border-emerald-300"></span> Thẻ màu Xanh Ngọc: <strong>Hình Thờ</strong>
+            </span>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="bg-black/70 backdrop-blur-md rounded-2xl border border-white/15 p-10 text-center max-w-md mx-auto my-8">
+                <div class="text-4xl mb-3 text-stone-400">🪷</div>
+                <h3 class="text-base font-bold text-stone-200 mb-1">Không tìm thấy thông tin</h3>
+                <p class="text-xs text-stone-400 mb-4">Quý Phật tử vui lòng kiểm tra lại họ tên hoặc năm sinh/mất.</p>
+                <a href="@Url.Action("TrangTimKiem", "Home")" class="inline-block bg-amber-600 text-white text-xs px-5 py-2.5 rounded-xl font-bold hover:bg-amber-500">
+                    Trở lại tìm kiếm
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach (var item in Model)
                 {
-                    var rowClass = item.Loai == "Cốt" ? "table-success" : "table-warning";
-                    <tr class="@rowClass text-center align-middle">
-                        <td><strong>@item.Loai</strong></td>
-                        <td>@item.Ho @item.Ten</td>
-                        <td>@item.PhapDanh</td>
-                        <td>@item.NamSinh</td>
-                        <td>@item.NgayMatDL</td>
-                        <td>@item.Tuoi</td>
-                        <td>@item.ViTriHienThi</td>
-                        <td>@item.TenNguoiThan</td>
-                        <td>
-                            <img src="@(!string.IsNullOrEmpty(item.AnhUrl)
-                                 ? $"{item.AnhUrl}?ver={Guid.NewGuid()}"
-                                 : Url.Content("~/images/Hinh.png"))"
-                                 width="70" height="90"
-                                 style="object-fit: cover; border-radius: 5px;" />
-                        </td>
+                    var isCot = item.Loai == "Cốt";
+                    var detailUrl = Url.Action("Details", isCot ? "Cots" : "Hinh", new { id = item.ID });
+                    var avatarUrl = !string.IsNullOrEmpty(item.AnhUrl)
+                    ? $"{item.AnhUrl}?ver={Guid.NewGuid()}"
+                    : Url.Content("~/images/Hinh.png");
 
-                        <td>
-                            <a href="@Url.Action("Details", item.Loai == "Cốt" ? "Cots" : "Hinh", new { id = item.ID })"
-                               class="btn btn-sm btn-info text-white">
-                                Thông tin người mất
+                    <div class="backdrop-blur-md rounded-2xl p-4 shadow-xl transition duration-200 flex flex-col justify-between border-2
+                                @(isCot ? "bg-gradient-to-br from-amber-950/80 via-stone-900/90 to-stone-950 border-amber-500/50 hover:border-amber-400"
+                                        : "bg-gradient-to-br from-teal-950/80 via-stone-900/90 to-stone-950 border-emerald-500/50 hover:border-emerald-400")">
+
+                        <div class="flex items-start space-x-3.5">
+                            <div class="relative shrink-0">
+                                <img src="@avatarUrl"
+                                     alt="@item.Ho @item.Ten"
+                                     class="w-16 h-20 md:w-20 md:h-24 object-cover rounded-xl border border-white/20 shadow-md bg-stone-900" />
+
+                                <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 text-[9px] font-black px-2 py-0.5 rounded shadow whitespace-nowrap
+                                             @(isCot ? "bg-amber-500 text-stone-950 border border-amber-300"
+                                                     : "bg-emerald-500 text-stone-950 border border-emerald-300")">
+                                    @(isCot ? "TRO CỐT" : "HÌNH THỜ")
+                                </span>
+                            </div>
+
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-bold text-white text-base leading-tight truncate">
+                                    @item.Ho @item.Ten
+                                </h3>
+
+                                <p class="text-xs font-bold mt-1 @(isCot ? "text-amber-300" : "text-emerald-300")">
+                                    PD: @(!string.IsNullOrEmpty(item.PhapDanh) ? item.PhapDanh : "Chưa có")
+                                </p>
+
+                                <div class="text-[11px] text-stone-300 mt-1 space-y-0.5">
+                                    <div>Sinh: <span class="text-white font-medium">@(item.NamSinh ?? "---")</span> | Mất: <span class="text-white font-medium">@(item.NgayMatDL ?? "---")</span></div>
+                                    @if (!string.IsNullOrEmpty(item.Tuoi?.ToString()))
+                                    {
+                                        <div>Thọ: <span class="text-white font-medium">@item.Tuoi tuổi</span></div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs">
+                            <div class="bg-black/50 text-stone-200 px-2.5 py-1 rounded-lg border border-white/10 font-semibold truncate max-w-[60%]" title="@item.ViTriHienThi">
+                                📍 @(string.IsNullOrEmpty(item.ViTriHienThi) ? "Đang cập nhật" : item.ViTriHienThi)
+                            </div>
+
+                            <a href="@detailUrl"
+                               class="px-3.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1 border shadow
+                                      @(isCot ? "bg-amber-600 hover:bg-amber-500 text-white border-amber-400/50"
+                                              : "bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-400/50")">
+                                Chi tiết
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                             </a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                        </div>
 
-        <div class="d-flex justify-content-center mt-4">
-            @Html.PagedListPager(Model, page => Url.Action("KetQuaTimKiem", new { ten = Context.Request.Query["ten"], page }),
-                     new PagedListRenderOptions
-        {
-            DisplayLinkToFirstPage = PagedListDisplayMode.Always,
-            DisplayLinkToLastPage = PagedListDisplayMode.Always,
-            DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
-            DisplayLinkToNextPage = PagedListDisplayMode.Always,
-            DisplayEllipsesWhenNotShowingAllPageNumbers = true,
-            LiElementClasses = new[] { "page-item" },
-            PageClasses = new[] { "page-link" }
-        })
+                    </div>
+                }
+            </div>
+
+            <!-- Phân trang -->
+            <div class="mt-8 flex justify-center">
+                @Html.PagedListPager(Model, page => Url.Action("KetQuaTimKiem", new { ten = keyword, page }),
+                         new PagedListRenderOptions
+            {
+                DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+                LiElementClasses = new[] { "page-item" },
+                PageClasses = new[] { "page-link" }
+            })
+            </div>
+        }
+
+    </main>
+
+    <!-- 3. Footer Nền Vàng & Logo Bửu Đà chuẩn bản gốc -->
+    <footer style="background-color: #f9c300; padding: 20px 0; text-align: center; color: #1c1917;" class="mt-12">
+        <div style="width: 100px; height: 100px; border-radius: 50%; background-color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            <img src="~/images/logo_Chua.jpg" alt="Logo" style="height: 70px; width: 70px; object-fit: contain;" />
         </div>
-    }
-</div>
+        <h5 class="fw-bold text-uppercase mb-1" style="color: #78350f; font-weight: 800;">CHÙA BỬU ĐÀ</h5>
+        <p class="mb-1 text-xs sm:text-sm font-medium">Địa chỉ: 419/11 Cách Mạng Tháng 8, Phường 13, Quận 10, TP Hồ Chí Minh</p>
+        <p class="mb-1 text-xs sm:text-sm font-medium">Điện thoại: <strong>0918 205 182</strong> - Website: chuabuuda.org</p>
+        <p class="text-[11px] text-stone-600 mb-0">Copyright © 2026 CHÙA BỬU ĐÀ. Hệ thống quản lý tưởng niệm.</p>
+    </footer>
+
+</body>
+</html>

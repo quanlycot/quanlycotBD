@@ -2,79 +2,149 @@
 @using X.PagedList.Mvc.Core
 @model IPagedList<RutCot>
 
-
 @{
     ViewData["Title"] = "Danh sách rút cốt";
     string keyword = Context.Request.Query["search"];
 }
 
-<h2 class="text-center mb-4">Danh sách rút cốt</h2>
-<div class="mb-3 text-end">
-    <a asp-action="ExportExcel" asp-route-search="@Context.Request.Query["search"]" class="btn btn-success">
-        Xuất Excel
-    </a>
-</div>
-<div class="row mb-3">
-    <div class="col-md-4">
-        <form asp-action="Index" method="get" class="d-flex">
-            <input type="text" name="search" value="@keyword" class="form-control me-2" placeholder="Tìm theo ID hoặc người rút..." />
-            <button type="submit" class="btn btn-primary">Tìm</button>
-        </form>
-    </div>
-    <div class="col-md-8 text-end">
-        <a asp-action="Create" class="btn btn-success">+ Thêm mới</a>
-    </div>
-</div>
-
-<table class="table table-bordered table-striped">
-    <thead class="table-dark">
-        <tr>
-            <th>ID</th>
-            <th>Người Rút</th>
-            <th>Họ Tên Cốt</th>
-            <th>Lô</th>
-            <th>Lầu</th>
-            <th>Ngày Rút</th>
-            <th style="width:180px;">Thao tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.IDRut</td>
-                <td>@($"{item.HoNguoiRut} {item.TenNguoiRut}")</td>
-                <td>@Html.Raw(item.HoTenCot?.Replace("\n", "<br>"))</td>
-                <td>@Html.Raw(item.Lo?.Replace("\n", "<br>"))</td>
-                <td>@Html.Raw(item.Lau?.Replace("\n", "<br>"))</td>
-                <td>@item.NgayRut</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.IDRut" class="btn btn-sm btn-info me-1">Chi tiết</a>
-                    <a asp-action="Edit" asp-route-id="@item.IDRut" class="btn btn-sm btn-warning">Cập nhật</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<div class="d-flex justify-content-center mt-4">
-    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, search = keyword }),
-            new PagedListRenderOptions
-    {
-        UlElementClasses = new[] { "pagination" },
-        LiElementClasses = new[] { "page-item" },
-        PageClasses = new[] { "page-link" }
-    })
-</div>
-
 <style>
-    td {
-        vertical-align: top;
-        word-break: break-word;
-        white-space: pre-wrap;
+    .rutcot-table th {
+        background-color: #212529 !important;
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 10px 8px;
+        vertical-align: middle;
     }
 
-    .pagination {
-        justify-content: center;
+    .rutcot-table td {
+        font-size: 14px;
+        padding: 8px 10px;
+        vertical-align: middle;
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    .btn-action-sm {
+        padding: 3px 8px;
+        font-size: 12px;
+        font-weight: 600;
     }
 </style>
+
+<div class="container-fluid px-lg-4 my-3">
+    <!-- Tiêu đề -->
+    <h3 class="text-center fw-bold mb-3 text-uppercase" style="letter-spacing: 0.5px;">
+        📦 Danh sách rút cốt
+    </h3>
+
+    <!-- Thanh công cụ: Tìm kiếm, Thêm mới, Xuất Excel gom chung 1 hàng -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <!-- Cụm tìm kiếm -->
+        <form asp-action="Index" method="get" class="d-flex align-items-center" style="max-width: 420px; flex: 1;">
+            <div class="input-group input-group-sm">
+                <input type="text" name="search" value="@keyword" class="form-control" placeholder="Tìm theo ID hoặc tên người rút..." />
+                <button type="submit" class="btn btn-primary px-3 fw-bold">Tìm</button>
+            </div>
+            @if (!string.IsNullOrEmpty(keyword))
+            {
+                <a asp-action="Index" class="btn btn-sm btn-outline-secondary ms-2 text-nowrap">Hủy</a>
+            }
+        </form>
+
+        <!-- Cụm nút thao tác xuất/nhập -->
+        <div class="d-flex gap-2">
+            <a asp-action="Create" class="btn btn-sm btn-success fw-bold px-3">
+                ➕ Thêm mới
+            </a>
+            <a asp-action="ExportExcel" asp-route-search="@keyword" class="btn btn-sm btn-outline-success fw-bold px-3">
+                📥 Xuất Excel
+            </a>
+        </div>
+    </div>
+
+    <!-- Bảng dữ liệu cân đối, có viền bo góc và bóng nhẹ -->
+    <div class="table-responsive rounded shadow-sm border bg-white">
+        <table class="table table-bordered table-hover table-striped mb-0 rutcot-table align-middle">
+            <thead class="text-center">
+                <tr>
+                    <th style="width: 60px;">ID</th>
+                    <th style="width: 180px;" class="text-start">Người Rút</th>
+                    <th class="text-start">Họ Tên Cốt</th>
+                    <th style="width: 80px;">Lô</th>
+                    <th style="width: 70px;">Lầu</th>
+                    <th style="width: 120px;">Ngày Rút</th>
+                    <th style="width: 150px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-center fw-bold text-secondary">@item.IDRut</td>
+                            <td class="text-start fw-semibold">@($"{item.HoNguoiRut} {item.TenNguoiRut}".Trim())</td>
+                            <td class="text-start text-dark">
+                                @Html.Raw(item.HoTenCot?.Replace("\n", "<br/>"))
+                            </td>
+                            <td class="text-center fw-bold text-primary">
+                                @Html.Raw(item.Lo?.Replace("\n", "<br/>"))
+                            </td>
+                            <td class="text-center">
+                                @Html.Raw(item.Lau?.Replace("\n", "<br/>"))
+                            </td>
+                            <td class="text-center text-muted">
+                                @{
+                                    string ngayHienThi = item.NgayRut ?? "";
+                                    if (double.TryParse(item.NgayRut, out double oaDate))
+                                    {
+                                        try
+                                        {
+                                            ngayHienThi = DateTime.FromOADate(oaDate).ToString("dd/MM/yyyy");
+                                        }
+                                        catch { }
+                                    }
+                                }
+                                @ngayHienThi
+                            </td>
+                            <td class="text-center">
+                                <div class="d-inline-flex gap-1">
+                                    <a asp-action="Details" asp-route-id="@item.IDRut" class="btn btn-info text-white btn-action-sm">
+                                        Chi tiết
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@item.IDRut" class="btn btn-warning text-dark btn-action-sm">
+                                        Cập nhật
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">Không có dữ liệu rút cốt.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Thanh tổng cộng và phân trang -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 small text-muted">
+        <div>
+            Tổng cộng: <strong>@Model.TotalItemCount</strong> phiếu rút cốt
+        </div>
+        <div>
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page, search = keyword }),
+                     new PagedListRenderOptions
+            {
+                MaximumPageNumbersToDisplay = 5,
+                UlElementClasses = new[] { "pagination pagination-sm mb-0" },
+                LiElementClasses = new[] { "page-item" },
+                PageClasses = new[] { "page-link" }
+            })
+        </div>
+    </div>
+</div>

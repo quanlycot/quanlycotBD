@@ -12,34 +12,85 @@
     ViewData["Title"] = "Danh sách Hình Thờ";
 }
 
-<h2 class="text-center mb-4">Danh sách Hình Thờ</h2>
+<style>
+    /* 1. Hiệu ứng viền nổi bật dòng vừa tạo */
+    .row-highlight td {
+        background-color: #d1e7dd !important;
+        border-top: 2px solid #198754 !important;
+        border-bottom: 2px solid #198754 !important;
+        font-weight: bold;
+        transition: background-color 0.5s ease;
+    }
+
+    /* 2. Thanh cuộn mượt mà riêng cho Modal 3 Tầng */
+    .modal-scroll-custom::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .modal-scroll-custom::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 4px;
+    }
+
+    .modal-scroll-custom::-webkit-scrollbar-thumb {
+        background: #198754;
+        border-radius: 4px;
+    }
+
+        .modal-scroll-custom::-webkit-scrollbar-thumb:hover {
+            background: #157347;
+        }
+
+    /* 3. Thanh cuộn cho danh sách tìm kiếm thân nhân */
+    .box-tim-nt-scroll {
+        max-height: 180px !important;
+        overflow-y: auto !important;
+        border: 1px solid #198754 !important;
+    }
+</style>
+
+<h2 class="text-center mb-4 text-success fw-bold">Danh sách Hình Thờ</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-success text-center">
+    <div class="alert alert-success text-center shadow-sm">
         @TempData["SuccessMessage"]
     </div>
 }
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger text-center shadow-sm">
+        @TempData["ErrorMessage"]
+    </div>
+}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <form asp-action="Index" method="get" class="d-flex mb-3">
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <!-- Cụm tìm kiếm -->
+    <form asp-action="Index" method="get" class="d-flex flex-grow-1" style="max-width: 650px;">
         <input type="text" name="searchString"
                value="@Context.Request.Query["searchString"]"
                class="form-control me-2"
-               placeholder="Nhập ID, họ tên, pháp danh"
-               style="flex: 1; min-width: 300px;" />
+               placeholder="Nhập ID, họ tên, pháp danh..." />
 
         <input type="number" name="namKetThuc"
                value="@Context.Request.Query["namKetThuc"]"
-               class="form-control me-2"
+               class="form-control me-2" style="max-width: 160px;"
                placeholder="Năm kết thúc" />
 
-        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+        <button type="submit" class="btn btn-primary px-3">Tìm kiếm</button>
     </form>
+
+    <!-- Nút mở Modal 3 Tầng -->
+    @if (User.IsInRole("Admin"))
+    {
+        <button type="button" class="btn btn-success fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalThemHinh3Tang">
+            ➕ Tiếp Nhận Hình Thờ Mới
+        </button>
+    }
 </div>
 
-<div class="table-responsive">
-    <table class="table table-striped table-bordered table-hover">
+<div class="table-responsive shadow-sm rounded">
+    <table class="table table-striped table-bordered table-hover mb-0">
         <thead class="table-dark text-center">
             <tr>
                 <th>STT</th>
@@ -53,7 +104,7 @@
                 <th>Ảnh Hình Thờ</th>
                 <th>Vị trí (Tủ - Dãy)</th>
                 <th>Ngày KT</th>
-                <th>ID Người Thân</th>
+                <th>ID Thân Nhân</th>
                 <th>Thao tác</th>
             </tr>
         </thead>
@@ -64,7 +115,7 @@
                 foreach (var hinh in Model)
                 {
                     stt++;
-                    <tr class="text-center align-middle @(hinh.IDHinh == highlightId ? "table-warning" : "")" id="hinh-@hinh.IDHinh">
+                    <tr class="text-center align-middle @(hinh.IDHinh == highlightId ? "row-highlight" : "")" id="hinh-@hinh.IDHinh">
                         <td>@stt</td>
                         <td>@hinh.Ho</td>
                         <td>@hinh.Ten</td>
@@ -75,10 +126,11 @@
                         <td>@hinh.Tuoi</td>
                         <td>
                             <img src="@(!string.IsNullOrEmpty(hinh.AnhHinh)
-                                 ? $"{hinh.AnhHinh}?ver={Guid.NewGuid()}"
-                                 : Url.Content("~/images/Hinh.png"))"
+                                         ? $"{hinh.AnhHinh}?ver={Guid.NewGuid()}"
+                                         : Url.Content("~/images/Hinh.png"))"
                                  alt="Ảnh hình thờ"
-                                 style="width:80px; height:100px; object-fit:cover;" />
+                                 class="rounded border shadow-sm"
+                                 style="width:75px; height:95px; object-fit:cover;" />
                         </td>
                         <td>@($"{hinh.ViTri?.Tu} - {hinh.ViTri?.Day}".Trim(' ', '-'))</td>
                         <td>@hinh.NgayKetThuc?.ToString("dd/MM/yyyy")</td>
@@ -86,18 +138,17 @@
                             <a asp-controller="HT_NguoiThan"
                                asp-action="ThongKe"
                                asp-route-id="@hinh.IDNguoiThan"
-                               class="text-decoration-none">
+                               class="text-decoration-none fw-bold">
                                 @hinh.IDNguoiThan
                             </a>
                         </td>
-
                         <td>
                             @if (User.IsInRole("Admin"))
                             {
                                 <a asp-action="Edit" asp-route-id="@hinh.IDHinh" class="btn btn-sm btn-warning">Sửa</a>
                                 <a asp-action="Delete" asp-route-id="@hinh.IDHinh" class="btn btn-sm btn-danger">Xóa</a>
                             }
-                            <a asp-action="Details" asp-route-id="@hinh.IDHinh" class="btn btn-sm btn-info">Chi tiết</a>
+                            <a asp-action="Details" asp-route-id="@hinh.IDHinh" class="btn btn-sm btn-info text-white">Chi tiết</a>
                         </td>
                     </tr>
                 }
@@ -105,18 +156,18 @@
             else
             {
                 <tr>
-                    <td colspan="13" class="text-center">Không có dữ liệu.</td>
+                    <td colspan="13" class="text-center py-4">Không có dữ liệu.</td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
 
-<div class="text-end me-3 mb-2 text-muted">
+<div class="text-end me-3 my-2 text-muted small">
     Tổng cộng: @Model.TotalItemCount hình
 </div>
 
-<div class="d-flex justify-content-center">
+<div class="d-flex justify-content-center mt-3">
     @Html.PagedListPager(Model, page => Url.Action("Index", new
         {
             page,
@@ -132,15 +183,329 @@
 })
 </div>
 
+<!-- ================= MODAL TIẾP NHẬN HÌNH THỜ 3 TẦNG ================= -->
+<div class="modal fade" id="modalThemHinh3Tang" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <!-- Đặt FORM làm thẻ modal-content để giữ vững cấu trúc Flexbox -->
+        <form asp-action="CreateAllInOne" method="post" enctype="multipart/form-data" class="modal-content border-0 shadow-lg">
+            @Html.AntiForgeryToken()
+
+            <!-- HEADER CỐ ĐỊNH -->
+            <div class="modal-header bg-success text-white py-3">
+                <h5 class="modal-title fw-bold">➕ TIẾP NHẬN HỒ SƠ HÌNH THỜ MỚI</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- NỘI DUNG CUỘN RIÊNG BIỆT (KHÔNG BỊ TRÀN HAY MẤT ĐÁY) -->
+            <div class="modal-body p-4 bg-light modal-scroll-custom" style="max-height: 72vh; overflow-y: auto;">
+
+                <!-- TẦNG 1: THÔNG TIN HÌNH THỜ & ẢNH -->
+                <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-header bg-white fw-bold text-success border-bottom">
+                        TẦNG 1: THÔNG TIN HÌNH THỜ & ẢNH
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Họ <span class="text-danger">*</span></label>
+                                <input type="text" name="Ho" class="form-control form-control-sm" required />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Tên <span class="text-danger">*</span></label>
+                                <input type="text" name="Ten" class="form-control form-control-sm" required />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Pháp danh</label>
+                                <input type="text" name="PhapDanh" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Năm sinh</label>
+                                <input type="text" name="NamSinh" class="form-control form-control-sm" />
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Ngày mất (ÂL)</label>
+                                <input type="text" name="NgayMatAL" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Ngày mất (DL)</label>
+                                <input type="text" name="NgayMatDL" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Tuổi</label>
+                                <input type="number" name="Tuoi" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Ngày bắt đầu</label>
+                                <input type="date" id="HT_NgayBatDau" name="NgayBatDau" value="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control form-control-sm" onchange="autoCapNhatNgayKetThuc()" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Ngày kết thúc (+10 năm)</label>
+                                <input type="date" id="HT_NgayKetThuc" name="NgayKetThuc" value="@DateTime.Today.AddYears(10).ToString("yyyy-MM-dd")" class="form-control form-control-sm" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Tải ảnh thờ (Azure Blob)</label>
+                                <input type="file" name="HinhAnhUpload" class="form-control form-control-sm" accept="image/*" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Link album mở rộng (nếu có)</label>
+                                <input type="url" name="LinkAnh" class="form-control form-control-sm" placeholder="https://drive.google.com/..." />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TẦNG 2: VỊ TRÍ AN VỊ (TỦ - DÃY) -->
+                <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-header bg-white fw-bold text-success border-bottom">
+                        TẦNG 2: VỊ TRÍ AN VỊ (TỦ - DÃY)
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Tủ (VD: Tủ 1, Tủ A):</label>
+                                <input type="text" id="inpVT_Tu" name="VT_Tu" class="form-control form-control-sm" placeholder="Nhập tên Tủ..." />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">Dãy / Hàng (VD: Dãy 1, Hàng A):</label>
+                                <input type="text" id="inpVT_Day" name="VT_Day" class="form-control form-control-sm" placeholder="Nhập tên Dãy..." />
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" class="btn btn-sm btn-primary w-100 fw-bold" onclick="kiemTraViTriHinh()">
+                                    🔍 Kiểm Tra Vị Trí
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="msgViTriHT" class="alert small mt-2 p-2 rounded d-none"></div>
+
+                        <input type="hidden" id="hdnIdViTriHT" name="IDViTri" value="0" />
+                        <input type="hidden" id="hdnTaoViTriMoiHT" name="TaoViTriMoi" value="false" />
+                    </div>
+                </div>
+
+                <!-- TẦNG 3: THÂN NHÂN LIÊN HỆ -->
+                <div class="card mb-2 border-0 shadow-sm">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center border-bottom">
+                        <span class="fw-bold text-success">TẦNG 3: THÂN NHÂN LIÊN HỆ</span>
+                        <button type="button" class="btn btn-sm btn-outline-success fw-bold" onclick="kichHoatTaoNguoiThanMoi()">
+                            ➕ Thêm Thân Nhân Mới
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-2 align-items-end mb-2">
+                            <div class="col-md-9">
+                                <label class="form-label small fw-bold">Tìm thân nhân (theo Họ Tên, SĐT, CCCD):</label>
+                                <input type="text" id="inpTimNT_HT" class="form-control form-control-sm" placeholder="Nhập tên, số điện thoại hoặc CCCD..." />
+                            </div>
+                            <div class="col-md-3">
+                                <button type="button" class="btn btn-sm btn-info w-100 fw-bold text-white" onclick="timNguoiThanHT()">
+                                    🔍 Tìm Danh Bạ
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Khung kết quả có thanh cuộn riêng -->
+                        <div id="boxKetQuaNT_HT" class="d-none mb-2 p-2 rounded bg-white small box-tim-nt-scroll"></div>
+                        <div id="msgStatusNT_HT" class="alert alert-info py-1 px-2 small mb-2 d-none"></div>
+
+                        <input type="hidden" id="hdnIdNguoiThanHT" name="IDNguoiThan" value="0" />
+                        <input type="hidden" id="hdnTaoNguoiThanMoiHT" name="TaoNguoiThanMoi" value="false" />
+
+                        <div class="row g-2 mt-2 p-2 border rounded bg-white">
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Họ thân nhân</label>
+                                <input type="text" id="nt_Ho" name="NT_Ho" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Tên thân nhân <span class="text-danger">*</span></label>
+                                <input type="text" id="nt_Ten" name="NT_Ten" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Pháp danh</label>
+                                <input type="text" id="nt_PhapDanh" name="NT_PhapDanh" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Năm sinh</label>
+                                <input type="text" id="nt_NamSinh" name="NT_NamSinh" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Số điện thoại</label>
+                                <input type="text" id="nt_SDT" name="NT_SDT" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">CCCD</label>
+                                <input type="text" id="nt_CCCD" name="NT_CCCD" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Địa chỉ</label>
+                                <input type="text" id="nt_DiaChi" name="NT_DiaChi" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- FOOTER CỐ ĐỊNH Ở ĐÁY (LUÔN HIỆN NÚT LƯU) -->
+            <div class="modal-footer bg-white py-2 border-top">
+                <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Đóng</button>
+                <button type="submit" class="btn btn-success fw-bold px-4 shadow">
+                    💾 LƯU TOÀN BỘ HỒ SƠ
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @section Scripts {
     <script>
-        window.onload = function () {
-            const url = new URL(window.location.href);
-            const highlight = url.searchParams.get("highlight");
-            if (highlight) {
-                const row = document.getElementById("hinh-" + highlight);
-                if (row) row.scrollIntoView({ behavior: "smooth", block: "center" });
+        // Lắng nghe sự kiện toàn bộ trang render xong để cuộn đến dòng vừa lưu
+        window.addEventListener("load", function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const highlightId = urlParams.get("highlight");
+
+            if (highlightId) {
+                const targetRow = document.getElementById("hinh-" + highlightId);
+                if (targetRow) {
+                    setTimeout(() => {
+                        targetRow.scrollIntoView({ behavior: "smooth", block: "center" });
+                        targetRow.classList.add("row-highlight");
+                    }, 400);
+                }
             }
-        };
+        });
+
+        // Tự động tính ngày kết thúc (+10 năm)
+        function autoCapNhatNgayKetThuc() {
+            const batDau = document.getElementById("HT_NgayBatDau").value;
+            if (batDau) {
+                const d = new Date(batDau);
+                d.setFullYear(d.getFullYear() + 10);
+                document.getElementById("HT_NgayKetThuc").value = d.toISOString().split('T')[0];
+            }
+        }
+
+        // TẦNG 2: Kiểm tra vị trí Tủ - Dãy
+        function kiemTraViTriHinh() {
+            const tu = document.getElementById('inpVT_Tu').value.trim();
+            const day = document.getElementById('inpVT_Day').value.trim();
+            const msgBox = document.getElementById('msgViTriHT');
+
+            if (!tu) {
+                alert("Vui lòng nhập tên Tủ.");
+                return;
+            }
+
+            fetch(`/Hinh/KiemTraViTri?tu=${encodeURIComponent(tu)}&day=${encodeURIComponent(day)}`)
+                .then(res => res.json())
+                .then(data => {
+                    msgBox.classList.remove('d-none', 'alert-success', 'alert-danger', 'alert-warning');
+
+                    if (!data.success) {
+                        msgBox.className = "alert alert-danger small mt-2 p-2 rounded";
+                        msgBox.innerHTML = `⚠️ ${data.message}`;
+                        document.getElementById('hdnIdViTriHT').value = "0";
+                        document.getElementById('hdnTaoViTriMoiHT').value = "false";
+                    } else if (data.exists) {
+                        msgBox.className = "alert alert-success small mt-2 p-2 rounded";
+                        msgBox.innerHTML = `✅ ${data.message}`;
+                        document.getElementById('hdnIdViTriHT').value = data.idViTri;
+                        document.getElementById('hdnTaoViTriMoiHT').value = "false";
+                    } else {
+                        msgBox.className = "alert alert-warning small mt-2 p-2 rounded";
+                        msgBox.innerHTML = `⚠️ ${data.message}
+                            <button type="button" class="btn btn-sm btn-outline-dark ms-2 fw-bold" onclick="xacNhanThemViTriMoi()">
+                                Xác Nhận Thêm Vị Trí Này
+                            </button>`;
+                        document.getElementById('hdnIdViTriHT').value = "0";
+                        document.getElementById('hdnTaoViTriMoiHT').value = "false";
+                    }
+                })
+                .catch(err => console.error("Lỗi kiểm tra vị trí:", err));
+        }
+
+        function xacNhanThemViTriMoi() {
+            document.getElementById('hdnTaoViTriMoiHT').value = "true";
+            const msgBox = document.getElementById('msgViTriHT');
+            msgBox.className = "alert alert-info small mt-2 p-2 rounded";
+            msgBox.innerHTML = "✅ Đã xác nhận thêm vị trí mới này khi bấm Lưu hồ sơ!";
+        }
+
+        // TẦNG 3: Tìm kiếm người thân Hình Thờ
+        function timNguoiThanHT() {
+            const kw = document.getElementById('inpTimNT_HT').value.trim();
+            const box = document.getElementById('boxKetQuaNT_HT');
+
+            if (!kw) {
+                alert("Vui lòng nhập từ khóa tìm kiếm.");
+                return;
+            }
+
+            box.classList.remove('d-none');
+            box.innerHTML = "Đang tìm kiếm danh bạ...";
+
+            fetch(`/Hinh/TimNguoiThan?keyword=${encodeURIComponent(kw)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        box.innerHTML = '<span class="text-danger">Không tìm thấy thân nhân nào. Bạn hãy bấm <b>➕ Thêm Thân Nhân Mới</b> để nhập.</span>';
+                        return;
+                    }
+
+                    let html = '<div class="list-group list-group-flush">';
+                    data.forEach(item => {
+                        const jsonStr = JSON.stringify(item).replace(/"/g, '&quot;');
+                        html += `
+                            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-2">
+                                <div>
+                                    <b>${item.ho} ${item.ten}</b> ${item.phapDanh ? `(${item.phapDanh})` : ''} - SĐT: ${item.sdt || 'Chưa có'}
+                                    <div class="text-muted" style="font-size: 11px;">Đ/C: ${item.diaChi || 'Chưa có'} | CCCD: ${item.cccd || 'Chưa có'}</div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-primary fw-bold" onclick="chonNguoiThanHT(${jsonStr})">Chọn</button>
+                            </div>`;
+                    });
+                    html += '</div>';
+                    box.innerHTML = html;
+                })
+                .catch(err => console.error("Lỗi tìm người thân:", err));
+        }
+
+        function chonNguoiThanHT(item) {
+            document.getElementById('hdnIdNguoiThanHT').value = item.id;
+            document.getElementById('hdnTaoNguoiThanMoiHT').value = "false";
+
+            document.getElementById('nt_Ho').value = item.ho || '';
+            document.getElementById('nt_Ten').value = item.ten || '';
+            document.getElementById('nt_PhapDanh').value = item.phapDanh || '';
+            document.getElementById('nt_NamSinh').value = item.ngaySinh || '';
+            document.getElementById('nt_SDT').value = item.sdt || '';
+            document.getElementById('nt_CCCD').value = item.cccd || '';
+            document.getElementById('nt_DiaChi').value = item.diaChi || '';
+
+            document.getElementById('boxKetQuaNT_HT').classList.add('d-none');
+            const status = document.getElementById('msgStatusNT_HT');
+            status.classList.remove('d-none');
+            status.innerHTML = `✅ Đã chọn thân nhân: <b>${item.ho} ${item.ten}</b> (Mã: ${item.id}). Có thể chỉnh sửa SĐT/Địa chỉ nếu có thay đổi.`;
+        }
+
+        function kichHoatTaoNguoiThanMoi() {
+            document.getElementById('hdnIdNguoiThanHT').value = "0";
+            document.getElementById('hdnTaoNguoiThanMoiHT').value = "true";
+
+            document.getElementById('nt_Ho').value = '';
+            document.getElementById('nt_Ten').value = '';
+            document.getElementById('nt_PhapDanh').value = '';
+            document.getElementById('nt_NamSinh').value = '';
+            document.getElementById('nt_SDT').value = '';
+            document.getElementById('nt_CCCD').value = '';
+            document.getElementById('nt_DiaChi').value = '';
+
+            document.getElementById('boxKetQuaNT_HT').classList.add('d-none');
+            const status = document.getElementById('msgStatusNT_HT');
+            status.classList.remove('d-none');
+            status.innerHTML = "📝 Chế độ: <b>Thêm thân nhân mới</b>. Vui lòng nhập Họ Tên và SĐT liên hệ.";
+        }
     </script>
 }

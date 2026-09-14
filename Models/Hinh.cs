@@ -24,6 +24,7 @@ namespace QuanLyCotWeb.Models
         public int? IDNguoiThan { get; set; }
 
         public string? AnhHinh { get; set; }
+        public string? LinkAnh { get; set; }
 
         // ✅ Navigation properties (Đặt tên ngắn gọn, rõ ràng)
         public int? IDViTri { get; set; }

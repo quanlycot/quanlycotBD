@@ -1,102 +1,215 @@
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - QuanLyCotWeb</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
+    <title>@ViewData["Title"] - Chùa Bửu Đà</title>
+
+    <!-- Bootstrap 5 CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        /* THANH MENU ĐIỀU HƯỚNG CHÍNH */
+        .navbar-custom {
+            background: rgba(20, 15, 10, 0.98) !important;
+            border-bottom: 2px solid #d97706;
+            backdrop-filter: blur(8px);
+            z-index: 1050; /* Đảm bảo cả thanh Header luôn nổi */
+        }
+
+        /* Chữ Menu to, đậm và sắc nét hơn */
+        .nav-link {
+            font-weight: 700 !important;
+            font-size: 16px !important;
+            color: #f3f4f6 !important;
+            transition: color 0.2s ease, transform 0.1s ease;
+            padding: 8px 14px !important;
+        }
+
+            .nav-link:hover {
+                color: #fbbf24 !important;
+            }
+
+        /* LOGO CHÙA HIỂN THỊ PHẲNG, NGUYÊN BẢN */
+        .navbar-logo {
+            height: 48px;
+            width: auto;
+            object-fit: contain;
+            border: none !important;
+        }
+
+        /* ================= KHẮC PHỤC TRIỆT ĐỂ MENU DROPDOWN ================= */
+        /* Menu xổ xuống rộng rãi, chữ to đậm và LUÔN NẰM TRÊN CÙNG */
+        .navbar-nav .dropdown-menu {
+            position: absolute !important;
+            z-index: 9999 !important; /* Luôn nổi trên banner 3 lớp và các card */
+            min-width: 220px !important; /* Mở rộng chiều ngang của menu */
+            background: rgba(26, 20, 15, 0.98) !important;
+            border: 2px solid #f59e0b !important; /* Viền vàng kim nổi bật */
+            border-radius: 14px !important;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.95) !important;
+            padding: 8px 6px !important;
+            margin-top: 8px !important;
+        }
+
+        /* Từng mục trong menu xổ xuống */
+        .navbar-nav .dropdown-item {
+            font-size: 16px !important;
+            font-weight: 700 !important;
+            color: #fef08a !important; /* Chữ vàng sáng dịu, rõ nét */
+            padding: 10px 16px !important;
+            border-radius: 8px !important;
+            transition: all 0.2s ease !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .navbar-nav .dropdown-item:hover {
+                background: linear-gradient(90deg, #d97706 0%, #b45309 100%) !important;
+                color: #ffffff !important;
+                transform: translateX(4px);
+            }
+
+        /* FOOTER CHÂN TRANG CHÙA BỬU ĐÀ */
+        .footer-custom {
+            background-color: #f9c300;
+            color: #1c1917;
+            padding: 24px 0 16px 0;
+            text-align: center;
+            border-top: 3px solid #b45309;
+        }
+    </style>
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="TrangTimKiem">
-                    <img src="~/images/Logo.jpg" alt="Logo" height="40" class="me-2" />
-                    Quản Lý Tro Cốt
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                       
-                        @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-controller="Cots" asp-action="Index">Quản lý Cốt</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-controller="ViTris" asp-action="Index">Quản lý Vị trí</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-controller="NguoiThans" asp-action="Index">Người thân</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-controller="RutCots" asp-action="Index">Rút Cốt</a>
-                            </li>
-                            <!-- Nhóm: Quản Lý Hình -->
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="quanlyhinhDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Quản Lý Hình
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="quanlyhinhDropdown">
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Hinh" asp-action="Index">Hình Thờ</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="HT_ViTri" asp-action="Index">Vị Trí (Hình)</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="HT_NguoiThan" asp-action="Index">Người Thân (Hình)</a></li>
-                                </ul>
-                            </li>
-                        }
-                    </ul>
-                    <ul class="navbar-nav">
-                        @if (SignInManager.IsSignedIn(User))
-                        {
-                            <li class="nav-item">
-                                <span class="nav-link text-light">Xin chào @User.Identity.Name!</span>
-                            </li>
-                            <li class="nav-item">
-                                <form method="post" asp-controller="Account" asp-action="Logout">
-                                    <button type="submit" class="btn btn-link nav-link text-light">Đăng xuất</button>
-                                </form>
-                            </li>
-                        }
-                        else
-                        {
-                            
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Login">Đăng nhập</a>
-                            </li>
-                        }
-                    </ul>
+<body class="bg-dark text-light" style="min-height: 100vh; display: flex; flex-direction: column;">
+
+    <!-- HEADER / NAVIGATION -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top py-2">
+        <div class="container-fluid px-lg-4">
+
+            <!-- Logo Chùa Bửu Đà nguyên bản -->
+            <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Home" asp-action="TrangTimKiem">
+                <img src="~/images/Logo.jpg" alt="Logo Chùa Bửu Đà" class="navbar-logo" />
+            </a>
+
+            <button class="navbar-toggler border-warning" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3 align-items-lg-center">
+
+                    <!-- Lối vào tra cứu công khai -->
+                    <li class="nav-item">
+                        <a class="nav-link text-warning" asp-controller="Home" asp-action="TrangTimKiem">
+                            <i class="bi bi-search me-1"></i> Tra cứu Linh - Cốt
+                        </a>
+                    </li>
+
+                    @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                    {
+                        <!-- QUẢN LÝ CỐT -->
+                        <li class="nav-item">
+                            <a class="nav-link text-warning fw-bold" asp-controller="Cots" asp-action="Index">
+                                🏺 Quản Lý Cốt
+                            </a>
+                        </li>
+
+                        <!-- CÁC CHỨC NĂNG RIÊNG LẺ CỐT -->
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="ViTris" asp-action="Index">
+                                Vị trí
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="NguoiThans" asp-action="Index">
+                                Người thân
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="RutCots" asp-action="Index">
+                                Rút Cốt
+                            </a>
+                        </li>
+
+                        <!-- DROPDOWN QUẢN LÝ HÌNH THỜ TO, ĐẬM, RỘNG VÀ KHÔNG BỊ CHE KHUẤT -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-success fw-bold" href="#" id="menuHinhTho" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                🖼️ Quản Lý Hình
+                            </a>
+                            <ul class="dropdown-menu shadow-lg" aria-labelledby="menuHinhTho">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Hinh" asp-action="Index">
+                                        <i class="bi bi-card-image text-success"></i> Hình Thờ
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="HT_ViTri" asp-action="Index">
+                                        <i class="bi bi-geo-alt text-warning"></i> Vị Trí Hình Thờ
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="HT_NguoiThan" asp-action="Index">
+                                        <i class="bi bi-people text-info"></i> Người Thân Hình Thờ
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+
+                <!-- TÀI KHOẢN / ĐĂNG NHẬP / ĐĂNG XUẤT -->
+                <div class="d-flex align-items-center gap-3">
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <span class="text-warning small fw-bold d-none d-md-inline">
+                            <i class="bi bi-person-circle me-1"></i> @User.Identity?.Name
+                        </span>
+                        <form method="post" asp-area="Identity" asp-page="/Account/Logout" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger px-3 py-1 fw-bold">
+                                Đăng xuất
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-sm btn-outline-warning px-3 py-1 fw-bold">
+                            <i class="bi bi-shield-lock me-1"></i> Đăng nhập Quản trị
+                        </a>
+                    }
                 </div>
             </div>
-        </nav>
-    </header>
 
-    <div class="container mt-3">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    
-    <footer style="background-color: #f9c300; padding: 10px 0; text-align: center;">
-        <div style="width: 120px; height: 120px; border-radius: 50%; background-color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
-            <img src="~/images/logo_Chua.jpg"
-                 alt="Logo"
-                 style="height: 80px; width: 80px; object-fit: contain;" />
         </div>
-        <h5 class="mt-3 fw-bold">CHÙA BỬU ĐÀ</h5>
-        <p>Địa chỉ: 419/11 Cách Mạng Tháng 8, Phường 13, Quận 10, TP Hồ Chí Minh</p>
-        <p>Điện thoại: 0918 205 182 - Website: <a href="https://chuabuuda.org" target="_blank">chuabuuda.org</a></p>
-        <p class="text-muted">Copyright © 2025 CHÙA BỬU ĐÀ </p>
+    </nav>
+
+    <!-- NỘI DUNG CHÍNH CỦA TRANG -->
+    <main role="main" class="flex-grow-1">
+        @RenderBody()
+    </main>
+
+    <!-- CHÂN TRANG NỀN VÀNG TRUYỀN THỐNG CHÙA BỬU ĐÀ -->
+    <footer class="footer-custom">
+        <div class="container">
+            <div style="width: 100px; height: 100px; border-radius: 50%; background-color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                <img src="~/images/logo_Chua.jpg" alt="Logo Chùa Bửu Đà" style="height: 72px; width: 72px; object-fit: contain;" />
+            </div>
+            <h5 class="fw-bold mb-1" style="font-size: 18px; letter-spacing: 0.5px;">CHÙA BỬU ĐÀ</h5>
+            <p class="mb-1 small">Địa chỉ: 419/11 Cách Mạng Tháng 8, Phường 13, Quận 10, TP Hồ Chí Minh</p>
+            <p class="mb-1 small">Điện thoại: 0918 205 182 - Website: <a href="https://chuabuuda.org" target="_blank" class="text-dark fw-bold text-decoration-none">chuabuuda.org</a></p>
+            <p class="text-muted small mb-0 mt-2">Copyright © 2026 CHÙA BỬU ĐÀ</p>
+        </div>
     </footer>
 
+    <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js"></script>
-    @RenderSection("Scripts", required: false)
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
