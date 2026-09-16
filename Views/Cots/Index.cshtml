@@ -752,5 +752,40 @@
             msgBox.classList.add('alert-info');
             msgBox.innerHTML = `✅ <strong>Đã chọn thân nhân #${nt.id} - ${nt.hoTen}</strong>. (Bạn có thể cập nhật lại thông tin ở các ô dưới nếu gia đình có thay đổi).`;
         }
+
+        // =========================================================
+        // XỬ LÝ BẤM ENTER NHẢY SANG Ô TIẾP THEO (KHÔNG LƯU NGAY)
+        // =========================================================
+        document.addEventListener('keydown', function (e) {
+            // Lấy form bên trong modal
+            const form = document.querySelector('#modalThemCot form');
+
+            // Nếu không có form hoặc người dùng đang không gõ trong form này thì bỏ qua
+            if (!form || !form.contains(e.target)) return;
+
+            // Kiểm tra nếu phím bấm là Enter và người dùng đang đứng ở ô input hoặc select
+            if (e.key === 'Enter' && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT')) {
+
+                // 1. CHẶN NGAY LẬP TỨC hành vi lưu (submit) mặc định của trình duyệt
+                e.preventDefault();
+
+                // 2. Lấy danh sách tất cả các ô nhập liệu có thể gõ được (không ẩn, không bị khóa)
+                const inputs = Array.from(form.querySelectorAll('input:not([type="hidden"]):not([disabled]):not([readonly]), select:not([disabled])'));
+
+                // 3. Tìm vị trí của ô mà bạn đang đứng
+                const currentIndex = inputs.indexOf(e.target);
+
+                // 4. Nếu chưa phải là ô cuối cùng thì chuyển con trỏ sang ô tiếp theo
+                if (currentIndex > -1 && currentIndex < inputs.length - 1) {
+                    const nextInput = inputs[currentIndex + 1];
+                    nextInput.focus();
+
+                    // (Tùy chọn) Tự động bôi đen chữ trong ô tiếp theo (nếu có) để gõ đè cho nhanh
+                    if (nextInput.tagName === 'INPUT' && (nextInput.type === 'text' || nextInput.type === 'number')) {
+                        nextInput.select();
+                    }
+                }
+            }
+        });
     </script>
 }

@@ -3,144 +3,434 @@
     ViewData["Title"] = "Sửa Hình Thờ";
 }
 
-<h2 class="text-center mb-4">Sửa Hình Thờ</h2>
+<style>
+    /* ================= TÔNG MÀU DỊU NHẸ - ĐỒNG BỘ VỚI TRANG THÊM ================= */
+    .page-title-gold {
+        font-family: 'Merriweather', serif;
+        font-size: 26px;
+        font-weight: 800;
+        color: #fef08a;
+        letter-spacing: 0.5px;
+    }
 
-<div class="row justify-content-center">
-    <div class="col-md-10">
-        <form asp-action="Edit" method="post" enctype="multipart/form-data" id="formEdit">
-            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+    .modal-content-dark {
+        background-color: #221a14;
+        border: 2px solid #b45309;
+        color: #fdfbf7;
+        border-radius: 18px;
+    }
 
-            <input type="hidden" asp-for="IDHinh" />
+    .tier-box {
+        background: #2d231b;
+        border: 1px solid #634b35;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+    }
 
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <label>ID Hình</label>
-                    <input type="text" class="form-control" value="@Model.IDHinh" disabled readonly />
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label asp-for="IDViTri"></label>
-                    <input asp-for="IDViTri" class="form-control" />
-                    <span asp-validation-for="IDViTri" class="text-danger"></span>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label asp-for="IDNguoiThan"></label>
-                    <input asp-for="IDNguoiThan" class="form-control" />
-                    <span asp-validation-for="IDNguoiThan" class="text-danger"></span>
-                </div>
-            </div>
+    .tier-title {
+        color: #fbbf24;
+        font-weight: 700;
+        font-size: 16px;
+        border-bottom: 1px dashed #785a3c;
+        padding-bottom: 6px;
+        margin-bottom: 14px;
+    }
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label asp-for="Ho"></label>
-                    <input asp-for="Ho" class="form-control" />
+    .input-dark {
+        background-color: #1a1410 !important;
+        border: 1px solid #785a3c !important;
+        color: #ffffff !important;
+        font-size: 15px;
+    }
+
+        .input-dark:focus {
+            border-color: #f59e0b !important;
+            box-shadow: 0 0 0 0.2rem rgba(245, 158, 11, 0.25) !important;
+        }
+
+    .box-tim-nt-scroll {
+        max-height: 180px !important;
+        overflow-y: auto !important;
+        scrollbar-width: thin;
+        scrollbar-color: #f59e0b #1a1410;
+        border: 1px solid #f59e0b !important;
+    }
+</style>
+
+<div class="container py-3" style="max-width: 1000px;">
+    <h2 class="text-center mb-4 page-title-gold text-uppercase">CẬP NHẬT HỒ SƠ HÌNH THỜ (ID: #@Model.IDHinh)</h2>
+
+    <form asp-action="Edit" method="post" enctype="multipart/form-data" id="formEdit" class="modal-content modal-content-dark shadow-lg p-4">
+        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+        <!-- Các trường ẩn bắt buộc để gửi data lên Server -->
+        <input type="hidden" asp-for="IDHinh" />
+        <input type="hidden" asp-for="IDViTri" id="hdnIdViTriHT" />
+        <input type="hidden" asp-for="IDNguoiThan" id="hdnIdNguoiThanHT" />
+
+        <!-- ========================================== -->
+        <!-- TẦNG 1: THÔNG TIN HÌNH THỜ & ẢNH -->
+        <!-- ========================================== -->
+        <div class="tier-box">
+            <div class="tier-title">TẦNG 1: THÔNG TIN HÌNH THỜ, ẢNH & LINK ẢNH</div>
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <label asp-for="Ho" class="form-label small">Họ (*):</label>
+                    <input asp-for="Ho" class="form-control form-control-sm input-dark" required />
                     <span asp-validation-for="Ho" class="text-danger"></span>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label asp-for="Ten"></label>
-                    <input asp-for="Ten" class="form-control" />
+                <div class="col-md-3">
+                    <label asp-for="Ten" class="form-label small">Tên (*):</label>
+                    <input asp-for="Ten" class="form-control form-control-sm input-dark" required />
                     <span asp-validation-for="Ten" class="text-danger"></span>
                 </div>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="PhapDanh"></label>
-                <input asp-for="PhapDanh" class="form-control" />
-                <span asp-validation-for="PhapDanh" class="text-danger"></span>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label asp-for="NamSinh"></label>
-                    <input asp-for="NamSinh" class="form-control" type="text" />
-                    <span asp-validation-for="NamSinh" class="text-danger"></span>
+                <div class="col-md-3">
+                    <label asp-for="PhapDanh" class="form-label small">Pháp danh:</label>
+                    <input asp-for="PhapDanh" class="form-control form-control-sm input-dark" />
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="NamSinh" class="form-label small">Năm sinh:</label>
+                    <input asp-for="NamSinh" class="form-control form-control-sm input-dark" type="text" />
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label asp-for="Tuoi"></label>
-                    <input asp-for="Tuoi" class="form-control" />
-                    <span asp-validation-for="Tuoi" class="text-danger"></span>
+                <div class="col-md-3">
+                    <label asp-for="NgayMatAL" class="form-label small">Ngày mất (AL):</label>
+                    <input asp-for="NgayMatAL" class="form-control form-control-sm input-dark" />
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="NgayMatDL" class="form-label small">Ngày mất (DL):</label>
+                    <input asp-for="NgayMatDL" class="form-control form-control-sm input-dark" />
+                </div>
+                <div class="col-md-2">
+                    <label asp-for="Tuoi" class="form-label small">Tuổi:</label>
+                    <input asp-for="Tuoi" class="form-control form-control-sm input-dark" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="LinkAnh" class="form-label small text-info">Link xem thêm ảnh:</label>
+                    <input asp-for="LinkAnh" class="form-control form-control-sm input-dark" type="url" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="NgayBatDau" class="form-label small">Ngày bắt đầu:</label>
+                    <input asp-for="NgayBatDau" type="date" id="HT_NgayBatDau" class="form-control form-control-sm input-dark" value="@(Model.NgayBatDau?.ToString("yyyy-MM-dd"))" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="NgayKetThuc" class="form-label small">Ngày kết thúc:</label>
+                    <input asp-for="NgayKetThuc" type="date" id="HT_NgayKetThuc" class="form-control form-control-sm input-dark" value="@(Model.NgayKetThuc?.ToString("yyyy-MM-dd"))" />
+                </div>
+
+                <div class="col-12 mt-2">
+                    <label class="form-label small fw-bold text-warning">Tải ảnh mới (Nếu muốn thay đổi):</label>
+                    <input type="file" name="HinhAnhUpload" class="form-control form-control-sm input-dark" accept="image/*" />
+                    @if (!string.IsNullOrEmpty(Model.AnhHinh))
+                    {
+                        <div class="mt-2 d-flex align-items-center gap-3">
+                            <img src="@($"{Model.AnhHinh}?ver={Guid.NewGuid()}")" alt="Ảnh hiện tại" style="width: 60px; height: 80px; object-fit: cover;" class="border rounded shadow-sm" />
+                            <small class="text-warning">Ảnh hiện tại đang lưu trong hệ thống.</small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TẦNG 2: VỊ TRÍ AN VỊ (TỦ - DÃY) -->
+        <!-- ========================================== -->
+        <div class="tier-box">
+            <div class="tier-title">TẦNG 2: VỊ TRÍ AN VỊ (Đang ở ID Vị trí: #@Model.IDViTri)</div>
+            <div class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label small">Tủ:</label>
+                    <input type="text" id="inpVT_Tu" class="form-control form-control-sm input-dark" value="@(Model.ViTri?.Tu)" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small">Dãy / Hàng:</label>
+                    <input type="text" id="inpVT_Day" class="form-control form-control-sm input-dark" value="@(Model.ViTri?.Day)" />
+                </div>
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-sm btn-primary w-100 fw-bold" style="height: 34px;" onclick="kiemTraViTriHinh()">
+                        <i class="bi bi-search me-1"></i> Kiểm Tra Vị Trí Này
+                    </button>
+                </div>
+            </div>
+            <div id="msgViTriHT" class="alert small mt-2 p-2 rounded d-none"></div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TẦNG 3: THÂN NHÂN LIÊN HỆ -->
+        <!-- ========================================== -->
+        <div class="tier-box mb-0">
+            <div class="d-flex justify-content-between align-items-center tier-title">
+                <span>TẦNG 3: THÔNG TIN NGƯỜI THÂN LIÊN HỆ</span>
+                <button type="button" class="btn btn-sm btn-success fw-bold px-3 py-1 shadow-sm" onclick="kichHoatTaoNguoiThanMoi()">
+                    <i class="bi bi-person-plus-fill me-1"></i> + Thêm Thân Nhân Mới
+                </button>
+            </div>
+
+            <div class="row g-2 align-items-end mb-2">
+                <div class="col-md-8">
+                    <label class="form-label small">Tìm kiếm theo Họ Tên, SĐT hoặc CCCD:</label>
+                    <input type="text" id="inpTimNT_HT" class="form-control form-control-sm input-dark" placeholder="Nhập tên, số điện thoại hoặc CCCD..." />
+                </div>
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-sm btn-info w-100 fw-bold text-white" style="height: 34px;" onclick="timNguoiThanHT()">
+                        <i class="bi bi-search me-1"></i> Tìm Danh Bạ
+                    </button>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label asp-for="NgayMatAL"></label>
-                    <input asp-for="NgayMatAL" class="form-control" />
-                    <span asp-validation-for="NgayMatAL" class="text-danger"></span>
+            <div id="boxKetQuaNT_HT" class="d-none mb-2 p-2 rounded bg-black border border-warning small box-tim-nt-scroll"></div>
+            <div id="msgStatusNT_HT" class="alert alert-info py-1 px-2 small mb-2 d-none"></div>
+
+            <input type="hidden" id="hdnTaoNguoiThanMoiHT" name="TaoNguoiThanMoi" value="false" />
+
+            <div class="row g-2 mt-1 pt-2 border-top border-secondary">
+                <div class="col-md-2">
+                    <label class="form-label small text-warning fw-bold">ID Người Thân:</label>
+                    <input type="text" id="nt_CustomId_Display" class="form-control form-control-sm input-dark text-warning fw-bold text-center" value="@Model.IDNguoiThan" readonly />
+                    <input type="hidden" id="hdnCustomId" name="NT_CustomId" value="@Model.IDNguoiThan" />
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label asp-for="NgayMatDL"></label>
-                    <input asp-for="NgayMatDL" class="form-control" />
-                    <span asp-validation-for="NgayMatDL" class="text-danger"></span>
+                <div class="col-md-3">
+                    <label class="form-label small">Họ:</label>
+                    <input type="text" id="nt_Ho" name="NT_Ho" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.Ho)" readonly />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small">Tên (*):</label>
+                    <input type="text" id="nt_Ten" name="NT_Ten" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.Ten)" readonly />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small">Pháp danh:</label>
+                    <input type="text" id="nt_PhapDanh" name="NT_PhapDanh" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.PhapDanh)" readonly />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small">Ngày sinh:</label>
+                    <input type="text" id="nt_NamSinh" name="NT_NamSinh" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.NamSinh)" readonly />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-warning fw-bold">CCCD / CMND:</label>
+                    <input type="text" id="nt_CCCD" name="NT_CCCD" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.CCCD)" readonly />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small">Ngày cấp:</label>
+                    <input type="text" id="nt_NgayCap" name="NT_NgayCap" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.NgayCap)" readonly />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small">Nơi cấp:</label>
+                    <input type="text" id="nt_NoiCap" name="NT_NoiCap" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.NoiCap)" readonly />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small">Số điện thoại (*):</label>
+                    <input type="text" id="nt_SDT" name="NT_SDT" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.SoDienThoai)" readonly />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small">Địa chỉ:</label>
+                    <input type="text" id="nt_DiaChi" name="NT_DiaChi" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.DiaChi)" readonly />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small">Ngày đăng ký:</label>
+                    <input type="text" id="nt_NgayDangKy" name="NT_NgayDangKy" class="form-control form-control-sm input-dark" value="@DateTime.Today.ToString("dd/MM/yyyy")" readonly />
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label small">Ghi chú:</label>
+                    <input type="text" id="nt_GhiChu" name="NT_GhiChu" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.GhiChu)" readonly />
                 </div>
             </div>
+        </div>
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label asp-for="NgayBatDau"></label>
-                    <input asp-for="NgayBatDau" type="date" class="form-control" />
-                    <span asp-validation-for="NgayBatDau" class="text-danger"></span>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label asp-for="NgayKetThuc"></label>
-                    <input asp-for="NgayKetThuc" type="date" class="form-control" />
-                    <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
-                </div>
-            </div>
-
-            @if (!string.IsNullOrEmpty(Model.AnhHinh))
-            {
-                <div class="mb-3">
-                    <label>Ảnh hiện tại:</label><br />
-                    <img src="@($"{Model.AnhHinh}?ver={Guid.NewGuid()}")"
-                         alt="Ảnh hiện tại"
-                         style="width: 120px; height: 150px; object-fit: cover;" class="border rounded" />
-                </div>
-            }
-
-            <div class="mb-3">
-                <label class="form-label">Tải ảnh mới (nếu muốn thay)</label>
-                <input type="file" name="HinhAnhUpload" class="form-control" accept="image/*" />
-            </div>
-
-            <!-- Ô NHẬP LINK HÌNH ẢNH / ALBUM MỞ RỘNG -->
-            <div class="mb-4">
-                <label asp-for="LinkAnh" class="form-label fw-bold text-primary">
-                    Link hình ảnh / video mở rộng
-                </label>
-                <input asp-for="LinkAnh"
-                       class="form-control"
-                       type="url"
-                       placeholder="Dán link Flickr, Google Drive, OneDrive..." />
-                <div class="form-text">
-                    Dán đường dẫn album ảnh lưu trữ ngoài nếu có, người xem có thể bấm vào xem thêm hình ảnh.
-                </div>
-                <span asp-validation-for="LinkAnh" class="text-danger"></span>
-            </div>
-
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                <a asp-action="Index" class="btn btn-secondary ms-3">Quay lại</a>
-            </div>
-        </form>
-    </div>
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-warning text-dark fw-bold px-5 py-2 shadow fs-6">
+                <i class="bi bi-check-circle-fill me-1"></i> LƯU LẠI THAY ĐỔI
+            </button>
+            <a asp-action="Index" class="btn btn-secondary px-4 py-2 ms-3 fw-bold">Hủy / Quay lại</a>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
-    <script>
-        document.getElementById("formEdit").addEventListener("keydown", function (e) {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                const inputs = Array.from(this.querySelectorAll("input, select, textarea"))
-                    .filter(i => !i.disabled && i.type !== "hidden" && i.type !== "file");
-                const index = inputs.indexOf(document.activeElement);
-                if (index > -1 && index < inputs.length - 1) {
-                    inputs[index + 1].focus();
-                }
-            }
-        });
-    </script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const batDau = document.getElementById("HT_NgayBatDau");
+            const ketThuc = document.getElementById("HT_NgayKetThuc");
+            if (batDau && ketThuc) {
+                batDau.addEventListener("change", function () {
+                    const d = new Date(batDau.value);
+                    if (!isNaN(d)) {
+                        d.setFullYear(d.getFullYear() + 10);
+                        ketThuc.value = d.toISOString().split('T')[0];
+                    }
+                });
+            }
+        });
+
+        document.getElementById("formEdit").addEventListener("keydown", function (e) {
+            if (e.key === "Enter" && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT')) {
+                e.preventDefault();
+                const inputs = Array.from(this.querySelectorAll("input, select, textarea"))
+                    .filter(i => !i.disabled && !i.readOnly && i.type !== "hidden" && i.type !== "file");
+                const index = inputs.indexOf(document.activeElement);
+                if (index > -1 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                    if(inputs[index + 1].type === 'text') {
+                        inputs[index + 1].select();
+                    }
+                }
+            }
+        });
+
+        function kiemTraViTriHinh() {
+            const tu = document.getElementById('inpVT_Tu').value.trim();
+            const day = document.getElementById('inpVT_Day').value.trim();
+            const msgBox = document.getElementById('msgViTriHT');
+
+            if (!tu) {
+                alert("Vui lòng nhập tên Tủ!");
+                return;
+            }
+
+            fetch(`/Hinh/KiemTraViTri?tu=${encodeURIComponent(tu)}&day=${encodeURIComponent(day)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if(!msgBox) return;
+                    msgBox.classList.remove('d-none', 'alert-success', 'alert-danger', 'alert-warning');
+                    if (data.exists && data.idViTri > 0) {
+                        msgBox.className = "alert alert-success small mt-2 p-2 rounded";
+                        msgBox.innerHTML = `✅ ${data.message}`;
+                        let hdn = document.getElementById('hdnIdViTriHT');
+                        if(hdn) hdn.value = data.idViTri;
+                    } else {
+                        let hdn = document.getElementById('hdnIdViTriHT');
+                        if (hdn && data.idViTri == hdn.value) {
+                            msgBox.className = "alert alert-success small mt-2 p-2 rounded";
+                            msgBox.innerHTML = `✅ Đây là vị trí hiện tại của hồ sơ.`;
+                        } else {
+                            msgBox.className = "alert alert-danger small mt-2 p-2 rounded";
+                            msgBox.innerHTML = `❌ Vị trí không khả dụng hoặc đã có người.`;
+                        }
+                    }
+                });
+        }
+
+        function timNguoiThanHT() {
+            const kw = document.getElementById('inpTimNT_HT').value.trim();
+            const box = document.getElementById('boxKetQuaNT_HT');
+            if (!kw) {
+                alert("Vui lòng nhập từ khóa!");
+                return;
+            }
+            if(box) {
+                box.classList.remove('d-none');
+                box.innerHTML = "Đang tìm...";
+            }
+            fetch(`/Hinh/TimNguoiThan?keyword=${encodeURIComponent(kw)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if(!box) return;
+                    if (data.length === 0) {
+                        box.innerHTML = '<span class="text-danger p-2">Không tìm thấy. Bấm "+ Thêm Thân Nhân Mới" để tạo mới.</span>';
+                        return;
+                    }
+                    let html = '';
+                    data.forEach(item => {
+                        const jsonStr = JSON.stringify(item).replace(/"/g, '&quot;');
+                        html += `<div class="d-flex justify-content-between align-items-center py-1 border-bottom border-secondary">
+                                    <span>[#${item.id}] <b>${item.ho} ${item.ten}</b> - SĐT: ${item.sdt || '---'}</span>
+                                    <button type="button" class="btn btn-sm btn-warning text-dark fw-bold py-0" onclick='chonNguoiThanHT(${jsonStr})'>Chọn</button>
+                                 </div>`;
+                    });
+                    box.innerHTML = html;
+                });
+        }
+
+        const arrNguoiThanInputsHT = ['nt_Ho', 'nt_Ten', 'nt_PhapDanh', 'nt_NamSinh', 'nt_SDT', 'nt_CCCD', 'nt_NgayCap', 'nt_NoiCap', 'nt_DiaChi', 'nt_GhiChu', 'nt_NgayDangKy'];
+
+        function chonNguoiThanHT(item) {
+            let hdnId = document.getElementById('hdnIdNguoiThanHT');
+            if(hdnId) hdnId.value = item.id;
+
+            let hdnTaoMoi = document.getElementById('hdnTaoNguoiThanMoiHT');
+            if(hdnTaoMoi) hdnTaoMoi.value = "false";
+
+            let hdnCust = document.getElementById('hdnCustomId');
+            if(hdnCust) hdnCust.value = item.id;
+
+            let custDisp = document.getElementById('nt_CustomId_Display');
+            if(custDisp) custDisp.value = item.id;
+
+            let setVal = (id, val) => { let el = document.getElementById(id); if(el) el.value = val || ''; };
+            setVal('nt_Ho', item.ho);
+            setVal('nt_Ten', item.ten);
+            setVal('nt_PhapDanh', item.phapDanh);
+            setVal('nt_NamSinh', item.namSinh);
+            setVal('nt_SDT', item.sdt);
+            setVal('nt_CCCD', item.cccd);
+            setVal('nt_NgayCap', item.ngayCap);
+            setVal('nt_NoiCap', item.noiCap);
+            setVal('nt_DiaChi', item.diaChi);
+            setVal('nt_GhiChu', item.ghiChu);
+
+            arrNguoiThanInputsHT.forEach(id => {
+                let el = document.getElementById(id);
+                if(el) el.setAttribute('readonly', true);
+            });
+
+            let box = document.getElementById('boxKetQuaNT_HT');
+            if(box) box.classList.add('d-none');
+        }
+
+        function kichHoatTaoNguoiThanMoi() {
+            fetch('/Hinh/GetNextIdNguoiThan')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        let hdnId = document.getElementById('hdnIdNguoiThanHT');
+                        if(hdnId) hdnId.value = "0";
+
+                        let hdnTaoMoi = document.getElementById('hdnTaoNguoiThanMoiHT');
+                        if(hdnTaoMoi) hdnTaoMoi.value = "true";
+
+                        let hdnCust = document.getElementById('hdnCustomId');
+                        if(hdnCust) hdnCust.value = data.id;
+
+                        let custDisp = document.getElementById('nt_CustomId_Display');
+                        if(custDisp) custDisp.value = data.id;
+
+                        arrNguoiThanInputsHT.forEach(id => {
+                            let el = document.getElementById(id);
+                            if (el) {
+                                el.value = '';
+                                el.removeAttribute('readonly');
+                            }
+                        });
+
+                        let elNgay = document.getElementById('nt_NgayDangKy');
+                        if(elNgay) {
+                            elNgay.value = '@DateTime.Today.ToString("dd/MM/yyyy")';
+                            elNgay.removeAttribute('readonly');
+                        }
+
+                        let box = document.getElementById('boxKetQuaNT_HT');
+                        if(box) box.classList.add('d-none');
+
+                        let status = document.getElementById('msgStatusNT_HT');
+                        if (status) {
+                            status.classList.remove('d-none', 'alert-success', 'alert-danger');
+                            status.classList.add(data.isReused ? 'alert-warning' : 'alert-info');
+                            status.innerHTML = `📝 <strong>${data.message}</strong>. Vui lòng nhập thông tin cho thân nhân mới.`;
+                        }
+
+                        let ten = document.getElementById('nt_Ten');
+                        if(ten) ten.focus();
+                    }
+                })
+                .catch(err => alert("Lỗi khi lấy ID thân nhân: " + err));
+        }
+    </script>
 }

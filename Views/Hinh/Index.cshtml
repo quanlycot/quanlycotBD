@@ -313,12 +313,18 @@
                         <input type="hidden" id="hdnIdNguoiThanHT" name="IDNguoiThan" value="0" />
                         <input type="hidden" id="hdnTaoNguoiThanMoiHT" name="TaoNguoiThanMoi" value="false" />
 
+                        <!-- VÙNG NHẬP THÔNG TIN NGƯỜI THÂN ĐÃ BỔ SUNG ĐẦY ĐỦ TRƯỜNG & ID -->
                         <div class="row g-2 mt-2 p-2 border rounded bg-white">
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold text-success">ID Người Thân:</label>
+                                <input type="text" id="nt_CustomId_Display" class="form-control form-control-sm text-success fw-bold text-center" readonly placeholder="Tự cấp" />
+                                <input type="hidden" id="hdnCustomId" name="NT_CustomId" value="0" />
+                            </div>
                             <div class="col-md-3">
                                 <label class="form-label small fw-bold">Họ thân nhân</label>
                                 <input type="text" id="nt_Ho" name="NT_Ho" class="form-control form-control-sm" />
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label class="form-label small fw-bold">Tên thân nhân <span class="text-danger">*</span></label>
                                 <input type="text" id="nt_Ten" name="NT_Ten" class="form-control form-control-sm" />
                             </div>
@@ -326,21 +332,40 @@
                                 <label class="form-label small fw-bold">Pháp danh</label>
                                 <input type="text" id="nt_PhapDanh" name="NT_PhapDanh" class="form-control form-control-sm" />
                             </div>
+
                             <div class="col-md-3">
-                                <label class="form-label small fw-bold">Năm sinh</label>
-                                <input type="text" id="nt_NamSinh" name="NT_NamSinh" class="form-control form-control-sm" />
+                                <label class="form-label small fw-bold">Ngày sinh</label>
+                                <input type="text" id="nt_NgaySinh" name="NT_NgaySinh" class="form-control form-control-sm" />
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label small fw-bold">Số điện thoại</label>
-                                <input type="text" id="nt_SDT" name="NT_SDT" class="form-control form-control-sm" />
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label small fw-bold">CCCD</label>
+                                <label class="form-label small fw-bold text-success">CCCD / CMND</label>
                                 <input type="text" id="nt_CCCD" name="NT_CCCD" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Ngày cấp</label>
+                                <input type="text" id="nt_NgayCap" name="NT_NgayCap" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Nơi cấp</label>
+                                <input type="text" id="nt_NoiCap" name="NT_NoiCap" class="form-control form-control-sm" />
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Số điện thoại (*)</label>
+                                <input type="text" id="nt_SDT" name="NT_SDT" class="form-control form-control-sm" />
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold">Địa chỉ</label>
                                 <input type="text" id="nt_DiaChi" name="NT_DiaChi" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Ngày đăng ký</label>
+                                <input type="text" id="nt_NgayDangKy" name="NT_NgayDangKy" value="@DateTime.Today.ToString("dd/MM/yyyy")" class="form-control form-control-sm" />
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label small fw-bold">Ghi chú</label>
+                                <input type="text" id="nt_GhiChu" name="NT_GhiChu" class="form-control form-control-sm" />
                             </div>
                         </div>
                     </div>
@@ -460,7 +485,7 @@
                         html += `
                             <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-2">
                                 <div>
-                                    <b>${item.ho} ${item.ten}</b> ${item.phapDanh ? `(${item.phapDanh})` : ''} - SĐT: ${item.sdt || 'Chưa có'}
+                                    <b>[#${item.id}] ${item.ho || ''} ${item.ten || ''}</b> ${item.phapDanh ? `(${item.phapDanh})` : ''} - SĐT: ${item.sdt || 'Chưa có'}
                                     <div class="text-muted" style="font-size: 11px;">Đ/C: ${item.diaChi || 'Chưa có'} | CCCD: ${item.cccd || 'Chưa có'}</div>
                                 </div>
                                 <button type="button" class="btn btn-sm btn-primary fw-bold" onclick="chonNguoiThanHT(${jsonStr})">Chọn</button>
@@ -475,37 +500,99 @@
         function chonNguoiThanHT(item) {
             document.getElementById('hdnIdNguoiThanHT').value = item.id;
             document.getElementById('hdnTaoNguoiThanMoiHT').value = "false";
+            document.getElementById('hdnCustomId').value = item.id;
+            document.getElementById('nt_CustomId_Display').value = item.id;
 
             document.getElementById('nt_Ho').value = item.ho || '';
             document.getElementById('nt_Ten').value = item.ten || '';
             document.getElementById('nt_PhapDanh').value = item.phapDanh || '';
-            document.getElementById('nt_NamSinh').value = item.ngaySinh || '';
+            document.getElementById('nt_NgaySinh').value = item.ngaySinh || '';
             document.getElementById('nt_SDT').value = item.sdt || '';
             document.getElementById('nt_CCCD').value = item.cccd || '';
+            document.getElementById('nt_NgayCap').value = item.ngayCap || '';
+            document.getElementById('nt_NoiCap').value = item.noiCap || '';
             document.getElementById('nt_DiaChi').value = item.diaChi || '';
+            document.getElementById('nt_GhiChu').value = item.ghiChu || '';
 
             document.getElementById('boxKetQuaNT_HT').classList.add('d-none');
             const status = document.getElementById('msgStatusNT_HT');
-            status.classList.remove('d-none');
-            status.innerHTML = `✅ Đã chọn thân nhân: <b>${item.ho} ${item.ten}</b> (Mã: ${item.id}). Có thể chỉnh sửa SĐT/Địa chỉ nếu có thay đổi.`;
+            status.classList.remove('d-none', 'alert-warning');
+            status.classList.add('alert-success');
+            status.innerHTML = `✅ Đã chọn thân nhân: <b>[#${item.id}] ${item.ho || ''} ${item.ten || ''}</b>. Có thể chỉnh sửa SĐT/Địa chỉ nếu có thay đổi.`;
         }
 
         function kichHoatTaoNguoiThanMoi() {
-            document.getElementById('hdnIdNguoiThanHT').value = "0";
-            document.getElementById('hdnTaoNguoiThanMoiHT').value = "true";
+            // Gọi API lấy ID mới (Đảm bảo HinhController có hàm GetNextIdNguoiThan giống CotsController)
+            fetch('/Hinh/GetNextIdNguoiThan')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('hdnIdNguoiThanHT').value = "0";
+                        document.getElementById('hdnTaoNguoiThanMoiHT').value = "true";
 
-            document.getElementById('nt_Ho').value = '';
-            document.getElementById('nt_Ten').value = '';
-            document.getElementById('nt_PhapDanh').value = '';
-            document.getElementById('nt_NamSinh').value = '';
-            document.getElementById('nt_SDT').value = '';
-            document.getElementById('nt_CCCD').value = '';
-            document.getElementById('nt_DiaChi').value = '';
+                        document.getElementById('hdnCustomId').value = data.id;
+                        document.getElementById('nt_CustomId_Display').value = data.id;
 
-            document.getElementById('boxKetQuaNT_HT').classList.add('d-none');
-            const status = document.getElementById('msgStatusNT_HT');
-            status.classList.remove('d-none');
-            status.innerHTML = "📝 Chế độ: <b>Thêm thân nhân mới</b>. Vui lòng nhập Họ Tên và SĐT liên hệ.";
+                        // Xóa trắng form nhập liệu
+                        document.getElementById('nt_Ho').value = '';
+                        document.getElementById('nt_Ten').value = '';
+                        document.getElementById('nt_PhapDanh').value = '';
+                        document.getElementById('nt_NgaySinh').value = '';
+                        document.getElementById('nt_SDT').value = '';
+                        document.getElementById('nt_CCCD').value = '';
+                        document.getElementById('nt_NgayCap').value = '';
+                        document.getElementById('nt_NoiCap').value = '';
+                        document.getElementById('nt_DiaChi').value = '';
+                        document.getElementById('nt_GhiChu').value = '';
+
+                        document.getElementById('boxKetQuaNT_HT').classList.add('d-none');
+                        const status = document.getElementById('msgStatusNT_HT');
+                        status.classList.remove('d-none', 'alert-success', 'alert-warning');
+                        status.classList.add(data.isReused ? 'alert-warning' : 'alert-info');
+                        status.innerHTML = `📝 <strong>${data.message}</strong>. Vui lòng nhập thông tin thân nhân mới.`;
+
+                        document.getElementById('nt_Ten').focus();
+                    }
+                })
+                .catch(err => {
+                    console.error("Lỗi lấy ID:", err);
+                    alert("Có lỗi xảy ra khi lấy ID người thân mới. Vui lòng kiểm tra lại kết nối.");
+                });
         }
+
+        // =========================================================
+        // XỬ LÝ BẤM ENTER NHẢY SANG Ô TIẾP THEO (KHÔNG LƯU NGAY)
+        // =========================================================
+        document.addEventListener('keydown', function (e) {
+            // Lấy form bên trong modal Hình Thờ
+            const form = document.querySelector('#modalThemHinh3Tang form');
+
+            // Nếu không có form hoặc người dùng đang không gõ trong form này thì bỏ qua
+            if (!form || !form.contains(e.target)) return;
+
+            // Kiểm tra nếu phím bấm là Enter và người dùng đang đứng ở ô input hoặc select
+            if (e.key === 'Enter' && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT')) {
+
+                // 1. Chặn hành vi submit mặc định
+                e.preventDefault();
+
+                // 2. Lấy danh sách tất cả các ô nhập liệu (bỏ qua ẩn, khóa, chỉ đọc)
+                const inputs = Array.from(form.querySelectorAll('input:not([type="hidden"]):not([disabled]):not([readonly]), select:not([disabled])'));
+
+                // 3. Tìm vị trí ô hiện tại
+                const currentIndex = inputs.indexOf(e.target);
+
+                // 4. Nhảy sang ô tiếp theo
+                if (currentIndex > -1 && currentIndex < inputs.length - 1) {
+                    const nextInput = inputs[currentIndex + 1];
+                    nextInput.focus();
+
+                    // Bôi đen văn bản để gõ đè nhanh
+                    if (nextInput.tagName === 'INPUT' && (nextInput.type === 'text' || nextInput.type === 'number')) {
+                        nextInput.select();
+                    }
+                }
+            }
+        });
     </script>
 }

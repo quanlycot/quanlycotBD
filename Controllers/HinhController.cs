@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using QuanLyCotWeb.Models;
-using QuanLyCotWeb.Services;
+using ClosedXML.Excel;
 using X.PagedList;
 using X.PagedList.Extensions;
+using QuanLyCotWeb.Models;
+using QuanLyCotWeb.Services;
 
 namespace QuanLyCotWeb.Controllers
 {
@@ -142,7 +144,61 @@ namespace QuanLyCotWeb.Controllers
             return Json(ds);
         }
 
-        // 2.3. POST: Lưu toàn bộ hồ sơ 3 tầng & Tính toán số trang chính xác
+        // 2.3. BỔ SUNG: API Cấp ID Người thân kế tiếp / Tận dụng ID trống (QUÉT LỖ HỔNG)
+        [HttpGet]
+        public async Task<IActionResult> GetNextIdNguoiThan()
+        {
+            try
+            {
+                // 1. QUÉT TỪ TRÊN XUỐNG ĐỂ TÌM LỖ HỔNG (ID BỊ XÓA)
+                var existingIds = await _context.HT_NguoiThan
+                    .Select(n => n.IDNguoiThan)
+                    .OrderBy(id => id)
+                    .ToListAsync();
+
+                int nextId = 1;
+                bool foundGap = false;
+
+                foreach (var id in existingIds)
+                {
+                    if (id == nextId)
+                        nextId++;
+                    else if (id > nextId)
+                    {
+                        foundGap = true;
+                        break;
+                    }
+                }
+
+                if (foundGap)
+                {
+                    return Json(new { success = true, id = nextId, isReused = true, message = $"Tái sử dụng ID trống #{nextId} (vị trí thân nhân đã bị xóa)" });
+                }
+
+                // 2. NẾU KHÔNG BỊ XÓA MẤT ID NÀO -> TÌM ID MỒ CÔI (có trong danh bạ nhưng không gắn với Hình nào)
+                var idDangDung = await _context.HT_Hinh
+                    .Where(h => h.IDNguoiThan != null && h.IDNguoiThan > 0)
+                    .Select(h => h.IDNguoiThan.Value)
+                    .Distinct()
+                    .ToListAsync();
+
+                var idDaRut = existingIds.FirstOrDefault(id => !idDangDung.Contains(id));
+
+                if (idDaRut > 0)
+                {
+                    return Json(new { success = true, id = idDaRut, isReused = true, message = $"Tái sử dụng ID #{idDaRut} (từ hồ sơ đã rút hình)" });
+                }
+
+                // 3. NẾU TẤT CẢ ĐỀU KÍN VÀ ĐANG SỬ DỤNG -> CẤP ID MỚI Ở CUỐI CÙNG
+                return Json(new { success = true, id = nextId, isReused = false, message = $"Cấp mã ID mới kế tiếp #{nextId}" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        // 2.4. POST: Lưu toàn bộ hồ sơ 3 tầng
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -151,8 +207,9 @@ namespace QuanLyCotWeb.Controllers
             IFormFile? HinhAnhUpload,
             bool TaoViTriMoi, string? VT_Tu, string? VT_Day,
             bool TaoNguoiThanMoi,
-            string? NT_Ho, string? NT_Ten, string? NT_PhapDanh,
-            string? NT_NamSinh, string? NT_CCCD, string? NT_DiaChi, string? NT_SDT)
+            int? NT_CustomId, string? NT_Ho, string? NT_Ten, string? NT_PhapDanh,
+            string? NT_NamSinh, string? NT_CCCD, string? NT_NgayCap, string? NT_NoiCap,
+            string? NT_DiaChi, string? NT_SDT, string? NT_NgayDangKy, string? NT_GhiChu)
         {
             try
             {
@@ -172,22 +229,47 @@ namespace QuanLyCotWeb.Controllers
                 // --- XỬ LÝ TẦNG 3: NGƯỜI THÂN ---
                 if (TaoNguoiThanMoi && !string.IsNullOrWhiteSpace(NT_Ten))
                 {
-                    var ntMoi = new HT_NguoiThan
+                    HT_NguoiThan ntLuu;
+                    // Nếu được cấp Custom ID, kiểm tra tái sử dụng
+                    if (NT_CustomId.HasValue && NT_CustomId.Value > 0)
                     {
-                        Ho = NT_Ho?.Trim() ?? "",
-                        Ten = NT_Ten.Trim(),
-                        PhapDanh = NT_PhapDanh?.Trim(),
-                        NamSinh = NT_NamSinh?.Trim(),
-                        CCCD = NT_CCCD?.Trim(),
-                        DiaChi = NT_DiaChi?.Trim(),
-                        SoDienThoai = NT_SDT?.Trim()
-                    };
-                    _context.HT_NguoiThan.Add(ntMoi);
+                        var ntCu = await _context.HT_NguoiThan.FindAsync(NT_CustomId.Value);
+                        if (ntCu != null)
+                        {
+                            ntLuu = ntCu; // Tận dụng dòng ID trống
+                        }
+                        else
+                        {
+                            ntLuu = new HT_NguoiThan { IDNguoiThan = NT_CustomId.Value };
+                            _context.HT_NguoiThan.Add(ntLuu);
+                        }
+                    }
+                    else
+                    {
+                        ntLuu = new HT_NguoiThan();
+                        _context.HT_NguoiThan.Add(ntLuu);
+                    }
+
+                    ntLuu.Ho = NT_Ho?.Trim() ?? "";
+                    ntLuu.Ten = NT_Ten.Trim();
+                    ntLuu.PhapDanh = NT_PhapDanh?.Trim();
+                    ntLuu.NamSinh = NT_NamSinh?.Trim();
+                    ntLuu.CCCD = NT_CCCD?.Trim();
+                    ntLuu.DiaChi = NT_DiaChi?.Trim();
+                    ntLuu.SoDienThoai = NT_SDT?.Trim();
+
+                    // LƯU Ý: Nếu Entity HT_NguoiThan CỦA BẠN chưa có các trường dưới đây thì CỨ COMMENT LẠI (//)
+                    // ntLuu.NgayCap = NT_NgayCap?.Trim();
+                    // ntLuu.NoiCap = NT_NoiCap?.Trim();
+                    // ntLuu.NgayDangKy = NT_NgayDangKy?.Trim() ?? DateTime.Today.ToString("dd/MM/yyyy");
+                    // ntLuu.GhiChu = NT_GhiChu?.Trim();
+
                     await _context.SaveChangesAsync();
-                    hinh.IDNguoiThan = ntMoi.IDNguoiThan;
+                    hinh.IDNguoiThan = ntLuu.IDNguoiThan;
                 }
                 else if (hinh.IDNguoiThan.HasValue && hinh.IDNguoiThan.Value > 0)
                 {
+                    // Cập nhật thông tin nếu chọn người thân cũ
                     var ntCu = await _context.HT_NguoiThan.FindAsync(hinh.IDNguoiThan.Value);
                     if (ntCu != null)
                     {
@@ -198,8 +280,12 @@ namespace QuanLyCotWeb.Controllers
                         await _context.SaveChangesAsync();
                     }
                 }
+                else if (NT_CustomId.HasValue && NT_CustomId.Value > 0)
+                {
+                    hinh.IDNguoiThan = NT_CustomId.Value;
+                }
 
-                // --- XỬ LÝ TẦNG 1: THÔNG TIN HÌNH THỜ (ĐÃ BAO GỒM LinkAnh) & ẢNH ---
+                // --- XỬ LÝ TẦNG 1: THÔNG TIN HÌNH THỜ & ẢNH ---
                 var existingHinh = await _context.HT_Hinh.FirstOrDefaultAsync(h => h.IDViTri == hinh.IDViTri);
 
                 if (existingHinh != null)
@@ -247,7 +333,7 @@ namespace QuanLyCotWeb.Controllers
 
                 TempData["SuccessMessage"] = $"Tiếp nhận thành công hồ sơ hình thờ: {hinh.Ho} {hinh.Ten} (Mã #{hinh.IDHinh})!";
 
-                // --- TÍNH TOÁN SỐ TRANG CHỨA DÒNG VỪA THÊM THEO CHUẨN CỐT ---
+                // --- TÍNH TOÁN SỐ TRANG ---
                 int pageSize = 20;
                 int viTriDung = await _context.HT_Hinh.CountAsync(h => h.IDHinh <= hinh.IDHinh);
                 int pageDich = (int)Math.Ceiling((double)viTriDung / pageSize);
@@ -307,7 +393,7 @@ namespace QuanLyCotWeb.Controllers
                 existing.NgayMatAL = hinh.NgayMatAL;
                 existing.NgayMatDL = hinh.NgayMatDL;
                 existing.IDNguoiThan = hinh.IDNguoiThan;
-                existing.LinkAnh = hinh.LinkAnh; // ✅ Cập nhật LinkAnh khi sửa hồ sơ sẵn có
+                existing.LinkAnh = hinh.LinkAnh;
 
                 if (HinhAnhUpload != null && HinhAnhUpload.Length > 0)
                 {
@@ -378,16 +464,27 @@ namespace QuanLyCotWeb.Controllers
         {
             if (id == null) return NotFound();
 
-            var hinh = await _context.HT_Hinh.FindAsync(id);
+            // SỬ DỤNG INCLUDE ĐỂ KÉO THEO DỮ LIỆU VỊ TRÍ VÀ NGƯỜI THÂN LÊN GIAO DIỆN
+            var hinh = await _context.HT_Hinh
+                .Include(h => h.ViTri)
+                .Include(h => h.NguoiThan)
+                .FirstOrDefaultAsync(h => h.IDHinh == id);
+
             if (hinh == null) return NotFound();
 
             return View(hinh);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Edit(int id, Hinh hinh, IFormFile? HinhAnhUpload)
+        public async Task<IActionResult> Edit(
+            int id,
+            Hinh hinh,
+            IFormFile? HinhAnhUpload,
+            bool TaoNguoiThanMoi,
+            int? NT_CustomId, string? NT_Ho, string? NT_Ten, string? NT_PhapDanh,
+            string? NT_NamSinh, string? NT_CCCD, string? NT_NgayCap, string? NT_NoiCap,
+            string? NT_DiaChi, string? NT_SDT, string? NT_NgayDangKy, string? NT_GhiChu)
         {
             if (id != hinh.IDHinh) return NotFound();
 
@@ -395,6 +492,68 @@ namespace QuanLyCotWeb.Controllers
             {
                 try
                 {
+                    // ---------------------------------------------------------
+                    // 1. XỬ LÝ TẦNG 3: NGƯỜI THÂN TRƯỚC KHI LƯU HÌNH
+                    // ---------------------------------------------------------
+                    if (TaoNguoiThanMoi && !string.IsNullOrWhiteSpace(NT_Ten))
+                    {
+                        HT_NguoiThan ntLuu;
+                        if (NT_CustomId.HasValue && NT_CustomId.Value > 0)
+                        {
+                            var ntCu = await _context.HT_NguoiThan.FindAsync(NT_CustomId.Value);
+                            if (ntCu != null) ntLuu = ntCu;
+                            else
+                            {
+                                ntLuu = new HT_NguoiThan { IDNguoiThan = NT_CustomId.Value };
+                                _context.HT_NguoiThan.Add(ntLuu);
+                            }
+                        }
+                        else
+                        {
+                            ntLuu = new HT_NguoiThan();
+                            _context.HT_NguoiThan.Add(ntLuu);
+                        }
+
+                        ntLuu.Ho = NT_Ho?.Trim() ?? "";
+                        ntLuu.Ten = NT_Ten.Trim();
+                        ntLuu.PhapDanh = NT_PhapDanh?.Trim();
+                        ntLuu.NamSinh = NT_NamSinh?.Trim();
+                        ntLuu.CCCD = NT_CCCD?.Trim();
+                        ntLuu.DiaChi = NT_DiaChi?.Trim();
+                        ntLuu.SoDienThoai = NT_SDT?.Trim();
+
+                        // Nếu Database chưa có các cột này thì thêm "//" ở đầu để comment lại
+                        // ntLuu.NgayCap = NT_NgayCap?.Trim();
+                        // ntLuu.NoiCap = NT_NoiCap?.Trim();
+                        // ntLuu.NgayDangKy = NT_NgayDangKy?.Trim() ?? DateTime.Today.ToString("dd/MM/yyyy");
+                        // ntLuu.GhiChu = NT_GhiChu?.Trim();
+
+                        await _context.SaveChangesAsync();
+
+                        // Gán ID người thân mới tạo vào Hình Thờ
+                        hinh.IDNguoiThan = ntLuu.IDNguoiThan;
+                    }
+                    else if (hinh.IDNguoiThan.HasValue && hinh.IDNguoiThan.Value > 0)
+                    {
+                        // Cập nhật SĐT, Địa chỉ, CCCD nếu đổi thông tin của người thân đang có
+                        var ntCu = await _context.HT_NguoiThan.FindAsync(hinh.IDNguoiThan.Value);
+                        if (ntCu != null)
+                        {
+                            if (!string.IsNullOrWhiteSpace(NT_SDT)) ntCu.SoDienThoai = NT_SDT.Trim();
+                            if (!string.IsNullOrWhiteSpace(NT_DiaChi)) ntCu.DiaChi = NT_DiaChi.Trim();
+                            if (!string.IsNullOrWhiteSpace(NT_CCCD)) ntCu.CCCD = NT_CCCD.Trim();
+                            _context.HT_NguoiThan.Update(ntCu);
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+                    else if (NT_CustomId.HasValue && NT_CustomId.Value > 0)
+                    {
+                        hinh.IDNguoiThan = NT_CustomId.Value;
+                    }
+
+                    // ---------------------------------------------------------
+                    // 2. XỬ LÝ ẢNH & LƯU HÌNH THỜ
+                    // ---------------------------------------------------------
                     if (HinhAnhUpload != null && HinhAnhUpload.Length > 0)
                     {
                         var fileName = $"HT{hinh.IDHinh}.jpg";
@@ -403,14 +562,15 @@ namespace QuanLyCotWeb.Controllers
                     }
                     else
                     {
+                        // Lấy lại ảnh cũ nếu không upload ảnh mới
                         var existing = await _context.HT_Hinh.AsNoTracking().FirstOrDefaultAsync(h => h.IDHinh == id);
                         if (existing != null)
                             hinh.AnhHinh = existing.AnhHinh;
                     }
 
-                    // Entity State được Update toàn bộ bao gồm cả trường LinkAnh mới sửa
                     _context.Update(hinh);
                     await _context.SaveChangesAsync();
+
                     TempData["SuccessMessage"] = "Cập nhật hình thờ thành công!";
                 }
                 catch (DbUpdateConcurrencyException)
@@ -419,6 +579,7 @@ namespace QuanLyCotWeb.Controllers
                     throw;
                 }
 
+                // Tính toán để trở về đúng trang chứa Hình Thờ vừa sửa
                 int pageSize = 20;
                 int viTriDung = await _context.HT_Hinh.CountAsync(h => h.IDHinh <= hinh.IDHinh);
                 int pageDich = (int)Math.Ceiling((double)viTriDung / pageSize);
