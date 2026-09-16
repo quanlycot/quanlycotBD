@@ -22,6 +22,7 @@ namespace QuanLyCotWeb.Controllers
         {
             _context = context;
         }
+
         private int GetNextIDRut()
         {
             var usedIds = _context.RutCot
@@ -35,7 +36,7 @@ namespace QuanLyCotWeb.Controllers
                     return i;
             }
 
-            return usedIds.Max() + 1;
+            return (usedIds.Count > 0 ? usedIds.Max() : 0) + 1;
         }
 
         // GET: RutCots
@@ -59,10 +60,9 @@ namespace QuanLyCotWeb.Controllers
 
             var ds = query
                  .OrderBy(x => x.IDRut)
-    .             ToPagedList(pageNumber, pageSize);
+                 .ToPagedList(pageNumber, pageSize);
 
             return View(ds);
-
         }
 
         public IActionResult ExportExcel(string search)
@@ -169,16 +169,25 @@ namespace QuanLyCotWeb.Controllers
             if (ModelState.IsValid)
             {
                 rutCot.IDRut = GetNextIDRut(); // Gán ID tự động ở đây
-                rutCot.HoTenCotKhongDau = StringHelper.NormalizeString(rutCot.HoTenCot ?? ""); // Thêm nếu bạn dùng cột khongdau
+                rutCot.HoTenCotKhongDau = StringHelper.NormalizeString(rutCot.HoTenCot ?? "");
+
                 _context.Add(rutCot);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                TempData["SuccessMessage"] = "Thêm mới hồ sơ rút cốt thành công!";
+
+                // --- TÍNH TOÁN VỊ TRÍ TRANG ---
+                int pageSize = 20; // Phải khớp với pageSize ở hàm Index
+                int viTriDung = await _context.RutCot.CountAsync(r => r.IDRut <= rutCot.IDRut);
+                int pageDich = (int)Math.Ceiling((double)viTriDung / pageSize);
+                if (pageDich <= 0) pageDich = 1;
+
+                return RedirectToAction(nameof(Index), new { page = pageDich, highlight = rutCot.IDRut });
             }
 
             ViewBag.NextID = GetNextIDRut(); // Nếu lỗi, giữ lại ID tiếp theo
             return View(rutCot);
         }
-
 
         public async Task<IActionResult> Edit(int id)
         {
@@ -206,10 +215,12 @@ namespace QuanLyCotWeb.Controllers
                     rutCot.HoTenCotKhongDau = StringHelper.NormalizeString(rutCot.HoTenCot ?? "");
                     _context.Update(rutCot);
                     await _context.SaveChangesAsync();
+
+                    TempData["SuccessMessage"] = "Cập nhật hồ sơ rút cốt thành công!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!RutCotExists(rutCot.IDRut.Value))
+                    if (!RutCotExists(rutCot.IDRut ?? 0))
                     {
                         return NotFound();
                     }
@@ -218,7 +229,14 @@ namespace QuanLyCotWeb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+
+                // --- TÍNH TOÁN VỊ TRÍ TRANG SAU KHI SỬA ---
+                int pageSize = 20;
+                int viTriDung = await _context.RutCot.CountAsync(r => r.IDRut <= rutCot.IDRut);
+                int pageDich = (int)Math.Ceiling((double)viTriDung / pageSize);
+                if (pageDich <= 0) pageDich = 1;
+
+                return RedirectToAction(nameof(Index), new { page = pageDich, highlight = rutCot.IDRut });
             }
             return View(rutCot);
         }
@@ -243,6 +261,7 @@ namespace QuanLyCotWeb.Controllers
             if (rutCot != null)
             {
                 _context.RutCot.Remove(rutCot);
+                TempData["SuccessMessage"] = "Xóa hồ sơ rút cốt thành công!";
             }
 
             await _context.SaveChangesAsync();

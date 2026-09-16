@@ -85,10 +85,14 @@ namespace QuanLyCotWeb.Controllers
 
             if (viTri != null)
             {
-                var daCoHinh = await _context.HT_Hinh.AnyAsync(h => h.IDViTri == viTri.IDViTri);
-                if (daCoHinh)
+                // KIỂM TRA ĐÃ CÓ NGƯỜI AN VỊ (CÓ TÊN/HỌ)
+                var daCoNguoiAnVi = await _context.HT_Hinh.AnyAsync(h =>
+                    h.IDViTri == viTri.IDViTri &&
+                    (!string.IsNullOrWhiteSpace(h.Ten) || !string.IsNullOrWhiteSpace(h.Ho)));
+
+                if (daCoNguoiAnVi)
                 {
-                    return Json(new { success = false, message = $"Vị trí Tủ {viTri.Tu} - Dãy {viTri.Day} đã có hình thờ an vị!" });
+                    return Json(new { success = false, message = $"Vị trí Tủ {viTri.Tu} - Dãy {viTri.Day} đã có người an vị!" });
                 }
 
                 return Json(new
@@ -96,7 +100,7 @@ namespace QuanLyCotWeb.Controllers
                     success = true,
                     exists = true,
                     idViTri = viTri.IDViTri,
-                    message = $"Vị trí hợp lệ: Tủ {viTri.Tu} - Dãy {viTri.Day} (Chưa có hình)"
+                    message = $"Vị trí hợp lệ: Tủ {viTri.Tu} - Dãy {viTri.Day} (Chưa có thông tin người an vị, có thể thêm mới)"
                 });
             }
 
@@ -196,17 +200,49 @@ namespace QuanLyCotWeb.Controllers
                 }
 
                 // --- XỬ LÝ TẦNG 1: THÔNG TIN HÌNH THỜ (ĐÃ BAO GỒM LinkAnh) & ẢNH ---
-                _context.HT_Hinh.Add(hinh);
-                await _context.SaveChangesAsync(); // Sinh IDHinh
+                var existingHinh = await _context.HT_Hinh.FirstOrDefaultAsync(h => h.IDViTri == hinh.IDViTri);
+
+                if (existingHinh != null)
+                {
+                    // CẬP NHẬT (ghi đè) thông tin mới lên dòng bị trống Tên
+                    existingHinh.Ho = hinh.Ho;
+                    existingHinh.Ten = hinh.Ten;
+                    existingHinh.PhapDanh = hinh.PhapDanh;
+                    existingHinh.NamSinh = hinh.NamSinh;
+                    existingHinh.Tuoi = hinh.Tuoi;
+                    existingHinh.NgayBatDau = hinh.NgayBatDau;
+                    existingHinh.NgayKetThuc = hinh.NgayKetThuc;
+                    existingHinh.NgayMatAL = hinh.NgayMatAL;
+                    existingHinh.NgayMatDL = hinh.NgayMatDL;
+                    existingHinh.IDNguoiThan = hinh.IDNguoiThan;
+                    existingHinh.LinkAnh = hinh.LinkAnh;
+
+                    _context.HT_Hinh.Update(existingHinh);
+                    await _context.SaveChangesAsync();
+
+                    hinh.IDHinh = existingHinh.IDHinh;
+                }
+                else
+                {
+                    // THÊM MỚI bình thường nếu vị trí trống hoàn toàn
+                    _context.HT_Hinh.Add(hinh);
+                    await _context.SaveChangesAsync(); // Sinh IDHinh
+                }
 
                 if (HinhAnhUpload != null && HinhAnhUpload.Length > 0)
                 {
                     var fileName = $"HT{hinh.IDHinh}.jpg";
                     using var stream = HinhAnhUpload.OpenReadStream();
                     var blobUrl = await _blobService.UploadAsync(stream, fileName);
-                    hinh.AnhHinh = blobUrl;
-                    _context.HT_Hinh.Update(hinh);
-                    await _context.SaveChangesAsync();
+
+                    // Lấy lại record vừa lưu để cập nhật link ảnh
+                    var savedHinh = await _context.HT_Hinh.FindAsync(hinh.IDHinh);
+                    if (savedHinh != null)
+                    {
+                        savedHinh.AnhHinh = blobUrl;
+                        _context.HT_Hinh.Update(savedHinh);
+                        await _context.SaveChangesAsync();
+                    }
                 }
 
                 TempData["SuccessMessage"] = $"Tiếp nhận thành công hồ sơ hình thờ: {hinh.Ho} {hinh.Ten} (Mã #{hinh.IDHinh})!";

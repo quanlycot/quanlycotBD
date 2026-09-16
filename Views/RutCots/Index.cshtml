@@ -5,6 +5,13 @@
 @{
     ViewData["Title"] = "Danh sách rút cốt";
     string keyword = Context.Request.Query["search"];
+
+    // Bắt ID cần làm nổi bật từ URL trả về sau khi Thêm/Sửa
+    int highlightId = 0;
+    if (Context.Request.Query["highlight"].Count > 0)
+    {
+        int.TryParse(Context.Request.Query["highlight"], out highlightId);
+    }
 }
 
 <style>
@@ -29,6 +36,14 @@
         padding: 3px 8px;
         font-size: 12px;
         font-weight: 600;
+    }
+
+    /* Hiệu ứng bôi màu dòng vừa thao tác */
+    .row-highlight td {
+        background-color: #d1e7dd !important;
+        border-top: 2px solid #198754 !important;
+        border-bottom: 2px solid #198754 !important;
+        transition: background-color 0.5s ease;
     }
 </style>
 
@@ -68,13 +83,17 @@
         <table class="table table-bordered table-hover table-striped mb-0 rutcot-table align-middle">
             <thead class="text-center">
                 <tr>
-                    <th style="width: 60px;">ID</th>
-                    <th style="width: 180px;" class="text-start">Người Rút</th>
-                    <th class="text-start">Họ Tên Cốt</th>
-                    <th style="width: 80px;">Lô</th>
-                    <th style="width: 70px;">Lầu</th>
-                    <th style="width: 120px;">Ngày Rút</th>
-                    <th style="width: 150px;">Thao tác</th>
+                    <th style="width: 50px;">ID</th>
+                    <th style="width: 150px;" class="text-start">Người Rút</th>
+                    <th style="width: 80px;">Năm Sinh</th>
+                    <th style="width: 110px;">SĐT</th>
+                    <th class="text-start">Địa Chỉ</th>
+                    <th style="width: 180px;" class="text-start">Họ Tên Cốt</th>
+                    <th style="width: 70px;">Lô</th>
+                    <th style="width: 60px;">Lầu</th>
+                    <th style="width: 100px;">Ngày Rút</th>
+                    <th style="width: 180px;" class="text-start">Lý Do Rút</th>
+                    <th style="width: 140px;">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
@@ -82,9 +101,24 @@
                 {
                     foreach (var item in Model)
                     {
-                        <tr>
+                        <!-- Gắn ID và Class vào thẻ tr để javascript tìm tới và đổi màu -->
+                        <tr id="rutcot-@item.IDRut" class="@(item.IDRut == highlightId ? "row-highlight" : "")">
                             <td class="text-center fw-bold text-secondary">@item.IDRut</td>
-                            <td class="text-start fw-semibold">@($"{item.HoNguoiRut} {item.TenNguoiRut}".Trim())</td>
+
+                            <!-- Các cột thông tin đã được tách rời -->
+                            <td class="text-start fw-bold text-primary">
+                                @($"{item.HoNguoiRut} {item.TenNguoiRut}".Trim())
+                            </td>
+                            <td class="text-center">
+                                @item.NamSinhNguoiRut
+                            </td>
+                            <td class="text-center">
+                                @item.SDT
+                            </td>
+                            <td class="text-start text-muted">
+                                @item.DiaChi
+                            </td>
+
                             <td class="text-start text-dark">
                                 @Html.Raw(item.HoTenCot?.Replace("\n", "<br/>"))
                             </td>
@@ -108,6 +142,9 @@
                                 }
                                 @ngayHienThi
                             </td>
+                            <td class="text-start text-muted">
+                                @Html.Raw(item.LyDo?.Replace("\n", "<br/>"))
+                            </td>
                             <td class="text-center">
                                 <div class="d-inline-flex gap-1">
                                     <a asp-action="Details" asp-route-id="@item.IDRut" class="btn btn-info text-white btn-action-sm">
@@ -124,7 +161,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="7" class="text-center py-4 text-muted">Không có dữ liệu rút cốt.</td>
+                        <td colspan="11" class="text-center py-4 text-muted">Không có dữ liệu rút cốt.</td>
                     </tr>
                 }
             </tbody>
@@ -148,3 +185,23 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Lắng nghe sự kiện load trang để cuộn đến dòng vừa thao tác
+        window.addEventListener("load", function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const highlightId = urlParams.get("highlight");
+
+            if (highlightId) {
+                const targetRow = document.getElementById("rutcot-" + highlightId);
+                if (targetRow) {
+                    setTimeout(() => {
+                        // Trượt màn hình nhẹ nhàng xuống giữa dòng được chọn
+                        targetRow.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }, 400); // Trì hoãn một chút để đảm bảo giao diện đã render xong
+                }
+            }
+        });
+    </script>
+}
