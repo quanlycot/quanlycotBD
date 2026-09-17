@@ -130,7 +130,8 @@ namespace QuanLyCotWeb.Controllers
                     noiCap = n.NoiCap,
                     diaChi = n.DiaChi,
                     sdt = n.SoDienThoai,
-                    ghiChu = n.GhiChu
+                    ghiChu = n.GhiChu,
+                    ngayDangKy = n.NgayDangKy // Kéo thêm dữ liệu Ngày Đăng Ký
                 })
                 .ToListAsync();
 
@@ -202,7 +203,7 @@ namespace QuanLyCotWeb.Controllers
              bool TaoNguoiThanMoi,
              int? NT_CustomId, string? NT_Ho, string? NT_Ten, string? NT_PhapDanh,
              string? NT_NgaySinh, string? NT_CCCD, string? NT_NgayCap, string? NT_NoiCap,
-             string? NT_DiaChi, string? NT_SDT, string? NT_GhiChu)
+             string? NT_DiaChi, string? NT_SDT, string? NT_GhiChu, string? NT_NgayDangKy) // Bổ sung biến NT_NgayDangKy vào tham số
         {
             try
             {
@@ -266,7 +267,9 @@ namespace QuanLyCotWeb.Controllers
                     ntLuu.DiaChi = NT_DiaChi?.Trim();
                     ntLuu.SoDienThoai = NT_SDT?.Trim();
                     ntLuu.GhiChu = NT_GhiChu?.Trim();
-                    ntLuu.NgayDangKy = DateTime.Today.ToString("dd/MM/yyyy");
+
+                    // Gán ngày đăng ký, nếu rỗng thì lấy mặc định là ngày hiện tại
+                    ntLuu.NgayDangKy = NT_NgayDangKy?.Trim() ?? DateTime.Today.ToString("dd/MM/yyyy");
 
                     await _context.SaveChangesAsync();
                     cot.IdnguoiThan = ntLuu.IdnguoiThan;
@@ -277,14 +280,18 @@ namespace QuanLyCotWeb.Controllers
                     var ntCu = await _context.NguoiThans.FindAsync(cot.IdnguoiThan.Value);
                     if (ntCu != null)
                     {
-                        if (!string.IsNullOrWhiteSpace(NT_CCCD)) ntCu.Cccd = NT_CCCD.Trim();
-                        if (!string.IsNullOrWhiteSpace(NT_SDT)) ntCu.SoDienThoai = NT_SDT.Trim();
-                        if (!string.IsNullOrWhiteSpace(NT_DiaChi)) ntCu.DiaChi = NT_DiaChi.Trim();
-                        if (!string.IsNullOrWhiteSpace(NT_PhapDanh)) ntCu.PhapDanh = NT_PhapDanh.Trim();
-                        if (!string.IsNullOrWhiteSpace(NT_NgaySinh)) ntCu.NgaySinh = NT_NgaySinh.Trim();
-                        if (!string.IsNullOrWhiteSpace(NT_NgayCap)) ntCu.NgayCap = NT_NgayCap.Trim();
-                        if (!string.IsNullOrWhiteSpace(NT_NoiCap)) ntCu.NoiCap = NT_NoiCap.Trim();
-                        if (!string.IsNullOrWhiteSpace(NT_GhiChu)) ntCu.GhiChu = NT_GhiChu.Trim();
+                        ntCu.Ho = NT_Ho?.Trim() ?? "";
+                        ntCu.Ten = !string.IsNullOrWhiteSpace(NT_Ten) ? NT_Ten.Trim() : ntCu.Ten;
+
+                        ntCu.Cccd = NT_CCCD?.Trim();
+                        ntCu.SoDienThoai = NT_SDT?.Trim();
+                        ntCu.DiaChi = NT_DiaChi?.Trim();
+                        ntCu.PhapDanh = NT_PhapDanh?.Trim();
+                        ntCu.NgaySinh = NT_NgaySinh?.Trim();
+                        ntCu.NgayCap = NT_NgayCap?.Trim();
+                        ntCu.NoiCap = NT_NoiCap?.Trim();
+                        ntCu.GhiChu = NT_GhiChu?.Trim();
+                        ntCu.NgayDangKy = NT_NgayDangKy?.Trim() ?? DateTime.Today.ToString("dd/MM/yyyy");
 
                         _context.Update(ntCu);
                         await _context.SaveChangesAsync();
@@ -458,7 +465,7 @@ namespace QuanLyCotWeb.Controllers
             bool TaoNguoiThanMoi,
             int? NT_CustomId, string? NT_Ho, string? NT_Ten, string? NT_PhapDanh,
             string? NT_NgaySinh, string? NT_CCCD, string? NT_NgayCap, string? NT_NoiCap,
-            string? NT_DiaChi, string? NT_SDT, string? NT_GhiChu)
+            string? NT_DiaChi, string? NT_SDT, string? NT_GhiChu, string? NT_NgayDangKy) // Thêm tham số NT_NgayDangKy
         {
             if (id != cot.Idcot) return NotFound();
 
@@ -498,7 +505,9 @@ namespace QuanLyCotWeb.Controllers
                         ntLuu.DiaChi = NT_DiaChi?.Trim();
                         ntLuu.SoDienThoai = NT_SDT?.Trim();
                         ntLuu.GhiChu = NT_GhiChu?.Trim();
-                        ntLuu.NgayDangKy = DateTime.Today.ToString("dd/MM/yyyy");
+
+                        // Cập nhật Ngày Đăng Ký
+                        ntLuu.NgayDangKy = NT_NgayDangKy?.Trim() ?? DateTime.Today.ToString("dd/MM/yyyy");
 
                         await _context.SaveChangesAsync();
 
@@ -510,16 +519,26 @@ namespace QuanLyCotWeb.Controllers
                         var ntCu = await _context.NguoiThans.FindAsync(cot.IdnguoiThan.Value);
                         if (ntCu != null)
                         {
-                            if (!string.IsNullOrWhiteSpace(NT_CCCD)) ntCu.Cccd = NT_CCCD.Trim();
-                            if (!string.IsNullOrWhiteSpace(NT_SDT)) ntCu.SoDienThoai = NT_SDT.Trim();
-                            if (!string.IsNullOrWhiteSpace(NT_DiaChi)) ntCu.DiaChi = NT_DiaChi.Trim();
-                            if (!string.IsNullOrWhiteSpace(NT_PhapDanh)) ntCu.PhapDanh = NT_PhapDanh.Trim();
-                            if (!string.IsNullOrWhiteSpace(NT_NgaySinh)) ntCu.NgaySinh = NT_NgaySinh.Trim();
-                            if (!string.IsNullOrWhiteSpace(NT_NgayCap)) ntCu.NgayCap = NT_NgayCap.Trim();
-                            if (!string.IsNullOrWhiteSpace(NT_NoiCap)) ntCu.NoiCap = NT_NoiCap.Trim();
-                            if (!string.IsNullOrWhiteSpace(NT_GhiChu)) ntCu.GhiChu = NT_GhiChu.Trim();
+                            // 1. Cập nhật Họ và Tên (Cho phép sửa sai sót)
+                            ntCu.Ho = NT_Ho?.Trim() ?? "";
 
-                            _context.NguoiThans.Update(ntCu);
+                            // Tên là trường bắt buộc, nên nếu form vô tình gửi rỗng thì giữ lại tên cũ
+                            ntCu.Ten = !string.IsNullOrWhiteSpace(NT_Ten) ? NT_Ten.Trim() : ntCu.Ten;
+
+                            // 2. Gán trực tiếp các trường khác (cho phép xóa trắng dữ liệu nếu nhập sai)
+                            ntCu.Cccd = NT_CCCD?.Trim();
+                            ntCu.SoDienThoai = NT_SDT?.Trim();
+                            ntCu.DiaChi = NT_DiaChi?.Trim();
+                            ntCu.PhapDanh = NT_PhapDanh?.Trim();
+                            ntCu.NgaySinh = NT_NgaySinh?.Trim();
+                            ntCu.NgayCap = NT_NgayCap?.Trim();
+                            ntCu.NoiCap = NT_NoiCap?.Trim();
+
+                            // 3. Lưu riêng biệt Ngày đăng ký và Ghi chú
+                            ntCu.NgayDangKy = NT_NgayDangKy?.Trim() ?? DateTime.Today.ToString("dd/MM/yyyy");
+                            ntCu.GhiChu = NT_GhiChu?.Trim();
+
+                            _context.Update(ntCu);
                             await _context.SaveChangesAsync();
                         }
                     }

@@ -188,55 +188,67 @@
             <div class="row g-2 mt-1 pt-2 border-top border-secondary">
                 <div class="col-md-2">
                     <label class="form-label small text-warning fw-bold">ID Người Thân:</label>
+                    <!-- Duy nhất ô ID này là readonly vì không cho người dùng tự gõ mã ID -->
                     <input type="text" id="nt_CustomId_Display" class="form-control form-control-sm input-dark text-warning fw-bold text-center" value="@Model.IDNguoiThan" readonly />
                     <input type="hidden" id="hdnCustomId" name="NT_CustomId" value="@Model.IDNguoiThan" />
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">Họ:</label>
-                    <input type="text" id="nt_Ho" name="NT_Ho" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.Ho)" readonly />
+                    <!-- ĐÃ XÓA readonly -->
+                    <input type="text" id="nt_Ho" name="NT_Ho" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.Ho)" />
                 </div>
                 <div class="col-md-4">
                     <label class="form-label small">Tên (*):</label>
-                    <input type="text" id="nt_Ten" name="NT_Ten" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.Ten)" readonly />
+                    <!-- ĐÃ XÓA readonly -->
+                    <input type="text" id="nt_Ten" name="NT_Ten" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.Ten)" required />
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">Pháp danh:</label>
-                    <input type="text" id="nt_PhapDanh" name="NT_PhapDanh" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.PhapDanh)" readonly />
+                    <!-- ĐÃ XÓA readonly -->
+                    <input type="text" id="nt_PhapDanh" name="NT_PhapDanh" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.PhapDanh)" />
                 </div>
 
                 <div class="col-md-3">
                     <label class="form-label small">Ngày sinh:</label>
-                    <input type="text" id="nt_NamSinh" name="NT_NamSinh" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.NamSinh)" readonly />
+                    <!-- ĐÃ XÓA readonly -->
+                    <input type="text" id="nt_NamSinh" name="NT_NgaySinh" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.NamSinh)" />
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small text-warning fw-bold">CCCD / CMND:</label>
-                    <input type="text" id="nt_CCCD" name="NT_CCCD" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.CCCD)" readonly />
+                    <!-- ĐÃ XÓA readonly -->
+                    <input type="text" id="nt_CCCD" name="NT_CCCD" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.CCCD)" />
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">Ngày cấp:</label>
-                    <input type="text" id="nt_NgayCap" name="NT_NgayCap" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.NgayCap)" readonly />
+                    <!-- ĐÃ XÓA readonly -->
+                    <input type="text" id="nt_NgayCap" name="NT_NgayCap" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.NgayCap)" />
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">Nơi cấp:</label>
-                    <input type="text" id="nt_NoiCap" name="NT_NoiCap" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.NoiCap)" readonly />
+                    <!-- ĐÃ XÓA readonly -->
+                    <input type="text" id="nt_NoiCap" name="NT_NoiCap" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.NoiCap)" />
                 </div>
 
                 <div class="col-md-3">
                     <label class="form-label small">Số điện thoại (*):</label>
-                    <input type="text" id="nt_SDT" name="NT_SDT" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.SoDienThoai)" readonly />
+                    <!-- ĐÃ XÓA readonly -->
+                    <input type="text" id="nt_SDT" name="NT_SDT" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.SoDienThoai)" />
                 </div>
                 <div class="col-md-6">
                     <label class="form-label small">Địa chỉ:</label>
-                    <input type="text" id="nt_DiaChi" name="NT_DiaChi" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.DiaChi)" readonly />
+                    <!-- ĐÃ XÓA readonly -->
+                    <input type="text" id="nt_DiaChi" name="NT_DiaChi" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.DiaChi)" />
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">Ngày đăng ký:</label>
-                    <input type="text" id="nt_NgayDangKy" name="NT_NgayDangKy" class="form-control form-control-sm input-dark" value="@DateTime.Today.ToString("dd/MM/yyyy")" readonly />
+                    <!-- ĐÃ XÓA readonly -->
+                    <input type="text" id="nt_NgayDangKy" name="NT_NgayDangKy" class="form-control form-control-sm input-dark" value="@DateTime.Today.ToString("dd/MM/yyyy")" />
                 </div>
 
                 <div class="col-md-12">
                     <label class="form-label small">Ghi chú:</label>
-                    <input type="text" id="nt_GhiChu" name="NT_GhiChu" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.GhiChu)" readonly />
+                    <!-- ĐÃ XÓA readonly -->
+                    <input type="text" id="nt_GhiChu" name="NT_GhiChu" class="form-control form-control-sm input-dark" value="@(Model.NguoiThan?.GhiChu)" />
                 </div>
             </div>
         </div>
@@ -349,7 +361,7 @@
                 });
         }
 
-        const arrNguoiThanInputsHT = ['nt_Ho', 'nt_Ten', 'nt_PhapDanh', 'nt_NamSinh', 'nt_SDT', 'nt_CCCD', 'nt_NgayCap', 'nt_NoiCap', 'nt_DiaChi', 'nt_GhiChu', 'nt_NgayDangKy'];
+        // Đã gỡ bỏ mảng arrNguoiThanInputsHT vì chúng ta không khóa (readonly) nữa
 
         function chonNguoiThanHT(item) {
             let hdnId = document.getElementById('hdnIdNguoiThanHT');
@@ -365,10 +377,12 @@
             if(custDisp) custDisp.value = item.id;
 
             let setVal = (id, val) => { let el = document.getElementById(id); if(el) el.value = val || ''; };
+
+            // Gán dữ liệu lên form, người dùng vẫn có thể click vào để sửa chữa
             setVal('nt_Ho', item.ho);
             setVal('nt_Ten', item.ten);
             setVal('nt_PhapDanh', item.phapDanh);
-            setVal('nt_NamSinh', item.namSinh);
+            setVal('nt_NamSinh', item.ngaySinh); // API trả về field tên là ngaySinh (chứa NamSinh DB)
             setVal('nt_SDT', item.sdt);
             setVal('nt_CCCD', item.cccd);
             setVal('nt_NgayCap', item.ngayCap);
@@ -376,10 +390,7 @@
             setVal('nt_DiaChi', item.diaChi);
             setVal('nt_GhiChu', item.ghiChu);
 
-            arrNguoiThanInputsHT.forEach(id => {
-                let el = document.getElementById(id);
-                if(el) el.setAttribute('readonly', true);
-            });
+            // ĐÃ XÓA ĐOẠN CODE SET 'readonly' Ở ĐÂY ĐỂ BẠN CÓ THỂ CHỈNH SỬA TỰ DO
 
             let box = document.getElementById('boxKetQuaNT_HT');
             if(box) box.classList.add('d-none');
@@ -402,18 +413,18 @@
                         let custDisp = document.getElementById('nt_CustomId_Display');
                         if(custDisp) custDisp.value = data.id;
 
-                        arrNguoiThanInputsHT.forEach(id => {
+                        // Reset rỗng các trường để nhập mới
+                        const arrInputs = ['nt_Ho', 'nt_Ten', 'nt_PhapDanh', 'nt_NamSinh', 'nt_SDT', 'nt_CCCD', 'nt_NgayCap', 'nt_NoiCap', 'nt_DiaChi', 'nt_GhiChu'];
+                        arrInputs.forEach(id => {
                             let el = document.getElementById(id);
                             if (el) {
                                 el.value = '';
-                                el.removeAttribute('readonly');
                             }
                         });
 
                         let elNgay = document.getElementById('nt_NgayDangKy');
                         if(elNgay) {
                             elNgay.value = '@DateTime.Today.ToString("dd/MM/yyyy")';
-                            elNgay.removeAttribute('readonly');
                         }
 
                         let box = document.getElementById('boxKetQuaNT_HT');
