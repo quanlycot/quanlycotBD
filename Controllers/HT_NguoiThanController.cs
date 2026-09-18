@@ -7,6 +7,7 @@ using QuanLyCotWeb.Services;
 using TemplateEngine.Docx;
 using X.PagedList;
 using X.PagedList.Extensions;
+using QRCoder;
 
 namespace QuanLyCotWeb.Controllers
 {
@@ -22,7 +23,6 @@ namespace QuanLyCotWeb.Controllers
             _blobService = blobService; // 👈 gán giá trị
         }
 
-        // In giấy đăng ký theo hình thờ
         [HttpPost]
         public IActionResult InGiayDangKyNhieuHinh(List<int> selectedIds)
         {
@@ -61,12 +61,24 @@ namespace QuanLyCotWeb.Controllers
                 new FieldContent("SoLuong", danhSachHinh.Count.ToString())
             );
 
-            var tableRows = danhSachHinh.Select((hinh, index) => new TableRowContent(
-                new FieldContent("STT", (index + 1).ToString()),
-                new FieldContent("HoTenCot", $"{hinh.Ho} {hinh.Ten}"),
-                new FieldContent("ViTri", $"{hinh.ViTri?.Tu} - {hinh.ViTri?.Day}"),
-                new FieldContent("ThoiHan", $"{hinh.NgayBatDau?.ToString("dd/MM/yyyy")} => {hinh.NgayKetThuc?.ToString("dd/MM/yyyy")}")
-            )).ToList();
+            var tableRows = danhSachHinh.Select((hinh, index) =>
+            {
+                // 1. Tạo liên kết chi tiết cho Hình, trỏ đến đúng trang Details của Hình
+                string linkChiTiet = $"https://chuabuudaqlc.onrender.com/Hinh/Details/{hinh.IDHinh}";
+
+                // 2. Sinh ảnh QR code dạng mảng byte
+                byte[] qrBytes = GenerateQRCode(linkChiTiet);
+
+                return new TableRowContent(
+                    new FieldContent("STT", (index + 1).ToString()),
+                    new FieldContent("HoTenCot", $"{hinh.Ho} {hinh.Ten}"),
+                    new FieldContent("ViTri", $"{hinh.ViTri?.Tu} - {hinh.ViTri?.Day}"),
+                    new FieldContent("ThoiHan", $"{hinh.NgayBatDau?.ToString("dd/MM/yyyy")} => {hinh.NgayKetThuc?.ToString("dd/MM/yyyy")}"),
+
+                    // 3. Đưa ảnh QR vào trường hình ảnh có Tag là QRCodeHinh
+                    new ImageContent("QRCodeHinh", qrBytes)
+                );
+            }).ToList();
 
             content.Tables.Add(new TableContent("DanhSachCot", tableRows));
 
@@ -274,6 +286,19 @@ namespace QuanLyCotWeb.Controllers
             }
 
             return RedirectToAction("Index", "HT_NguoiThan", new { page = page, highlight = idNguoiThan });
+        }
+        private byte[] GenerateQRCode(string text)
+        {
+            using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+            {
+                // Tạo dữ liệu QR với mức chịu lỗi Q (tốt cho in ấn)
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.Q);
+                using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData))
+                {
+                    // Số 5 là kích thước/độ phân giải của mã QR, bạn có thể tăng lên 7 hoặc 10 nếu muốn ảnh nét hơn
+                    return qrCode.GetGraphic(5);
+                }
+            }
         }
 
     }

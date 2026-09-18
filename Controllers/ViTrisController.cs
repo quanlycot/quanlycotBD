@@ -14,6 +14,7 @@ using TemplateEngine.Docx;
 using System.IO;
 using System.Collections.Generic;
 using X.PagedList.Extensions;
+using QRCoder;
 
 
 namespace QuanLyCotWeb.Controllers
@@ -49,11 +50,20 @@ namespace QuanLyCotWeb.Controllers
             string tempFile = Path.GetTempFileName();
             System.IO.File.Copy(templatePath, tempFile, true);
 
+            // --- 1. TẠO MÃ QR CHO 1 CỐT ---
+            string linkChiTiet = $"https://chuabuudaqlc.onrender.com/Cots/Details/{cot.Idcot}";
+            byte[] qrBytes = GenerateQRCode(linkChiTiet);
+            // --------------------------------
+
             // Gán nội dung vào template
             using (var outputDoc = new TemplateEngine.Docx.TemplateProcessor(tempFile).SetRemoveContentControls(true))
             {
                 var valuesToFill = new TemplateEngine.Docx.Content(
                     new FieldContent("MaSoHoSo", nguoiThan.IdnguoiThan.ToString()),
+
+                    // --- 2. ĐƯA ẢNH QR VÀO FILE WORD (Tương ứng với Tag QRCode) ---
+                    new ImageContent("QRCode", qrBytes),
+
                     new FieldContent("HoTenNT", $"{nguoiThan.Ho} {nguoiThan.Ten}"),
                     new FieldContent("PhapDanhNT", nguoiThan.PhapDanh ?? ""),
                     new FieldContent("NgaySinhNT", nguoiThan.NgaySinh ?? ""),
@@ -89,7 +99,6 @@ namespace QuanLyCotWeb.Controllers
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 $"DonDangKy_{nguoiThan.IdnguoiThan}.docx");
         }
-
         // GET: ViTris
         public async Task<IActionResult> Index(string lau, string loSo, int? tinhTrang, bool loSoStartsWith, int? page)
         {
@@ -268,6 +277,19 @@ namespace QuanLyCotWeb.Controllers
         private bool ViTriExists(int id)
         {
             return _context.ViTris.Any(e => e.IdviTri == id);
+        }
+        private byte[] GenerateQRCode(string text)
+        {
+            using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+            {
+                // Tạo dữ liệu QR với mức chịu lỗi Q (tốt cho in ấn)
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.Q);
+                using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData))
+                {
+                    // Số 5 là kích thước/độ phân giải của mã QR, bạn có thể tăng lên 7 hoặc 10 nếu muốn ảnh nét hơn
+                    return qrCode.GetGraphic(5);
+                }
+            }
         }
     }
 }

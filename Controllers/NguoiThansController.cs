@@ -15,6 +15,7 @@ using TemplateEngine.Docx;
 using System.IO;
 using System.Collections.Generic;
 using X.PagedList.Extensions;
+using QRCoder;
 
 
 namespace QuanLyCotWeb.Controllers
@@ -56,9 +57,6 @@ namespace QuanLyCotWeb.Controllers
 
         }
 
-
-
-
         public IActionResult InGiayDangKyTheoCot(int idCot)
     {
         var cot = _context.Cots
@@ -79,38 +77,46 @@ namespace QuanLyCotWeb.Controllers
             string tempFile = Path.GetTempFileName();
             System.IO.File.Copy(templatePath, tempFile, true);
 
-            // Gán nội dung vào template
+            // --- ĐOẠN CODE MỚI THÊM VÀO ĐỂ TẠO QR ---
+            // Gắn thẳng domain và ID Cốt để tạo thành link trang chi tiết
+            string qrText = $"https://chuabuudaqlc.onrender.com/Cots/Details/{cot.Idcot}";
+            byte[] qrCodeBytes = GenerateQRCode(qrText);
+            // ----------------------------------------
+
             using (var outputDoc = new TemplateEngine.Docx.TemplateProcessor(tempFile).SetRemoveContentControls(true))
             {
                 var valuesToFill = new Content(
-         new FieldContent("MaSoHoSo", nguoiThan.IdnguoiThan.ToString()),
-         new FieldContent("HoTenNT", $"{nguoiThan.Ho} {nguoiThan.Ten}"),
-         new FieldContent("PhapDanhNT", nguoiThan.PhapDanh ?? ""),
-         new FieldContent("NgaySinhNT", nguoiThan.NgaySinh ?? ""),
-         new FieldContent("CCCD", nguoiThan.Cccd ?? ""),
-         new FieldContent("NgayCap", nguoiThan.NgayCap ?? ""),
-         new FieldContent("NoiCap", nguoiThan.NoiCap ?? ""),
-         new FieldContent("DiaChi", nguoiThan.DiaChi ?? ""),
-         new FieldContent("SDT", nguoiThan.SoDienThoai ?? ""),
+                    new FieldContent("MaSoHoSo", nguoiThan.IdnguoiThan.ToString()),
 
-         new FieldContent("HoTenNM", $"{cot.Ho} {cot.Ten}"),
-         new FieldContent("PhapDanhNM", cot.PhapDanh ?? ""),
-         new FieldContent("NamSinh", cot.NamSinh ?? ""),
-         new FieldContent("NgayMatAL", cot.MatAl ?? ""),
-            new FieldContent("NgayMatDL", cot.MatDl ?? ""),
-         new FieldContent("TuoiAL", cot.Tuoi?.ToString() ?? ""),
-         new FieldContent("Lau", cot.IdViTriNavigation?.Lau ?? ""),
-         new FieldContent("Day", cot.IdViTriNavigation?.LoSo ?? ""),
-         new FieldContent("TinhTrang", cot.IdViTriNavigation?.TinhTrangNavigation?.TenTinhTrang ?? ""),
-         new FieldContent("SoNamDK", "10"),
-         new FieldContent("NgayBatDau", cot.NgayBatDau?.ToString("dd/MM/yyyy") ?? ""),
-         new FieldContent("NgayKetThuc", cot.NgayKetThuc?.ToString("dd/MM/yyyy") ?? "")
-     );
+                    // DÒNG NÀY ĐỂ TRUYỀN ẢNH QR VÀO FILE WORD
+                    new ImageContent("QRCode", qrCodeBytes),
 
+                    new FieldContent("HoTenNT", $"{nguoiThan.Ho} {nguoiThan.Ten}"),
+                    new FieldContent("PhapDanhNT", nguoiThan.PhapDanh ?? ""),
+                    new FieldContent("NgaySinhNT", nguoiThan.NgaySinh ?? ""),
+                    new FieldContent("CCCD", nguoiThan.Cccd ?? ""),
+                    new FieldContent("NgayCap", nguoiThan.NgayCap ?? ""),
+                    new FieldContent("NoiCap", nguoiThan.NoiCap ?? ""),
+                    new FieldContent("DiaChi", nguoiThan.DiaChi ?? ""),
+                    new FieldContent("SDT", nguoiThan.SoDienThoai ?? ""),
+
+                    new FieldContent("HoTenNM", $"{cot.Ho} {cot.Ten}"),
+                    new FieldContent("PhapDanhNM", cot.PhapDanh ?? ""),
+                    new FieldContent("NamSinh", cot.NamSinh ?? ""),
+                    new FieldContent("NgayMatAL", cot.MatAl ?? ""),
+                    new FieldContent("NgayMatDL", cot.MatDl ?? ""),
+                    new FieldContent("TuoiAL", cot.Tuoi?.ToString() ?? ""),
+                    new FieldContent("Lau", cot.IdViTriNavigation?.Lau ?? ""),
+                    new FieldContent("Day", cot.IdViTriNavigation?.LoSo ?? ""),
+                    new FieldContent("TinhTrang", cot.IdViTriNavigation?.TinhTrangNavigation?.TenTinhTrang ?? ""),
+                    new FieldContent("SoNamDK", "10"),
+                    new FieldContent("NgayBatDau", cot.NgayBatDau?.ToString("dd/MM/yyyy") ?? ""),
+                    new FieldContent("NgayKetThuc", cot.NgayKetThuc?.ToString("dd/MM/yyyy") ?? "")
+                );
 
                 outputDoc.FillContent(valuesToFill);
-            outputDoc.SaveChanges();
-        }
+                outputDoc.SaveChanges();
+            }
 
             // Đọc từ file tạm rồi xóa
             byte[] bytes = System.IO.File.ReadAllBytes(tempFile);
@@ -144,10 +150,17 @@ namespace QuanLyCotWeb.Controllers
             templateStream.CopyTo(memStream);
             memStream.Position = 0;
 
+            // --- ĐOẠN CODE MỚI THÊM VÀO ĐỂ TẠO QR ---
+            string qrText = $"https://chuabuudaqlc.onrender.com/Cots/Details/{danhSachCot.First().Idcot}";
+            byte[] qrCodeBytes = GenerateQRCode(qrText);
+            // ----------------------------------------
+
             using (var outputDoc = new TemplateProcessor(memStream).SetRemoveContentControls(true))
             {
                 var valuesToFill = new Content(
                     new FieldContent("MaSoHoSo", nguoiThan.IdnguoiThan.ToString()),
+                    // new ImageContent("QRCode", qrCodeBytes), // <-- Bỏ dòng này nếu không dùng QR tổng nữa
+
                     new FieldContent("HoTenNT", $"{nguoiThan.Ho} {nguoiThan.Ten}"),
                     new FieldContent("PhapDanhNT", nguoiThan.PhapDanh ?? ""),
                     new FieldContent("NgaySinhNT", nguoiThan.NgaySinh ?? ""),
@@ -159,13 +172,26 @@ namespace QuanLyCotWeb.Controllers
                     new FieldContent("SoLuong", danhSachCot.Count.ToString())
                 );
 
-                var tableRows = danhSachCot.Select((cot, index) => new TableRowContent(
-                    new FieldContent("STT", (index + 1).ToString()),
-                    new FieldContent("HoTenCot", $"{cot.Ho} {cot.Ten}"),
-                    new FieldContent("ViTri", $"{cot.IdViTriNavigation?.Lau}:{cot.IdViTriNavigation?.LoSo}"),
-                    new FieldContent("TinhTrang", cot.IdViTriNavigation?.TinhTrangNavigation?.TenTinhTrang ?? ""),
-                    new FieldContent("ThoiHan", $"{cot.NgayBatDau?.ToString("dd/MM/yyyy")} => {cot.NgayKetThuc?.ToString("dd/MM/yyyy")}")
-                )).ToList();
+                // --- SỬA LẠI ĐOẠN TẠO BẢNG Ở ĐÂY ---
+                var tableRows = danhSachCot.Select((cot, index) =>
+                {
+                    // 1. Tạo mã QR riêng cho từng cốt trong vòng lặp
+                    string linkChiTiet = $"https://chuabuudaqlc.onrender.com/Cots/Details/{cot.Idcot}";
+                    byte[] qrBytes = GenerateQRCode(linkChiTiet);
+
+                    // 2. Gắn dữ liệu và QR vào từng dòng của bảng
+                    return new TableRowContent(
+                        new FieldContent("STT", (index + 1).ToString()),
+                        new FieldContent("HoTenCot", $"{cot.Ho} {cot.Ten}"),
+                        new FieldContent("ViTri", $"{cot.IdViTriNavigation?.Lau}:{cot.IdViTriNavigation?.LoSo}"),
+                        new FieldContent("TinhTrang", cot.IdViTriNavigation?.TinhTrangNavigation?.TenTinhTrang ?? ""),
+                        new FieldContent("ThoiHan",  $"Từ {cot.NgayBatDau?.ToString("dd/MM/yyyy")} đến {cot.NgayKetThuc?.ToString("dd/MM/yyyy")}"),
+
+                        // 3. Thêm trường ảnh QR vào cột mới
+                        new ImageContent("QRCodeCot", qrBytes)
+                    );
+                }).ToList();
+                // ------------------------------------
 
                 valuesToFill.Tables.Add(new TableContent("DanhSachCot", tableRows));
                 outputDoc.FillContent(valuesToFill);
@@ -414,6 +440,19 @@ namespace QuanLyCotWeb.Controllers
             }
 
             return id; // nếu không có ID trống thì trả về ID tiếp theo
+        }
+        private byte[] GenerateQRCode(string text)
+        {
+            using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+            {
+                // Tạo dữ liệu QR với mức chịu lỗi Q (tốt cho in ấn)
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.Q);
+                using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData))
+                {
+                    // Số 5 là kích thước/độ phân giải của mã QR, bạn có thể tăng lên 7 hoặc 10 nếu muốn ảnh nét hơn
+                    return qrCode.GetGraphic(5);
+                }
+            }
         }
 
     }
